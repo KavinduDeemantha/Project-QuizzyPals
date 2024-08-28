@@ -18,5 +18,5 @@ mongoClient.connect()
                 });
             })
             .catch((error) => {
-                console.log(error);
+                console.log(`Database connection failed: ${error}`);
             });
