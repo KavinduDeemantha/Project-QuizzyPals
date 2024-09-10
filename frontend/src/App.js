@@ -1,12 +1,15 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import WelcomePage from './pages/WelcomePage';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Quizzy Pals</h1>
-      </header>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/welcomepage' element={<WelcomePage />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
