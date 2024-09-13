@@ -62,3 +62,14 @@
 3. After a set timeout, the quizzes are swapped, and players must answer each other’s quizzes.
 4. Scores are updated in real-time based on the accuracy and speed of responses.
 5. At the end summary of who scored more and less will be shown.
+
+### Flow Chart
+```mermaid
+graph TD
+    A[Join Game Lobby] --> B[Create Quiz with Multiple-Choice Answers]
+    B --> C[Set Timeout]
+    C --> D[Quizzes Swapped Between Players]
+    D --> E[Players Answer Quizzes]
+    E --> F[Real-Time Scoring Based on Accuracy and Speed]
+    F --> G[Display Final Scores and Summary]
+```
