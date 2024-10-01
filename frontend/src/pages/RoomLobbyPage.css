@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Julee&display=swap');
+
+.bigname {
+    font-family: 'julee';
+    font-size: 8vw;
+}
+
+.pagetitle {
+    margin-top: 10vh;
+    font-size: 5vw;
+    font-weight: bold;
+}
+
+.subtitle {
+    font-size: 2vw;
+}
+
+.player-list-box-outer {
+    margin-top: 10px;
+    width: 20vw;
+    height: 50vh;
+    background-color: #cccccc;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.player-list-box-inner {
+    background-color: #ffffff;
+    border-radius: 10px;
+    height: 42vh;
+}
+
