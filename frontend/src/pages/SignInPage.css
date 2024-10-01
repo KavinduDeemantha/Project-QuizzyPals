@@ -1,12 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Julee&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 
-.bigname {
-    font-family: 'julee';
-    font-size: 8vw;
+.continue-btn {
+  margin-top: 10vh;
 }
 
-.pagetitle {
-    margin-top: 10vh;
-    font-size: 5vw;
-    font-weight: bold;
+.custom-links {
+    margin-top: 10px;
 }
+
+.error-message {
+    margin-top: 5px;
+    color: red;
+}
+
