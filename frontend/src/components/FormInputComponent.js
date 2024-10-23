@@ -1,26 +1,20 @@
 import { TextField } from "@mui/material";
 
 const FormInputComponent = ({ type, label, placeholder, value, onChange }) => {
-    return (
-        <>
-            <div style={{
-                fontSize: 24,
-                marginTop: '5vh',
-            }}>{label}</div>
+  return (
+    <>
+      <div className="form-component-container">{label}</div>
 
-            <TextField
-                style={{
-                    width: 300,
-                    marginTop: '1vh',
-                }}
-                value={value}
-                label={placeholder}
-                variant="standard"
-                type={type}
-                onChange={onChange}
-            />
-        </>
-    );
+      <TextField
+        className="form-component"
+        value={value}
+        label={placeholder}
+        variant="standard"
+        type={type}
+        onChange={onChange}
+      />
+    </>
+  );
 };
 
 export default FormInputComponent;

@@ -1,20 +1,14 @@
-import { Button } from "@mui/material"
+import { Button } from "@mui/material";
+import "../App.css";
 
-const ButtonComponent = ({ label, width, height, onClick, fontSize = 18}) => {
-    return (
-        <>
-            <Button style={{
-                width: width,
-                height: height,
-                backgroundColor: '#cccccc',
-                color: '#000000',
-                fontSize: fontSize
-            }}
-                onClick={onClick}
-                variant="contained"
-            >{ label }</Button>
-        </>
-    )
+const ButtonComponent = ({ label, onClick }) => {
+  return (
+    <>
+      <Button className="btn-component" onClick={onClick} variant="contained">
+        {label}
+      </Button>
+    </>
+  );
 };
 
 export default ButtonComponent;
