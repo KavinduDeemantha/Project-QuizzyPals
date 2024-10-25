@@ -12,109 +12,105 @@ import ButtonComponent from "../components/ButtonComponent";
 import { useSignUp } from "../hook/useSignup";
 
 const BootstrapButton = styled(Button)({
-    backgroundColor: "#cccccc",
-    color: "#000000",
-    fontSize: 24,
+  backgroundColor: "#cccccc",
+  color: "#000000",
+  fontSize: 24,
 });
 
 const SignUpPage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const signUp = useSignUp();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const signUp = useSignUp();
 
-    const handleContinueButton = async (e) => {
-        e.preventDefault();
+  const handleContinueButton = async (e) => {
+    e.preventDefault();
 
-        if (password != confirmPassword) {
-            alert(
-                "Password you entered do not match with the confirm password"
-            );
-            return;
-        } else {
-            const userData = {
-                email: username,
-                password: password,
-            };
+    if (password != confirmPassword) {
+      alert("Password you entered do not match with the confirm password");
+      return;
+    } else {
+      const userData = {
+        email: username,
+        password: password,
+      };
 
-            await signUp.signup(userData);
-        }
-    };
+      await signUp.signup(userData);
+    }
+  };
 
-    return (
-        <Grid container columns={16}>
-            <Grid size={8}>
-                <div
-                    style={{
-                        borderRight: "1px solid black",
-                        height: "100vh",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                    }}
-                >
-                    <div className="bigname">QuizzyPals</div>
-                </div>
-            </Grid>
-            <Grid size={8}>
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyItems: "center",
-                    }}
-                >
-                    <div className="pagetitle">SIGN UP</div>
+  return (
+    <Grid container columns={16}>
+      <Grid size={8}>
+        <div
+          style={{
+            borderRight: "1px solid black",
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <div className="bigname">QuizzyPals</div>
+        </div>
+      </Grid>
+      <Grid size={8}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyItems: "center",
+          }}
+        >
+          <div className="pagetitle">SIGN UP</div>
 
-                    <FormInputComponent
-                        placeholder={"john.doe@example.com"}
-                        type={"email"}
-                        label={"Email Address"}
-                        value={username}
-                        onChange={(evt) => setUsername(evt.target.value)}
-                    />
+          <FormInputComponent
+            placeholder={"john.doe@example.com"}
+            type={"email"}
+            label={"Email Address"}
+            value={username}
+            onChange={(evt) => setUsername(evt.target.value)}
+          />
 
-                    <FormInputComponent
-                        placeholder={"Enter your password here"}
-                        type={"password"}
-                        label={"Password"}
-                        value={password}
-                        onChange={(evt) => setPassword(evt.target.value)}
-                    />
+          <FormInputComponent
+            placeholder={"Enter your password here"}
+            type={"password"}
+            label={"Password"}
+            value={password}
+            onChange={(evt) => setPassword(evt.target.value)}
+          />
 
-                    <FormInputComponent
-                        placeholder={"Enter your password here to confirm"}
-                        type={"password"}
-                        label={"Confirm Password"}
-                        value={confirmPassword}
-                        onChange={(evt) => setConfirmPassword(evt.target.value)}
-                    />
-                </div>
+          <FormInputComponent
+            placeholder={"Enter your password here to confirm"}
+            type={"password"}
+            label={"Confirm Password"}
+            value={confirmPassword}
+            onChange={(evt) => setConfirmPassword(evt.target.value)}
+          />
+        </div>
 
-                <div
-                    style={{
-                        marginTop: "10vh",
-                    }}
-                >
-                    <ButtonComponent
-                        label={"CONTINUE"}
-                        onClick={handleContinueButton}
-                        fontSize={24}
-                        isDisabled={signUp.isLoading}
-                    />
-                    {signUp.error && (
-                        <div className="error-message">{signUp.error}</div>
-                    )}
-                    <div className="custom-links">
-                        <Link href="/signin">Already have an account</Link>
-                    </div>
-                </div>
-            </Grid>
-        </Grid>
-    );
+        <div
+          style={{
+            marginTop: "10vh",
+          }}
+        >
+          <ButtonComponent
+            label={"CONTINUE"}
+            onClick={handleContinueButton}
+            fontSize={24}
+            isDisabled={signUp.isLoading}
+          />
+          {signUp.error && <div className="error-message">{signUp.error}</div>}
+          <div className="custom-links">
+            <Link href="/signin">Already have an account</Link>
+          </div>
+        </div>
+      </Grid>
+    </Grid>
+  );
 };
 
 export default SignUpPage;

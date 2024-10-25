@@ -1,99 +1,158 @@
 .App {
-    text-align: center;
+  text-align: center;
 }
 
 .App-logo {
-    height: 40vmin;
-    pointer-events: none;
+  height: 40vmin;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
 .App-header {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
 .App-link {
-    color: #61dafb;
+  color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ButtonComponent.js stylings */
 
 .btn-component {
-    background-color: #cccccc !important;
-    color: #000000 !important;
-    font-size: var(--font-size, 18px) !important;
-    width: var(--width, auto) !important;
-    height: var(--height, auto) !important;
+  background-color: #cccccc !important;
+  color: #000000 !important;
+  font-size: var(--font-size, 18px) !important;
+  width: var(--width, auto) !important;
+  height: var(--height, auto) !important;
 }
 
 /* FormInputComponent.js stylings */
 
 .form-component-container {
-    font-size: 24px !important;
-    margin-top: 5vh !important;
+  font-size: 24px !important;
+  margin-top: 5vh !important;
 }
 
 .form-component {
-    text-align: center !important;
-    width: 300px !important;
-    margin-top: 1vh !important;
+  text-align: center !important;
+  width: 300px !important;
+  margin-top: 1vh !important;
 }
 
 /* common stylings */
 
 .header {
-    font-family: "julee";
-    font-size: 8vw;
+  font-family: "julee";
+  font-size: 8vw;
 }
 
 .page-title {
-    margin-top: 10vh;
-    font-size: 5vw;
-    font-weight: bold;
+  margin-top: 10vh;
+  font-size: 5vw;
+  font-weight: bold;
 }
 
 .sub-title {
-    font-size: 2vw;
+  font-size: 2vw;
 }
 
 .margin-top-10 {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .header-container {
-    border-right: 1px solid black;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  border-right: 1px solid black;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .page-title-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+}
+
+/* ButtonComponent.js stylings */
+
+.btn-component {
+  background-color: #cccccc !important;
+  color: #000000 !important;
+  font-size: var(--font-size, 18px) !important;
+  width: var(--width, auto) !important;
+  height: var(--height, auto) !important;
+}
+
+/* FormInputComponent.js stylings */
+
+.form-component-container {
+  font-size: 24px !important;
+  margin-top: 5vh !important;
+}
+
+.form-component {
+  text-align: center !important;
+  width: 300px !important;
+  margin-top: 1vh !important;
+}
+
+/* common stylings */
+
+.header {
+  font-family: "julee";
+  font-size: 8vw;
+}
+
+.page-title {
+  margin-top: 10vh;
+  font-size: 5vw;
+  font-weight: bold;
+}
+
+.sub-title {
+  font-size: 2vw;
+}
+
+.margin-top-10 {
+  margin-top: 10px;
+}
+
+.header-container {
+  border-right: 1px solid black;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.page-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
 }
 
 /* ButtonComponent.js stylings */
