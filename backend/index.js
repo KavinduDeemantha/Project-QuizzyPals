@@ -1,9 +1,9 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
-const userRouter = require('./routes/userRouter');
+const userRouter = require("./routes/userRouter");
 const quizRouter = require("./routes/quizRouter");
 
 const app = express();
@@ -13,8 +13,8 @@ app.use(express.json());
 app.use(cors());
 
 app.use((req, res, next) => {
-    console.log(req.path, req.method);
-    next();
+  console.log(req.path, req.method);
+  next();
 });
 
 // routes
@@ -22,15 +22,16 @@ app.use("/api/users", userRouter);
 app.use("/api/game", quizRouter);
 
 app.get("/", (req, res) => {
-    res.send("QuizzyPals backend is up and running at: http://localhost:4000...");
+  res.send("QuizzyPals backend is up and running at: http://localhost:4000...");
 });
 
-mongoose.connect(process.env.MONGO_URI)
-            .then(() => {
-                app.listen(process.env.PORT, () => {
-                    console.log(`Listening on port ${process.env.PORT}...`);
-                });
-            })
-            .catch((error) => {
-                console.log(`Database connection failed: ${error}`);
-            });
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    app.listen(process.env.PORT, () => {
+      console.log(`Listening on port ${process.env.PORT}...`);
+    });
+  })
+  .catch((error) => {
+    console.log(`Database connection failed: ${error}`);
+  });
