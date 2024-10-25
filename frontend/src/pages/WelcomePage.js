@@ -15,8 +15,8 @@ const WelcomePage = () => {
     const signOut = useSignOut();
     const { user } = useAuthContext();
 
-    const [roomCode, setRoomCode] = useState();
-    const [joinWithRoom, setJoinWithRoom] = useState(false);
+  const [roomCode, setRoomCode] = useState();
+  const [joinWithRoom, setJoinWithRoom] = useState(false);
 
     const handleSignOutButton = async (e) => {
         e.preventDefault();

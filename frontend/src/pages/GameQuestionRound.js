@@ -28,11 +28,11 @@ const GameQuestionRound = () => {
         setNewChoiceText("");
     };
 
-    const removeChoice = (choice) => {
-        const newChoices = addedChoices;
-        newChoices.splice(choice, 1);
-        setAddedChoices(newChoices);
-    };
+  const removeChoice = (choice) => {
+    const newChoices = addedChoices;
+    newChoices.splice(choice, 1);
+    setAddedChoices(newChoices);
+  };
 
     return (
         <div className="main-container">

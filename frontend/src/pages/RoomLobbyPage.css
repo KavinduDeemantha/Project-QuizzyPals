@@ -1,36 +1,36 @@
 @import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 
 .player-list-box-outer {
-    margin-top: 10px;
-    width: 20vw;
-    height: 50vh;
-    background-color: #cccccc;
-    border-radius: 10px;
-    padding: 10px;
+  margin-top: 10px;
+  width: 20vw;
+  height: 50vh;
+  background-color: #cccccc;
+  border-radius: 10px;
+  padding: 10px;
 }
 
 .player-list-box-inner {
-    background-color: #ffffff;
-    border-radius: 10px;
-    height: 42vh;
+  background-color: #ffffff;
+  border-radius: 10px;
+  height: 42vh;
 }
 
 .players-list {
-    text-align: center;
+  text-align: center;
 }
 
 .start-btn {
-    margin-top: 200px;
+  margin-top: 200px;
 }
 
 .lobby-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
 }
 
 .players {
-    font-size: 24px;
-    margin-bottom: 10px;
+  font-size: 24px;
+  margin-bottom: 10px;
 }

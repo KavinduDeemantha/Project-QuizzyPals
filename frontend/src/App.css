@@ -95,3 +95,62 @@
     align-items: center;
     justify-items: center;
 }
+
+/* ButtonComponent.js stylings */
+
+.btn-component {
+  background-color: #cccccc !important;
+  color: #000000 !important;
+  font-size: var(--font-size, 18px) !important;
+  width: var(--width, auto) !important;
+  height: var(--height, auto) !important;
+}
+
+/* FormInputComponent.js stylings */
+
+.form-component-container {
+  font-size: 24px !important;
+  margin-top: 5vh !important;
+}
+
+.form-component {
+  text-align: center !important;
+  width: 300px !important;
+  margin-top: 1vh !important;
+}
+
+/* common stylings */
+
+.header {
+  font-family: "julee";
+  font-size: 8vw;
+}
+
+.page-title {
+  margin-top: 10vh;
+  font-size: 5vw;
+  font-weight: bold;
+}
+
+.sub-title {
+  font-size: 2vw;
+}
+
+.margin-top-10 {
+  margin-top: 10px;
+}
+
+.header-container {
+  border-right: 1px solid black;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.page-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+}

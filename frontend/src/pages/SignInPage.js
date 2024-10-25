@@ -12,7 +12,7 @@ import { LinearProgress } from "@mui/material";
 import { useAuthContext } from "../hook/useAuthContext";
 
 const SignInPage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -47,21 +47,21 @@ const SignInPage = () => {
                 <div className="page-title-container">
                     <div className="page-title">SIGN IN</div>
 
-                    <FormInputComponent
-                        placeholder={"john.doe@example.com"}
-                        type={"email"}
-                        label={"Email Address"}
-                        value={username}
-                        onChange={(evt) => setUsername(evt.target.value)}
-                    />
+          <FormInputComponent
+            placeholder={"john.doe@example.com"}
+            type={"email"}
+            label={"Email Address"}
+            value={username}
+            onChange={(evt) => setUsername(evt.target.value)}
+          />
 
-                    <FormInputComponent
-                        placeholder={"Enter your password here"}
-                        type={"password"}
-                        label={"Password"}
-                        value={password}
-                        onChange={(evt) => setPassword(evt.target.value)}
-                    />
+          <FormInputComponent
+            placeholder={"Enter your password here"}
+            type={"password"}
+            label={"Password"}
+            value={password}
+            onChange={(evt) => setPassword(evt.target.value)}
+          />
 
                     <div className="margin-top-10">
                         <Link href="#">Forgot password?</Link>
