@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Julee&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 
 .bigname {
-    font-family: 'julee';
+    font-family: "julee";
     font-size: 8vw;
 }
 
@@ -29,7 +29,4 @@
     border-radius: 10px;
     height: 42vh;
     overflow-y: scroll;
-}
-
-.player-score-table {
 }

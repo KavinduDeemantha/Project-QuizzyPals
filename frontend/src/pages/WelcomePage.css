@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 
 .btn-container {
-  margin-top: 50px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }

@@ -6,7 +6,9 @@ export const useSignOut = () => {
     const signout = () => {
         localStorage.removeItem("userData");
 
-        dispatch({ type: 'SIGN_OUT' });
+        dispatch({ type: "SIGN_OUT" });
+
+        return true;
     };
 
     return { signout };

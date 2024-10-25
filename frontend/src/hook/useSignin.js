@@ -11,7 +11,7 @@ export const useSignIn = () => {
         setError(null);
         setIsLoading(false);
 
-        axios
+        return axios
             .post("http://localhost:4000/api/users/signin", userData)
             .then((response) => {
                 if (response.status !== 200) {
@@ -24,13 +24,19 @@ export const useSignIn = () => {
                     );
                     dispatch({ type: "SIGN_IN", payload: response.data });
                     setIsLoading(false);
+
+                    return true;
                 }
+
+                return false;
             })
             .catch((error) => {
                 // Access server error message
                 const errorMessage =
                     error.response?.data?.message || error.message;
                 setError(errorMessage);
+
+                return false;
             });
     };
 

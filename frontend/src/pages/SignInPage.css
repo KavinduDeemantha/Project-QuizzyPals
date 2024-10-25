@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 
 .continue-btn {
-  margin-top: 10vh;
+    margin-top: 10vh;
 }
 
 .custom-links {
@@ -12,4 +12,3 @@
     margin-top: 5px;
     color: red;
 }
-
