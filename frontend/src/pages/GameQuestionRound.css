@@ -94,3 +94,18 @@
   margin: 10px !important;
   width: 100px !important;
 }
+
+.choices-list {
+    margin: 10px !important;
+}
+
+.yes-no-btn-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.yes-no-btn {
+    margin: 10px !important;
+    width: 100px !important;
+}
