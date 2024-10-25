@@ -1,15 +1,15 @@
 import { useAuthContext } from "./useAuthContext";
 
 export const useSignOut = () => {
-    const { dispatch } = useAuthContext();
+  const { dispatch } = useAuthContext();
 
-    const signout = () => {
-        localStorage.removeItem("userData");
+  const signout = () => {
+    localStorage.removeItem("userData");
 
-        dispatch({ type: "SIGN_OUT" });
+    dispatch({ type: "SIGN_OUT" });
 
-        return true;
-    };
+    return true;
+  };
 
-    return { signout };
+  return { signout };
 };

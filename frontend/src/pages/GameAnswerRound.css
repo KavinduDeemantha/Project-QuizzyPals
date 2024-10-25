@@ -1,87 +1,87 @@
 .main-container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .game-round-header {
-    margin-top: 2vh;
-    margin-left: 20vw;
-    margin-right: 20vw;
+  margin-top: 2vh;
+  margin-left: 20vw;
+  margin-right: 20vw;
 
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .game-round-header-left {
-    text-align: left;
+  text-align: left;
 }
 
 .game-round-header-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .game-timer {
-    border: 1px solid black;
-    border-radius: 999px;
-    padding: 20px;
-    font-size: 24px;
-    font-weight: bold;
+  border: 1px solid black;
+  border-radius: 999px;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .round-title {
-    font-size: 48px;
-    font-weight: bold;
+  font-size: 48px;
+  font-weight: bold;
 }
 
 .room-code {
-    font-size: 32px;
+  font-size: 32px;
 }
 
 .question-outer-container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    margin: 4vh 20vw 4vh 20vw;
-    padding: 10px;
-    border-radius: 10px;
-    /* height: 10vh; */
+  margin: 4vh 20vw 4vh 20vw;
+  padding: 10px;
+  border-radius: 10px;
+  /* height: 10vh; */
 
-    background-color: #d9d9d9;
+  background-color: #d9d9d9;
 }
 
 .question-inner-container {
-    background-color: white;
-    margin: 5px 40px 20px 40px;
-    border-radius: 10px;
+  background-color: white;
+  margin: 5px 40px 20px 40px;
+  border-radius: 10px;
 
-    height: 50vh;
-    padding: 20px;
-    font-size: 18px;
+  height: 50vh;
+  padding: 20px;
+  font-size: 18px;
 
-    overflow-y: scroll;
-    overflow-x: hidden;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .inner-container-row {
-    margin-top: 1vh;
+  margin-top: 1vh;
 }
 
 .question-text {
-    text-align: left;
+  text-align: left;
 }
 
 .choice-box {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .choice-box .choice-item {
-    text-align: left;
-    margin-left: 5vw;
+  text-align: left;
+  margin-left: 5vw;
 }
 
 .topic-label {
-    font-size: 24px;
+  font-size: 24px;
 }
