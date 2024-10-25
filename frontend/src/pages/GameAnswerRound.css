@@ -7,6 +7,7 @@
     margin-top: 2vh;
     margin-left: 20vw;
     margin-right: 20vw;
+
     display: flex;
     justify-content: space-between;
 }
@@ -41,9 +42,12 @@
 .question-outer-container {
     display: flex;
     flex-direction: column;
+
     margin: 4vh 20vw 4vh 20vw;
     padding: 10px;
     border-radius: 10px;
+    /* height: 10vh; */
+
     background-color: #d9d9d9;
 }
 
@@ -51,9 +55,11 @@
     background-color: white;
     margin: 5px 40px 20px 40px;
     border-radius: 10px;
+
     height: 50vh;
     padding: 20px;
     font-size: 18px;
+
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -78,19 +84,4 @@
 
 .topic-label {
     font-size: 24px;
-}
-
-.choices-list {
-    margin: 10px !important;
-}
-
-.yes-no-btn-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.yes-no-btn {
-    margin: 10px !important;
-    width: 100px !important;
 }
