@@ -37,7 +37,11 @@ const SignUpPage = () => {
         password: password,
       };
 
-      await signUp.signup(userData);
+      const success = await signUp.signup(userData);
+
+      if (success) {
+        navigate("/signin");
+      }
     }
   };
 

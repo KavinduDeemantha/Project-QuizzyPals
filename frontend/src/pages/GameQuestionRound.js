@@ -29,9 +29,9 @@ const GameQuestionRound = () => {
   };
 
   const removeChoice = (choice) => {
-    const newChoices = addedChoices;
+    const newChoices = [...addedChoices]; // create a copy
     newChoices.splice(choice, 1);
-    setAddedChoices(newChoices);
+    setAddedChoices(newChoices); // update state with the new array
   };
 
   return (

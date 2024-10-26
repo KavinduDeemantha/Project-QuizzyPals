@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRouter = require("./routes/userRouter");
 const quizRouter = require("./routes/quizRouter");
+const roomRouter = require("./routes/roomRouter");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 // routes
 app.use("/api/users", userRouter);
 app.use("/api/game", quizRouter);
+app.use("/api/rooms", roomRouter);
 
 app.get("/", (req, res) => {
   res.send("QuizzyPals backend is up and running at: http://localhost:4000...");
