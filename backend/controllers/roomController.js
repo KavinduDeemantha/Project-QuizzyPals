@@ -67,8 +67,8 @@ const joinRoomById = async (req, res) => {
   }
 };
 
-const deleteRoomById = async (req, res) => {
-  const { userId } = req.body;
+const deleteRoomByUserId = async (req, res) => {
+  const userId = req.params.userId;
 
   try {
     const host = await User.findOne({ userId });
@@ -138,6 +138,6 @@ module.exports = {
   createRoom,
   getRoomById,
   joinRoomById,
-  deleteRoomById,
+  deleteRoomByUserId,
   getUsersByRoomId,
 };
