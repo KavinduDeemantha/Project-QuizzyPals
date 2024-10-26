@@ -94,7 +94,7 @@ const RoomLobbyPage = () => {
       userId: user.userId,
       durationHours: 0,
       durationMinutes: 0,
-      durationSeconds: 30,
+      durationSeconds: 6,
     };
 
     await axios
