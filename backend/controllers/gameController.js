@@ -19,7 +19,7 @@ const startGame = async (req, res) => {
   const { userId, durationHours, durationMinutes, durationSeconds } = req.body;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ userId: userId });
 
     if (!user) {
       throw Error("Sorry, only registered users can create a game");
@@ -59,7 +59,10 @@ const startGame = async (req, res) => {
     room.gameRound = room.gameRound ? room.gameRound + 1 : 1;
     await room.save();
 
-    res.status(StatusCodes.OK).json({ room: room, message: "Game started" });
+    const responseEntity = { room: room, message: "Game started" };
+    responseEntity.host = user.email;
+
+    res.status(StatusCodes.OK).json(responseEntity);
   } catch (error) {
     console.log(error);
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
