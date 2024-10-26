@@ -9,6 +9,19 @@ export const useRoomCheckIn = () => {
   const { dispatch } = useRoomContext();
   const { user } = useAuthContext();
 
+  const logError = (error) => {
+    console.log(error);
+    if (error) {
+      if (error.response) {
+        if (error.response.data) {
+          if (error.response.data.message) {
+            setError(error.response.data.message);
+          }
+        }
+      }
+    }
+  };
+
   const checkin = async (userData, roomData) => {
     setError(null);
     setIsLoading(false);
@@ -45,8 +58,7 @@ export const useRoomCheckIn = () => {
         return false;
       })
       .catch((error) => {
-        const errorMessage = error.response?.data?.message || error.message;
-        setError(errorMessage);
+        logError(error);
 
         return false;
       });

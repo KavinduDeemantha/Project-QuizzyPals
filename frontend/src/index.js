@@ -5,13 +5,16 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { AuthContextProvider } from "./context/AuthContext";
 import { RoomContextProvider } from "./context/RoomContext";
+import { GameContextProvider } from "./context/GameContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthContextProvider>
       <RoomContextProvider>
-        <App />
+        <GameContextProvider>
+          <App />
+        </GameContextProvider>
       </RoomContextProvider>
     </AuthContextProvider>
   </React.StrictMode>

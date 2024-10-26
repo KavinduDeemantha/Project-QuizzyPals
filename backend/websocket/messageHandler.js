@@ -1,13 +1,24 @@
-const handleGameStart = (ws, rooms, data) => {
-  if (rooms.has(data.roomId)) {
-    ws.send("Error: game has already started!");
-    return;
-  }
+const handleAnswerRoundTimesUpNonHost = (ws, duration) => {
+  setTimeout(() => {
+    ws.send(
+      JSON.stringify({
+        type: "GAME_ENDED",
+        message: "Time's up! Game over!",
+      })
+    );
+  }, duration);
+};
 
-  const time1 = new Date(data.startTime);
-  const time2 = new Date(data.endTime);
+const handleGameStartForNonHost = (ws, rooms, data) => {
+  console.log("Starting game...");
+  const roomData = rooms.get(data.roomId).data;
+
+  console.log(rooms);
+  const time1 = new Date();
+  const time2 = new Date(roomData.endTime);
 
   const duration = time2 - time1;
+  console.log("non host user duration", duration);
 
   const timerId = setTimeout(() => {
     ws.send(
@@ -16,9 +27,13 @@ const handleGameStart = (ws, rooms, data) => {
         message: "Quiz creation time is up! Now answer quizzes!",
       })
     );
-  }, duration);
 
-  rooms.set(data.roomId, { timerId, data });
+    let _time1 = new Date(roomData.startTime);
+    let _time2 = new Date(roomData.endTime);
+    let _duration = _time2 - _time1;
+
+    handleAnswerRoundTimesUpNonHost(ws, _duration);
+  }, duration);
 
   ws.send(
     JSON.stringify({
@@ -28,18 +43,11 @@ const handleGameStart = (ws, rooms, data) => {
   );
 };
 
-const handleAnswerRound = (ws, rooms, data) => {
-  if (!rooms.has(data.roomId)) {
-    ws.send("Error: game has not started!");
-    return;
-  }
-
-  const room = rooms.get(data.roomId);
-  const roomData = room.data;
+const handleAnswerRoundTimesUp = (ws, rooms, data) => {
+  const roomData = rooms.get(data.roomId).data;
 
   const time1 = new Date(roomData.startTime);
   const time2 = new Date(roomData.endTime);
-
   const duration = time2 - time1;
 
   setTimeout(() => {
@@ -51,7 +59,104 @@ const handleAnswerRound = (ws, rooms, data) => {
     );
 
     rooms.delete(data.roomId);
+    console.log("Answer round finished!", roomData);
   }, duration);
+};
+
+// Handle the request to start the game from user.
+const handleGameStart = (ws, rooms, data) => {
+  console.log("Starting game...");
+
+  // If the roomId is in the rooms datastructure already means that a room is
+  // created before and still in use. So we return "You can't create a room with
+  // that id".
+  if (rooms.has(data.roomId)) {
+    console.log("debug: ", data.userId, rooms.get(data.roomId).data.userId);
+    if (data.userId == rooms.get(data.roomId).data.userId) {
+      ws.send(
+        JSON.stringify({
+          type: "ERROR",
+          message: "Game has already started!",
+        })
+      );
+    } else {
+      handleGameStartForNonHost(ws, rooms, data);
+    }
+    return;
+  }
+
+  const time1 = new Date();
+  const time2 = new Date(time1);
+  time2.setHours(time2.getHours() + data.durationHours);
+  time2.setMinutes(time2.getMinutes() + data.durationMinutes);
+  time2.setSeconds(time2.getSeconds() + data.durationSeconds);
+
+  const duration = time2 - time1;
+
+  // Start a timer to keep track of the game state. When the time interval is
+  // finished we send a ws message to the client to the change its state.
+  const timerId = setTimeout(() => {
+    ws.send(
+      JSON.stringify({
+        type: "ANSWER_ROUND_STARTED",
+        message: "Quiz creation time is up! Now answer quizzes!",
+      })
+    );
+
+    let _roomData = rooms.get(data.roomId);
+    // We change the game state of the room to answer round started in our rooms
+    // datastructure.
+    _roomData.gameState = "ANSWER_ROUND_STARTED";
+    rooms.set(data.roomId, _roomData);
+
+    // When the answer round ended we send a request to the client to change its
+    // state.
+    handleAnswerRoundTimesUp(ws, rooms, data);
+  }, duration);
+
+  rooms.set(data.roomId, {
+    timerId: timerId,
+    data: {
+      ...data,
+      startTime: time1,
+      endTime: time2,
+    },
+    gameState: "GAME_STARTED",
+  });
+
+  ws.send(
+    JSON.stringify({
+      type: "GAME_STARTED",
+      duration: duration,
+    })
+  );
+};
+
+const handleAnswerRound = (ws, rooms, data) => {
+  if (!rooms.has(data.roomId)) {
+    ws.send(
+      JSON.stringify({
+        type: "ERROR",
+        message: "game has not started yet!",
+      })
+    );
+    return;
+  }
+
+  const room = rooms.get(data.roomId);
+  const roomData = room.data;
+
+  if (roomData.gameState !== "GAME_STARTED") {
+    ws.send(
+      JSON.stringify({
+        type: "INFO",
+        message: "please wait others still creating quizzes!",
+      })
+    );
+    return;
+  }
+
+  handleAnswerRound(ws, rooms, data);
 
   ws.send(
     JSON.stringify({
@@ -62,12 +167,29 @@ const handleAnswerRound = (ws, rooms, data) => {
 };
 
 const handleGameEnd = (ws, rooms, data) => {
+  console.log("Game ending...");
+
   if (!rooms.has(data.roomId)) {
-    ws.send("Error: game has not started!");
+    ws.send(
+      JSON.stringify({
+        type: "ERROR",
+        message: "game has not started yet!",
+      })
+    );
     return;
   }
 
   const roomData = rooms.get(data.roomId);
+  if (roomData.data.host !== data.host) {
+    ws.send(
+      JSON.stringify({
+        type: "ERROR",
+        message: "only the host can end the game!",
+      })
+    );
+    return;
+  }
+
   clearTimeout(roomData.timerId);
 
   rooms.delete(data.roomId);
@@ -83,6 +205,7 @@ const handleGameEnd = (ws, rooms, data) => {
 
 const messageHandler = (ws, rooms) => {
   function incoming(msg) {
+    console.log(`Message received: ${msg}`);
     const data = JSON.parse(msg);
 
     switch (data.type) {

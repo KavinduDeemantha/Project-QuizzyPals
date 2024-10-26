@@ -9,6 +9,10 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  gameRound: {
+    type: Number,
+    required: false,
+  },
   gameStart: {
     type: Date,
     required: false,

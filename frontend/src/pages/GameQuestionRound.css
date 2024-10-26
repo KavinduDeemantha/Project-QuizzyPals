@@ -75,6 +75,11 @@
   width: 100px !important;
 }
 
+.lobby-btn {
+  width: 100px;
+  position: fixed;
+}
+
 .choices-list {
   margin: 10px !important;
 }

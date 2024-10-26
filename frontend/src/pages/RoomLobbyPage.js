@@ -15,11 +15,16 @@ import { useNavigate } from "react-router-dom";
 import { useRoomContext } from "../hook/useRoomContext";
 import { useEffect } from "react";
 import { useAuthContext } from "../hook/useAuthContext";
+import { useGameContext } from "../hook/useGameContext";
 
 const RoomLobbyPage = () => {
   const navigate = useNavigate();
+  const gameContext = useGameContext();
+  const { socket } = gameContext;
+
   const [error, setError] = useState(null);
-  const { room } = useRoomContext();
+  const roomContext = useRoomContext();
+  const { room } = roomContext;
   const { user } = useAuthContext();
 
   const [playersInRoom, setPlayersInRoom] = useState([
@@ -56,11 +61,40 @@ const RoomLobbyPage = () => {
       });
   };
 
+  const logError = (error) => {
+    if (error) {
+      if (error.response) {
+        if (error.response.data) {
+          if (error.response.data.message) {
+            console.log(error.response.data.message);
+            setError(error.response.data.message);
+          } else {
+            console.log(error.response.data);
+            setError(error.response.data);
+          }
+        } else {
+          console.log(error.response);
+        }
+      } else {
+        console.log(error);
+      }
+    }
+  };
+
+  // const getRoomId = async () => {
+  //   return axios
+  //     .get(`${process.env.REACT_APP_BASE_URL}/api/users/roomid/${user.email}`)
+  //     .then((response) => {
+  //       return response.data;
+  //     });
+  // };
+
   const handleStartGameButton = async (e) => {
     const gameData = {
       userId: user.userId,
       durationHours: 0,
-      durationMinutes: 10,
+      durationMinutes: 0,
+      durationSeconds: 30,
     };
 
     await axios
@@ -73,25 +107,66 @@ const RoomLobbyPage = () => {
         if (response.status === 200) {
           console.log(response.data);
           if (response.data.message == "Game started") {
+            const startGameRequest = {
+              type: "GAME_START",
+              ...gameData,
+            };
+
+            socket.current.send(JSON.stringify(startGameRequest));
+            roomContext.dispatch({
+              type: "ROOM_UPDATE",
+              payload: response.data.room,
+            });
             navigate("/createquiz");
           }
         }
       })
-      .catch((error) => {
-        console.log(error.response.data);
-        setError(error.response.data.message);
-      });
+      .catch(logError);
   };
+
+  const handleEndGameButton = async (e) => {
+    await axios
+      .get(
+        `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          const endGameRequest = {
+            type: "GAME_END",
+            host: user.userId,
+            roomId: room.roomId,
+          };
+
+          socket.current.send(JSON.stringify(endGameRequest));
+          navigate("/");
+        }
+      })
+      .catch(logError);
+  };
+
+  // useEffect(() => {
+  //   console.log(socket);
+  //   if (socket == null) return;
+
+  //   socket.current.onmessage = (msg) => {
+  //     const data = JSON.parse(msg.data);
+  //     dispatch({ type: data.type, payload: data });
+  //     console.log(game);
+  //     console.log("Received", msg);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (!room) {
       navigate("/");
+      return;
     }
 
     getAndSetRoomPlayers(room.roomId);
   }, []);
 
-  return (
+  return room ? (
     <Grid container columns={16}>
       <Grid size={8}>
         <div className="header-container">
@@ -102,6 +177,16 @@ const RoomLobbyPage = () => {
               onClick={handleStartGameButton}
             />
           </div>
+          {room.host === user.email ? (
+            <div className="end-btn">
+              <ButtonComponent
+                label={"End Game"}
+                onClick={handleEndGameButton}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
           {error && <div className="error-message">{error}</div>}
         </div>
       </Grid>
@@ -135,6 +220,8 @@ const RoomLobbyPage = () => {
         </div>
       </Grid>
     </Grid>
+  ) : (
+    <>Room context destroyed in client side</>
   );
 };
 
