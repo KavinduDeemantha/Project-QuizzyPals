@@ -44,7 +44,7 @@ const WelcomePage = () => {
         }
       }
     } catch (error) {
-      setError(error.response.data);
+      setError({ message: error.response.data.message });
       console.log(error.response.data);
     }
   };
@@ -77,10 +77,14 @@ const WelcomePage = () => {
     setJoinWithRoom(true);
   };
 
+  const handleHomePageButton = (e) => {
+    window.location.reload();
+  };
+
   // Redirect to / if no user is logged in
   useEffect(() => {
     if (!user) {
-      navigate("/");
+      navigate("/signin");
     }
   }, [user, navigate]);
 
@@ -110,6 +114,12 @@ const WelcomePage = () => {
                   <ButtonComponent
                     label={"Join Game"}
                     onClick={handleJoinGameButton}
+                  />
+                </div>
+                <div style={{ marginTop: 20 }}>
+                  <ButtonComponent
+                    label={"Home Page"}
+                    onClick={handleHomePageButton}
                   />
                 </div>
               </>

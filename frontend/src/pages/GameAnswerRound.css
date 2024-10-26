@@ -62,6 +62,11 @@
   overflow-x: hidden;
 }
 
+.lobby-btn {
+  width: 100px;
+  position: fixed;
+}
+
 .inner-container-row {
   margin-top: 1vh;
 }

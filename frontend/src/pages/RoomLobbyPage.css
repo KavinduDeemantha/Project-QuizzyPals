@@ -23,6 +23,10 @@
   margin-top: 200px;
 }
 
+.end-btn {
+  margin-top: 10px;
+}
+
 .lobby-container {
   display: flex;
   flex-direction: column;
