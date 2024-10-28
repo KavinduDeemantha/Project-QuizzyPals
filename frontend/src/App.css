@@ -125,3 +125,27 @@
 .inner-container-row {
   margin-top: 1vh;
 }
+
+.question-outer-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #d9d9d9;
+  width: 58.7%;
+}
+
+.question-inner-container {
+  background-color: white;
+  margin: 5px 40px 20px 40px;
+  border-radius: 10px;
+  height: 50vh;
+  padding: 20px;
+  font-size: 18px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.inner-container-row {
+  margin-top: 1vh;
+}
