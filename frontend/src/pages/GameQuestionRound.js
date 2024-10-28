@@ -77,47 +77,48 @@ const GameQuestionRound = () => {
           </Button>
         </div>
       </Dialog>
-
-      <div className="question-outer-container">
-        <div className="topic-label">
-          Write a question to ask from your friends.
-        </div>
-        <div className="question-inner-container">
-          <div className="inner-container-row question-text">
-            Question Question
+      <div className="questions-main-container">
+        <div className="question-outer-container">
+          <div className="topic-label">
+            Write a question to ask from your friends.
           </div>
-          <div className="inner-container-row">Expected Correct Answer</div>
-          <div className="inner-container-row">
-            <ButtonComponent
-              label={"+ Add New Choice"}
-              onClick={() => setNewChoiceVisible(true)}
-            />
-          </div>
-          <div className="inner-container-row choice-box">
-            <List>
-              {addedChoices.map((item, i) => {
-                return (
-                  // <div className="choice-item">- {item}</div>
-                  <ListItem key={i} className="choice-item">
-                    <IconButton onClick={() => removeChoice(i)}>
-                      <RemoveCircleIcon />
-                    </IconButton>
-                    <ListItemText primary={item} />
-                  </ListItem>
-                );
-              })}
-            </List>
-          </div>
-          <div className="inner-container-row">
-            <TextField
-              variant="outlined"
-              placeholder="Free to type your answer"
-              value={freeAnswer}
-              onChange={(e) => setFreeAnswer(e.target.value)}
-            />
-          </div>
-          <div className="margin-top-10">
-            <ButtonComponent label={"Done"} />
+          <div className="question-inner-container">
+            <div className="inner-container-row question-text">
+              Question Question
+            </div>
+            <div className="inner-container-row">Expected Correct Answer</div>
+            <div className="inner-container-row">
+              <ButtonComponent
+                label={"+ Add New Choice"}
+                onClick={() => setNewChoiceVisible(true)}
+              />
+            </div>
+            <div className="inner-container-row choice-box">
+              <List>
+                {addedChoices.map((item, i) => {
+                  return (
+                    // <div className="choice-item">- {item}</div>
+                    <ListItem key={i} className="choice-item">
+                      <IconButton onClick={() => removeChoice(i)}>
+                        <RemoveCircleIcon />
+                      </IconButton>
+                      <ListItemText primary={item} />
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </div>
+            <div className="inner-container-row">
+              <TextField
+                variant="outlined"
+                placeholder="Free to type your answer"
+                value={freeAnswer}
+                onChange={(e) => setFreeAnswer(e.target.value)}
+              />
+            </div>
+            <div className="margin-top-10">
+              <ButtonComponent label={"Done"} />
+            </div>
           </div>
         </div>
       </div>

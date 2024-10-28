@@ -4,7 +4,9 @@ import WelcomePage from "./pages/WelcomePage";
 import SignInPage from "./pages/SignInPage";
 import RoomLobbyPage from "./pages/RoomLobbyPage";
 import GameQuestionRound from "./pages/GameQuestionRound";
+import SummaryPage from "./pages/SummaryPage";
 import SignUpPage from "./pages/SignUpPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Route path="/welcomepage" element={<WelcomePage />} />
           <Route path="/roomlobby" element={<RoomLobbyPage />} />
           <Route path="/createquiz" element={<GameQuestionRound />} />
+          <Route path="/summary" element={<SummaryPage />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
         </Routes>
       </BrowserRouter>
     </div>
