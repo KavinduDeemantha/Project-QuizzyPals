@@ -72,7 +72,6 @@ const SignInPage = () => {
           <ButtonComponent
             label={"CONTINUE"}
             onClick={handleContinueButton}
-<<<<<<< HEAD
             isDisabled={signIn.isLoading}
             fontSize={24}
           />
@@ -80,13 +79,6 @@ const SignInPage = () => {
         {signIn.error && <div className="error-message">{signIn.error}</div>}
         <div className="margin-top-10">
           <Link href="/signup">Create New Account</Link>
-=======
-            fontSize={24}
-          />
-        </div>
-        <div className="margin-top-10">
-          <Link href="#">Create New Account</Link>
->>>>>>> 5e4cfb6 (removed inline css and set them in separate css files (#13))
         </div>
       </Grid>
     </Grid>
