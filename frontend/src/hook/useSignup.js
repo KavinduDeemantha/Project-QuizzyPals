@@ -18,6 +18,7 @@ export const useSignUp = () => {
           setError(response.data);
           setIsLoading(false);
         } else {
+          console.log(userData);
           localStorage.setItem("userData", JSON.stringify(response.data));
           dispatch({ type: "SIGN_UP", payload: response.data });
           setIsLoading(false);

@@ -14,7 +14,9 @@ const signIn = async (req, res) => {
 
     const userJWT = createJWT(user._id);
 
-    res.status(StatusCodes.OK).json({ email, userJWT });
+    res
+      .status(StatusCodes.OK)
+      .json({ email: email, userId: user._id, userJWT: userJWT });
   } catch (err) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -30,7 +32,9 @@ const signUp = async (req, res) => {
 
     const userJWT = createJWT(newUser._id);
 
-    res.status(StatusCodes.OK).json({ email, userJWT });
+    res
+      .status(StatusCodes.OK)
+      .json({ email: newUser.email, userId: newUser._id, userJWT: userJWT });
   } catch (err) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -42,9 +46,7 @@ const updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user == null) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: "User not found" });
+      res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
     }
 
     if (req.body.username != null) {
@@ -68,14 +70,12 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    if (user == null) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: "User not found" });
+    const deleted = await User.findOneAndDelete({ email: req.params.email });
+    if (!deleted) {
+      res.status(StatusCodes.NOT_FOUND).json({ message: "User not deleted" });
+      return;
     }
 
-    await user.remove();
     res.json({ message: "User deleted" });
   } catch (err) {
     res
@@ -87,10 +87,9 @@ const deleteUser = async (req, res) => {
 const getUserRoomId = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
-    if (user == null) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: "User not found" });
+    if (!user) {
+      res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+      return;
     }
 
     res.json({ roomId: user.roomId });

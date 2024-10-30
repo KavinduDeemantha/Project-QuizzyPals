@@ -4,6 +4,10 @@ const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
+    userId: {
+      type: String,
+      required: false,
+    },
     email: {
       type: String,
       required: true,
@@ -47,6 +51,8 @@ userSchema.statics.signup = async function (email, password) {
   // Create a new user in the database
   // We store the hashed password, not the original password
   const newUser = await this.create({ email, password: hashedPassword });
+  newUser.userId = newUser._id;
+  await newUser.save();
 
   return newUser;
 };
