@@ -27,7 +27,7 @@ export const useRoomCheckIn = () => {
 
     return axios
       .post(
-        `http://localhost:4000/api/rooms/joinroom`,
+        `${process.env.REACT_APP_BASE_URL}/api/rooms/joinroom`,
         checkinData,
         requestHeaders
       )

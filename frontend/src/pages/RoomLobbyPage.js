@@ -21,7 +21,7 @@ const RoomLobbyPage = () => {
 
   useEffect(() => {
     if (!room) {
-      navigate("/welcomepage");
+      navigate("/");
     }
   }, []);
 
@@ -33,7 +33,7 @@ const RoomLobbyPage = () => {
           <div className="start-btn">
             <ButtonComponent
               label={"Start Game"}
-              onClick={() => navigate("/gameround")}
+              onClick={() => navigate("/createquiz")}
             />
           </div>
         </div>

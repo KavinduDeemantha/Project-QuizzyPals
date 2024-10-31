@@ -31,7 +31,7 @@ const rows = [
   createData("Player 8", 100),
   createData("Player 9", 100),
   createData("Player 9", 100),
-  createData("Player 10", 100)
+  createData("Player 10", 100),
 ];
 
 const LeaderboardPage = () => {
@@ -49,21 +49,24 @@ const LeaderboardPage = () => {
           <div className="header">QuizzyPals</div>
           <div className="three-btn-container ">
             <div className="button-container">
-              <ButtonComponent className="leaderboard-btns"
+              <ButtonComponent
+                className="leaderboard-btns"
                 label={"Start new game"}
                 onClick={() => navigate("/createquiz")}
               />
             </div>
             <div>
-              <ButtonComponent className="leaderboard-btns"
+              <ButtonComponent
+                className="leaderboard-btns"
                 label={"Go to lobby"}
                 onClick={() => navigate("/roomlobby")}
               />
             </div>
             <div>
-              <ButtonComponent className="leaderboard-btns"
+              <ButtonComponent
+                className="leaderboard-btns"
                 label={"Exit to home"}
-                onClick={() => navigate("/welcomepage")}
+                onClick={() => navigate("/")}
               />
             </div>
           </div>

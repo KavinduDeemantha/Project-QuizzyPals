@@ -12,7 +12,7 @@ export const useSignUp = () => {
     setIsLoading(false);
 
     return axios
-      .post("http://localhost:4000/api/users/signup", userData)
+      .post(`${process.env.REACT_APP_BASE_URL}/api/users/signup`, userData)
       .then((response) => {
         if (response.status !== 200) {
           setError(response.data);

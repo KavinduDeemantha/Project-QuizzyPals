@@ -7,20 +7,21 @@ import GameQuestionRound from "./pages/GameQuestionRound";
 import SummaryPage from "./pages/SummaryPage";
 import SignUpPage from "./pages/SignUpPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
+import GameAnswerRound from "./pages/GameAnswerRound";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<SignInPage />} />
+          <Route path="/" element={<WelcomePage />} />
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/welcomepage" element={<WelcomePage />} />
           <Route path="/roomlobby" element={<RoomLobbyPage />} />
           <Route path="/createquiz" element={<GameQuestionRound />} />
           <Route path="/summary" element={<SummaryPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/answers" element={<GameAnswerRound />} />
         </Routes>
       </BrowserRouter>
     </div>
