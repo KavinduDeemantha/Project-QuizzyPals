@@ -73,7 +73,6 @@
 .yes-no-btn {
   margin: 10px !important;
   width: 100px !important;
-<<<<<<< HEAD
 }
 
 .lobby-btn {
@@ -94,8 +93,6 @@
 .yes-no-btn {
   margin: 10px !important;
   width: 100px !important;
-=======
->>>>>>> 5e4cfb6 (removed inline css and set them in separate css files (#13))
 }
 
 .question-field {
