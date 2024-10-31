@@ -24,10 +24,14 @@
 
 .game-timer {
   border: 1px solid black;
-  border-radius: 999px;
+  border-radius: 50%;
   padding: 20px;
   font-size: 24px;
   font-weight: bold;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
 }
 
 .round-title {
@@ -42,12 +46,9 @@
 .question-outer-container {
   display: flex;
   flex-direction: column;
-
-  margin: 4vh 20vw 4vh 20vw;
+  margin: 4vh;
   padding: 10px;
   border-radius: 10px;
-  /* height: 10vh; */
-
   background-color: #d9d9d9;
 }
 
@@ -55,11 +56,8 @@
   background-color: white;
   margin: 5px 40px 20px 40px;
   border-radius: 10px;
-
-  height: 50vh;
   padding: 20px;
   font-size: 18px;
-
   overflow-y: scroll;
   overflow-x: hidden;
 }

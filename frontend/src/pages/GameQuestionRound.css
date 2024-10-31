@@ -23,10 +23,14 @@
 
 .game-timer {
   border: 1px solid black;
-  border-radius: 999px;
+  border-radius: 50%;
   padding: 20px;
   font-size: 24px;
   font-weight: bold;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
 }
 
 .round-title {
@@ -84,4 +88,14 @@
 .yes-no-btn {
   margin: 10px !important;
   width: 100px !important;
+}
+
+.question-field {
+  width: 100%;
+  padding: 5px 10px;
+}
+
+.correct-answer-text {
+  margin: 0;
+  padding: 0 10px;
 }

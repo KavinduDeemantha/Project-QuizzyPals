@@ -30,7 +30,7 @@ const SignInPage = () => {
     const success = await signIn.signin(userData);
 
     if (success) {
-      navigate("/welcomepage");
+      navigate("/");
     }
   };
 

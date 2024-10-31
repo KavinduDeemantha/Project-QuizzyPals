@@ -9,16 +9,19 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircleOutlined";
-
 import "./GameQuestionRound.css";
 import ButtonComponent from "../components/ButtonComponent";
+import TimerComponent from "../components/TimerComponent";
 
 const GameQuestionRound = () => {
   const [addedChoices, setAddedChoices] = useState(["Choice A", "Choice B"]);
   const [freeAnswer, setFreeAnswer] = useState("");
   const [newChoiceVisible, setNewChoiceVisible] = useState(false);
   const [newChoiceText, setNewChoiceText] = useState("");
+
+  const navigate = useNavigate();
 
   const handleAddNewChoice = () => {
     let choiceText = newChoiceText.trim();
@@ -34,6 +37,10 @@ const GameQuestionRound = () => {
     setAddedChoices(newChoices); // update state with the new array
   };
 
+  const handleDoneClick = () => {
+    navigate("/answers");
+  };
+
   return (
     <div className="main-container">
       <div className="game-round-header">
@@ -42,7 +49,7 @@ const GameQuestionRound = () => {
           <div className="round-title">Round: 0</div>
         </div>
         <div className="game-round-header-right">
-          <div className="game-timer">01</div>
+          <TimerComponent initialSeconds={60} />
         </div>
       </div>
 
@@ -84,9 +91,15 @@ const GameQuestionRound = () => {
           </div>
           <div className="question-inner-container">
             <div className="inner-container-row question-text">
-              Question Question
+              <TextField
+                className="question-field"
+                label="Enter your question here"
+                variant="outlined"
+              />
             </div>
-            <div className="inner-container-row">Expected Correct Answer</div>
+            <div className="inner-container-row correct-answer">
+              Expected Correct Answer: <p className="correct-answer-text"></p>
+            </div>
             <div className="inner-container-row">
               <ButtonComponent
                 label={"+ Add New Choice"}
@@ -97,7 +110,6 @@ const GameQuestionRound = () => {
               <List>
                 {addedChoices.map((item, i) => {
                   return (
-                    // <div className="choice-item">- {item}</div>
                     <ListItem key={i} className="choice-item">
                       <IconButton onClick={() => removeChoice(i)}>
                         <RemoveCircleIcon />
@@ -108,16 +120,8 @@ const GameQuestionRound = () => {
                 })}
               </List>
             </div>
-            <div className="inner-container-row">
-              <TextField
-                variant="outlined"
-                placeholder="Free to type your answer"
-                value={freeAnswer}
-                onChange={(e) => setFreeAnswer(e.target.value)}
-              />
-            </div>
             <div className="margin-top-10">
-              <ButtonComponent label={"Done"} />
+              <ButtonComponent label={"Done"} onClick={handleDoneClick} />
             </div>
           </div>
         </div>
