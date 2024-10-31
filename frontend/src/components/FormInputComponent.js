@@ -1,6 +1,13 @@
 import { TextField } from "@mui/material";
 
-const FormInputComponent = ({ type, label, placeholder, value, onChange }) => {
+const FormInputComponent = ({
+  type,
+  label,
+  placeholder,
+  value,
+  onChange,
+  isRequired = false,
+}) => {
   return (
     <>
       <div className="form-component-container">{label}</div>
@@ -12,6 +19,7 @@ const FormInputComponent = ({ type, label, placeholder, value, onChange }) => {
         variant="standard"
         type={type}
         onChange={onChange}
+        required={isRequired}
       />
     </>
   );
