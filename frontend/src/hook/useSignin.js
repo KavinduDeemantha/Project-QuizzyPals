@@ -9,29 +9,25 @@ export const useSignIn = () => {
 
   const signin = async (userData) => {
     setError(null);
-    setIsLoading(false);
-
+    setIsLoading(true);
     return axios
-      .post("http://localhost:4000/api/users/signin", userData)
+      .post(`${process.env.REACT_APP_BASE_URL}/api/users/signin`, userData)
       .then((response) => {
-        if (response.status !== 200) {
-          setError(response.data);
-          setIsLoading(false);
-        } else {
+        if (response.status === 200) {
           localStorage.setItem("userData", JSON.stringify(response.data));
           dispatch({ type: "SIGN_IN", payload: response.data });
           setIsLoading(false);
-
           return true;
+        } else {
+          setError(response.data);
+          setIsLoading(false);
+          return false;
         }
-
-        return false;
       })
       .catch((error) => {
-        // Access server error message
         const errorMessage = error.response?.data?.message || error.message;
         setError(errorMessage);
-
+        setIsLoading(false);
         return false;
       });
   };

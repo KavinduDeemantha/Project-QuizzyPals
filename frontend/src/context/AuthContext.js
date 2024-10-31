@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useReducer } from "react";
+import React, { createContext, useReducer } from "react";
 
 // AuthContext holder
 export const AuthContext = createContext(null);
@@ -15,19 +15,16 @@ export const authReducer = (state, action) => {
   }
 };
 
+// Initialize state from localStorage once on load
+const initialState = {
+  user: JSON.parse(localStorage.getItem("userData")),
+};
+
 // AuthContext wrapper
 export const AuthContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, { user: null });
+  const [state, dispatch] = useReducer(authReducer, initialState);
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("userData"));
-    if (user) {
-      dispatch({ type: "SIGN_IN", payload: user });
-    }
-  }, []);
-
-  // Simple message for debugging purpose
-  console.log("[INFO]: auth context state changed: ", state);
+  console.log("[INFO]: auth context state changed: ", state); // Debugging info
 
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>
