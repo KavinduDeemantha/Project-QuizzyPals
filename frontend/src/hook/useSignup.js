@@ -11,7 +11,7 @@ export const useSignUp = () => {
     setError(null);
     setIsLoading(false);
 
-    axios
+    return axios
       .post("http://localhost:4000/api/users/signup", userData)
       .then((response) => {
         if (response.status !== 200) {
@@ -21,12 +21,18 @@ export const useSignUp = () => {
           localStorage.setItem("userData", JSON.stringify(response.data));
           dispatch({ type: "SIGN_UP", payload: response.data });
           setIsLoading(false);
+
+          return true;
         }
+
+        return false;
       })
       .catch((error) => {
         // Access server error message
         const errorMessage = error.response?.data?.message || error.message;
         setError(errorMessage);
+
+        return false;
       });
   };
 

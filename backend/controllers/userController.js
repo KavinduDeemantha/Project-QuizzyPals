@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const { StatusCodes } = require("http-status-codes");
 
 const createJWT = (id) => {
   return jwt.sign({ id }, process.env.SUPER_SECRET, { expiresIn: "5d" });
@@ -13,9 +14,11 @@ const signIn = async (req, res) => {
 
     const userJWT = createJWT(user._id);
 
-    res.status(200).json({ email, userJWT });
+    res.status(StatusCodes.OK).json({ email, userJWT });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: err.message });
   }
 };
 
@@ -27,9 +30,11 @@ const signUp = async (req, res) => {
 
     const userJWT = createJWT(newUser._id);
 
-    res.status(200).json({ email, userJWT });
+    res.status(StatusCodes.OK).json({ email, userJWT });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: err.message });
   }
 };
 
@@ -37,7 +42,9 @@ const updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user == null) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "User not found" });
     }
 
     if (req.body.username != null) {
@@ -53,7 +60,9 @@ const updateUser = async (req, res) => {
     const updatedUser = await user.save();
     res.json(updatedUser);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: err.message });
   }
 };
 
@@ -61,13 +70,34 @@ const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user == null) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "User not found" });
     }
 
     await user.remove();
     res.json({ message: "User deleted" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: err.message });
+  }
+};
+
+const getUserRoomId = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.params.email });
+    if (user == null) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "User not found" });
+    }
+
+    res.json({ roomId: user.roomId });
+  } catch (err) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: err.message });
   }
 };
 
@@ -76,4 +106,5 @@ module.exports = {
   signUp,
   updateUser,
   deleteUser,
+  getUserRoomId,
 };
