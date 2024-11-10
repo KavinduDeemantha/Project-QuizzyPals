@@ -30,7 +30,9 @@ const createRoom = async (req, res) => {
       await user.save();
     }
 
-    res.status(StatusCodes.CREATED).json(room);
+    res
+      .status(StatusCodes.CREATED)
+      .json({ roomId: room.roomId, host: user.email });
   } catch (err) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
   }
@@ -55,9 +57,47 @@ const joinRoomById = async (req, res) => {
       await user.save();
     }
 
-    res.status(StatusCodes.OK).json(roomExist);
+    const host = await User.findOne({ userId: roomExist.host });
+
+    res
+      .status(StatusCodes.OK)
+      .json({ roomId: roomExist.roomId, host: host.email });
   } catch (err) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
+  }
+};
+
+const deleteRoomById = async (req, res) => {
+  const { userId, roomId } = req.body;
+
+  try {
+    const host = await User.findOne({ userId });
+
+    if (!host) {
+      throw Error("Only the host can delete a room");
+    }
+
+    const room = await Room.findOne({ roomId: host.roomId });
+    if (!room) {
+      throw Error("You cannot delete unless it is not your room");
+    }
+
+    if (room.host != host._id) {
+      throw Error("You cannot delete room if host is not you");
+    }
+
+    const deleted = await Room.findOneAndDelete({ roomId: roomId });
+
+    if (!deleted) {
+      throw Error("The room cannot be deleted!");
+    }
+
+    res.status(StatusCodes.OK).json({ message: "Room deleted successfully" });
+  } catch (error) {
+    console.log(error.message);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
@@ -73,8 +113,31 @@ const getRoomById = async (req, res) => {
   }
 };
 
+const getUsersByRoomId = async (req, res) => {
+  const roomId = req.params.roomId;
+
+  try {
+    const users = await User.find({ roomId });
+
+    if (!users) {
+      throw Error(`There are no users assigned to this room: ${roomId}`);
+    }
+
+    const roomMates = [];
+    for (let user of users) {
+      roomMates.push({ email: user.email });
+    }
+
+    res.status(StatusCodes.OK).json(roomMates);
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createRoom,
   getRoomById,
   joinRoomById,
+  deleteRoomById,
+  getUsersByRoomId,
 };
