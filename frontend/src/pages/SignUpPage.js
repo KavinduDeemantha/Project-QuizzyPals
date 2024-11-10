@@ -50,7 +50,6 @@ const SignUpPage = () => {
       <Grid size={8}>
         <div
           style={{
-            borderRight: "1px solid black",
             height: "100vh",
             display: "flex",
             flexDirection: "column",
@@ -63,6 +62,7 @@ const SignUpPage = () => {
       <Grid size={8}>
         <div
           style={{
+            borderLeft: "1px solid black",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -94,22 +94,23 @@ const SignUpPage = () => {
             value={confirmPassword}
             onChange={(evt) => setConfirmPassword(evt.target.value)}
           />
-        </div>
-
-        <div
-          style={{
-            marginTop: "10vh",
-          }}
-        >
-          <ButtonComponent
-            label={"CONTINUE"}
-            onClick={handleContinueButton}
-            fontSize={24}
-            isDisabled={signUp.isLoading}
-          />
-          {signUp.error && <div className="error-message">{signUp.error}</div>}
-          <div className="custom-links">
-            <Link href="/signin">Already have an account</Link>
+          <div
+            style={{
+              marginTop: "10vh",
+            }}
+          >
+            <ButtonComponent
+              label={"CONTINUE"}
+              onClick={handleContinueButton}
+              fontSize={24}
+              isDisabled={signUp.isLoading}
+            />
+            {signUp.error && (
+              <div className="error-message">{signUp.error}</div>
+            )}
+            <div className="custom-links">
+              <Link href="/signin">Already have an account</Link>
+            </div>
           </div>
         </div>
       </Grid>

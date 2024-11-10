@@ -4,6 +4,8 @@ const {
   createRoom,
   getRoomById,
   joinRoomById,
+  deleteRoomById,
+  getUsersByRoomId,
 } = require("../controllers/roomController");
 
 const router = express.Router();
@@ -18,5 +20,10 @@ router.get("/getroom/:roomId", getRoomById);
 
 // Join to a room by id
 router.post("/joinroom", joinRoomById);
+
+// Delete room by id
+router.delete("/deleteroom", deleteRoomById);
+
+router.get("/getroommates/:roomId", getUsersByRoomId);
 
 module.exports = router;
