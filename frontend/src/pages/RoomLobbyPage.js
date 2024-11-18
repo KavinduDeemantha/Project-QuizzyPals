@@ -68,6 +68,9 @@ const RoomLobbyPage = () => {
           if (error.response.data.message) {
             console.log(error.response.data.message);
             setError(error.response.data.message);
+          } else if (error.response.data.error) {
+            console.log(error.response.data.error);
+            setError(error.response.data.error);
           } else {
             console.log(error.response.data);
             setError(error.response.data);
@@ -145,6 +148,24 @@ const RoomLobbyPage = () => {
       .catch(logError);
   };
 
+  const handleDeleteRoomButton = async (e) => {
+    const deleteRoomRequest = {
+      userId: user.userID,
+    };
+
+    await axios
+      .delete(
+        `${process.env.REACT_APP_BASE_URL}/api/rooms/deleteroom/${user.userId}`,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          navigate("/");
+        }
+      })
+      .catch(logError);
+  };
+
   // useEffect(() => {
   //   console.log(socket);
   //   if (socket == null) return;
@@ -182,6 +203,16 @@ const RoomLobbyPage = () => {
               <ButtonComponent
                 label={"End Game"}
                 onClick={handleEndGameButton}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+          {room.host === user.email ? (
+            <div className="end-btn">
+              <ButtonComponent
+                label={"Delete Room"}
+                onClick={handleDeleteRoomButton}
               />
             </div>
           ) : (
