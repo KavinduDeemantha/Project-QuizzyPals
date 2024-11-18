@@ -4,7 +4,7 @@ const {
   createRoom,
   getRoomById,
   joinRoomById,
-  deleteRoomById,
+  deleteRoomByUserId,
   getUsersByRoomId,
 } = require("../controllers/roomController");
 
@@ -22,7 +22,7 @@ router.get("/getroom/:roomId", getRoomById);
 router.post("/joinroom", joinRoomById);
 
 // Delete room by id
-router.delete("/deleteroom", deleteRoomById);
+router.delete("/deleteroom/:userId", deleteRoomByUserId);
 
 router.get("/getroommates/:roomId", getUsersByRoomId);
 

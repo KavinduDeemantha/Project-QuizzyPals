@@ -12,6 +12,14 @@
 
 - **Endpoint**: `POST /api/game/createquiz`
 
+### Get All Quizzes
+
+- **Endpoint**: `GET /api/game/getquizzes/<user-id>`
+
+### Create New Quiz
+
+- **Endpoint**: `POST /api/game/createquiz`
+
 **Request Body**:
 
 ```json
@@ -50,6 +58,8 @@
 
 ```json
 {
-  "host": "<user-email>"
+  "host": "<user-email>",
+  "quizQuestion": "What is your favourite game?",
+  "quizAnswer": "IGI"
 }
 ```

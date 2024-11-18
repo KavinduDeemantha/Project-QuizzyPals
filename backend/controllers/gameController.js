@@ -16,10 +16,10 @@ const _getQuizzesByRoom = async (roomId) => {
 };
 
 const startGame = async (req, res) => {
-  const { userId, durationHours, durationMinutes } = req.body;
+  const { userId, durationHours, durationMinutes, durationSeconds } = req.body;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ userId: userId });
 
     if (!user) {
       throw Error("Sorry, only registered users can create a game");
@@ -32,11 +32,18 @@ const startGame = async (req, res) => {
     }
 
     if (room.host != userId) {
+      if (room.gameStart && room.gameEnd && room.gameEnd >= Date.now()) {
+        res
+          .status(StatusCodes.OK)
+          .json({ room: room, message: "Game started" });
+        return;
+      }
       throw Error("Sorry, the host has not started the game!");
     }
 
     if (room.gameStart && room.gameEnd && room.gameEnd >= Date.now()) {
-      throw Error(`A game is already running in this room: ${room.roomId}`);
+      res.status(StatusCodes.OK).json({ message: "Game already running" });
+      return;
     }
 
     if (isNaN(durationHours) || isNaN(durationMinutes)) {
@@ -45,13 +52,19 @@ const startGame = async (req, res) => {
 
     room.gameStart = Date.now();
     const endsAt = new Date();
-    endsAt.setHours(endsAt.getHours() + parseInt(durationHours));
-    endsAt.setMinutes(endsAt.getMinutes() + parseInt(durationMinutes));
+    endsAt.setHours(room.gameStart.getHours() + parseInt(durationHours));
+    endsAt.setMinutes(room.gameStart.getMinutes() + parseInt(durationMinutes));
+    endsAt.setSeconds(room.gameStart.getSeconds() + parseInt(durationSeconds));
     room.gameEnd = endsAt;
+    room.gameRound = room.gameRound ? room.gameRound + 1 : 1;
     await room.save();
 
-    res.status(StatusCodes.OK).json({ message: "Game started" });
+    const responseEntity = { room: room, message: "Game started" };
+    responseEntity.host = user.email;
+
+    res.status(StatusCodes.OK).json(responseEntity);
   } catch (error) {
+    console.log(error);
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
@@ -116,9 +129,7 @@ const createQuiz = async (req, res) => {
 
     res.status(StatusCodes.OK).json(quiz);
   } catch (error) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: error.message });
+    res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
 

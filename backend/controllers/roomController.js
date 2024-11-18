@@ -67,8 +67,8 @@ const joinRoomById = async (req, res) => {
   }
 };
 
-const deleteRoomById = async (req, res) => {
-  const { userId, roomId } = req.body;
+const deleteRoomByUserId = async (req, res) => {
+  const userId = req.params.userId;
 
   try {
     const host = await User.findOne({ userId });
@@ -86,7 +86,7 @@ const deleteRoomById = async (req, res) => {
       throw Error("You cannot delete room if host is not you");
     }
 
-    const deleted = await Room.findOneAndDelete({ roomId: roomId });
+    const deleted = await Room.findOneAndDelete({ roomId: room.roomId });
 
     if (!deleted) {
       throw Error("The room cannot be deleted!");
@@ -138,6 +138,6 @@ module.exports = {
   createRoom,
   getRoomById,
   joinRoomById,
-  deleteRoomById,
+  deleteRoomByUserId,
   getUsersByRoomId,
 };
