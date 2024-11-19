@@ -59,6 +59,7 @@ const startGame = async (req, res) => {
     room.gameRound = room.gameRound ? room.gameRound + 1 : 1;
     await room.save();
 
+    room.host = user.email;
     const responseEntity = { room: room, message: "Game started" };
     responseEntity.host = user.email;
 

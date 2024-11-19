@@ -8,8 +8,11 @@ import ButtonComponent from "../components/ButtonComponent";
 import {
   List,
   ListItem,
+  Dialog,
+  DialogTitle,
   ListItemText,
   responsiveFontSizes,
+  TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useRoomContext } from "../hook/useRoomContext";
@@ -20,9 +23,11 @@ import { useGameContext } from "../hook/useGameContext";
 const RoomLobbyPage = () => {
   const navigate = useNavigate();
   const gameContext = useGameContext();
-  const { socket } = gameContext;
+  const { socket, dispatch } = gameContext;
 
   const [error, setError] = useState(null);
+  const [startDialogVisible, setStartDialogVisible] = useState(false);
+  const [gameDurationSeconds, setGameDurationSeconds] = useState(10);
   const roomContext = useRoomContext();
   const { room } = roomContext;
   const { user } = useAuthContext();
@@ -93,11 +98,22 @@ const RoomLobbyPage = () => {
   // };
 
   const handleStartGameButton = async (e) => {
+    if (room.host === user.email) {
+      setStartDialogVisible(true);
+    } else {
+      await startGame();
+    }
+  };
+
+  const startGame = async () => {
+    dispatch({ type: "NEW_GAME", payload: null });
+
     const gameData = {
       userId: user.userId,
+      roomId: room.roomId,
       durationHours: 0,
       durationMinutes: 0,
-      durationSeconds: 6,
+      durationSeconds: gameDurationSeconds,
     };
 
     await axios
@@ -137,7 +153,7 @@ const RoomLobbyPage = () => {
         if (response.status === 200) {
           const endGameRequest = {
             type: "GAME_END",
-            host: user.userId,
+            userId: user.userId,
             roomId: room.roomId,
           };
 
@@ -149,10 +165,6 @@ const RoomLobbyPage = () => {
   };
 
   const handleDeleteRoomButton = async (e) => {
-    const deleteRoomRequest = {
-      userId: user.userID,
-    };
-
     await axios
       .delete(
         `${process.env.REACT_APP_BASE_URL}/api/rooms/deleteroom/${user.userId}`,
@@ -188,69 +200,85 @@ const RoomLobbyPage = () => {
   }, []);
 
   return room ? (
-    <Grid container columns={16}>
-      <Grid size={8}>
-        <div className="header-container">
-          <div className="header">QuizzyPals</div>
-          <div className="start-btn">
-            <ButtonComponent
-              label={"Start Game"}
-              onClick={handleStartGameButton}
-            />
-          </div>
-          {room.host === user.email ? (
-            <div className="end-btn">
+    <div>
+      <Dialog
+        onClose={() => setStartDialogVisible(false)}
+        open={startDialogVisible}
+      >
+        <DialogTitle>Start game settings</DialogTitle>
+        <TextField
+          value={gameDurationSeconds}
+          type="number"
+          variant="outlined"
+          label={"Single round time duration (seconds)"}
+          onChange={(e) => setGameDurationSeconds(e.target.value)}
+        />
+        <ButtonComponent label={"Start Game"} onClick={(e) => startGame()} />
+      </Dialog>
+      <Grid container columns={16}>
+        <Grid size={8}>
+          <div className="header-container">
+            <div className="header">QuizzyPals</div>
+            <div className="start-btn">
               <ButtonComponent
-                label={"End Game"}
-                onClick={handleEndGameButton}
+                label={"Start Game"}
+                onClick={handleStartGameButton}
               />
             </div>
-          ) : (
-            <></>
-          )}
-          {room.host === user.email ? (
-            <div className="end-btn">
-              <ButtonComponent
-                label={"Delete Room"}
-                onClick={handleDeleteRoomButton}
-              />
-            </div>
-          ) : (
-            <></>
-          )}
-          {error && <div className="error-message">{error}</div>}
-        </div>
-      </Grid>
-      <Grid size={8}>
-        <div className="lobby-container">
-          <div className="page-title">LOBBY</div>
-          <div className="sub-title">Room Id: {room.roomId}</div>
+            {room.host === user.email ? (
+              <div className="end-btn">
+                <ButtonComponent
+                  label={"End Game"}
+                  onClick={handleEndGameButton}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+            {room.host === user.email ? (
+              <div className="end-btn">
+                <ButtonComponent
+                  label={"Delete Room"}
+                  onClick={handleDeleteRoomButton}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+            {error && <div className="error-message">{error}</div>}
+          </div>
+        </Grid>
+        <Grid size={8}>
+          <div className="lobby-container">
+            <div className="page-title">LOBBY</div>
+            <div className="sub-title">Room Id: {room.roomId}</div>
 
-          <div className="player-list-box-outer">
-            <div className="players">Players</div>
-            <div className="player-list-box-inner">
-              <List>
-                {playersInRoom.map((item, index) => {
-                  let name = item;
-                  if (item === room.host) {
-                    name += " (Host)";
-                  }
-                  if (item === user.email) {
-                    name += " (Me)";
-                  }
+            <div className="player-list-box-outer">
+              <div className="players">Players</div>
+              <div className="player-list-box-inner">
+                <List>
+                  {playersInRoom.map((item, index) => {
+                    let name = item;
+                    if (item === room.host) {
+                      name += " (Host)";
+                    }
+                    if (item === user.email) {
+                      name += " (Me)";
+                    }
 
-                  return (
-                    <ListItem key={index}>
-                      <ListItemText className="players-list" primary={name} />
-                    </ListItem>
-                  );
-                })}
-              </List>
+                    return (
+                      <ListItem key={index}>
+                        <ListItemText className="players-list" primary={name} />
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </div>
             </div>
           </div>
-        </div>
+        </Grid>
       </Grid>
-    </Grid>
+    </div>
   ) : (
     <>Room context destroyed in client side</>
   );
