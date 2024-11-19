@@ -66,8 +66,10 @@ const GameAnswerRound = () => {
           for (let qa of response.data) {
             questions.push(qa.question);
             choices.push(JSON.parse(qa.answer));
+            console.log(JSON.parse(qa.answer));
           }
           setQuestion(questions);
+          console.log("Choices", choices);
           setAddedChoices(choices);
         }
       })
@@ -82,7 +84,7 @@ const GameAnswerRound = () => {
 
   const handleGameEnded = () => {
     navigate("/roomlobby");
-    dispatch({ game: null });
+    dispatch({ type: "GAME_OVER", payload: null });
   };
 
   const handleGameStateContinueButton = (e) => {
@@ -183,7 +185,6 @@ const GameAnswerRound = () => {
                 })}
               </RadioGroup>
             </FormControl>
-            <List></List>
           </div>
           <div style={{ marginTop: 10 }}>
             <ButtonComponent label={"Done"} onClick={handleDoneClick} />
