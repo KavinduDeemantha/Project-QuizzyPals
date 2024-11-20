@@ -20,6 +20,21 @@ const WelcomePage = () => {
   const [joinWithRoom, setJoinWithRoom] = useState(false);
   const [error, setError] = useState(null);
 
+  const logError = (error) => {
+    console.log(error);
+    if (error) {
+      if (error.response) {
+        if (error.response.data) {
+          if (error.response.data.message) {
+            setError(error.response.data.message);
+          } else {
+            setError(error.response.data);
+          }
+        }
+      }
+    }
+  };
+
   const handleCreateARoomButton = async (e) => {
     setError(null);
     const requestHeaders = {
@@ -44,8 +59,7 @@ const WelcomePage = () => {
         }
       }
     } catch (error) {
-      setError({ message: error.response.data.message });
-      console.log(error.response.data);
+      logError(error);
     }
   };
 
@@ -139,7 +153,7 @@ const WelcomePage = () => {
                 />
               </div>
             )}
-            {error && <div className="error-message">{error.message}</div>}
+            {error && <div className="error-message">{error}</div>}
           </div>
         </Grid>
       </Grid>
