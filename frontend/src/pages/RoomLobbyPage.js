@@ -23,7 +23,7 @@ import { useGameContext } from "../hook/useGameContext";
 const RoomLobbyPage = () => {
   const navigate = useNavigate();
   const gameContext = useGameContext();
-  const { socket, dispatch } = gameContext;
+  const { socket, game, dispatch } = gameContext;
 
   const [error, setError] = useState(null);
   const [startDialogVisible, setStartDialogVisible] = useState(false);
@@ -43,6 +43,15 @@ const RoomLobbyPage = () => {
       Authorization: `Bearer ${user.userJWT}`,
       "Content-Type": "application/json",
     },
+  };
+
+  const handleSetGameDurationSeconds = (val) => {
+    val = parseInt(val);
+    if (val < 0 || val > 59) {
+      return;
+    }
+
+    setGameDurationSeconds(val);
   };
 
   const getAndSetRoomPlayers = async (roomId) => {
@@ -106,6 +115,8 @@ const RoomLobbyPage = () => {
   };
 
   const startGame = async () => {
+    // This is because if gameContext keeps previous game states as a cleaning
+    // step we clear the payload
     dispatch({ type: "NEW_GAME", payload: null });
 
     const gameData = {
@@ -144,24 +155,28 @@ const RoomLobbyPage = () => {
   };
 
   const handleEndGameButton = async (e) => {
-    await axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
-        requestHeaders
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          const endGameRequest = {
-            type: "GAME_END",
-            userId: user.userId,
-            roomId: room.roomId,
-          };
+    if (room.host === user.email) {
+      await axios
+        .get(
+          `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
+          requestHeaders
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            const endGameRequest = {
+              type: "GAME_END",
+              userId: user.userId,
+              roomId: room.roomId,
+            };
 
-          socket.current.send(JSON.stringify(endGameRequest));
-          navigate("/");
-        }
-      })
-      .catch(logError);
+            socket.current.send(JSON.stringify(endGameRequest));
+            navigate("/");
+          }
+        })
+        .catch(logError);
+    } else {
+      navigate("/");
+    }
   };
 
   const handleDeleteRoomButton = async (e) => {
@@ -197,7 +212,23 @@ const RoomLobbyPage = () => {
     }
 
     getAndSetRoomPlayers(room.roomId);
+
+    // const gameStatusRequest = {
+    //   type: "GAME_STATUS",
+    //   roomId: room.roomId,
+    // };
+
+    // socket.current.send(JSON.stringify(gameStatusRequest));
   }, []);
+
+  // useEffect(() => {
+  //   console.log("[DEBUG] RoomLobbyPage: game state changed ->", game);
+  //   if (game) {
+  //     if (game.type === "GAME_STARTED") {
+  //       startGame();
+  //     }
+  //   }
+  // }, [game]);
 
   return room ? (
     <div>
@@ -211,7 +242,7 @@ const RoomLobbyPage = () => {
           type="number"
           variant="outlined"
           label={"Single round time duration (seconds)"}
-          onChange={(e) => setGameDurationSeconds(e.target.value)}
+          onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
         />
         <ButtonComponent label={"Start Game"} onClick={(e) => startGame()} />
       </Dialog>
@@ -225,16 +256,12 @@ const RoomLobbyPage = () => {
                 onClick={handleStartGameButton}
               />
             </div>
-            {room.host === user.email ? (
-              <div className="end-btn">
-                <ButtonComponent
-                  label={"End Game"}
-                  onClick={handleEndGameButton}
-                />
-              </div>
-            ) : (
-              <></>
-            )}
+            <div className="end-btn">
+              <ButtonComponent
+                label={"End Game"}
+                onClick={handleEndGameButton}
+              />
+            </div>
             {room.host === user.email ? (
               <div className="end-btn">
                 <ButtonComponent
