@@ -27,12 +27,13 @@ const GameQuestionRound = () => {
   const { room } = useRoomContext();
   const { user } = useAuthContext();
   const { game, socket, dispatch } = useGameContext();
-  const [addedChoices, setAddedChoices] = useState(["Choice A", "Choice B"]);
+  const [addedChoices, setAddedChoices] = useState([]);
   const [freeAnswer, setFreeAnswer] = useState("");
   const [newChoiceVisible, setNewChoiceVisible] = useState(false);
   const [newChoiceText, setNewChoiceText] = useState("");
   const [quizQuestion, setQuizQuestion] = useState("");
   const [gameStateMessageVisible, setGameStateMessageVisible] = useState(false);
+  const [gameTime, setGameTime] = useState(0);
   const [gameStateMessage, setGameStateMessage] = useState({
     title: "Game State",
     message: "Hi!",
@@ -119,7 +120,10 @@ const GameQuestionRound = () => {
 
   useEffect(() => {
     if (game) {
-      if (game.type === "ANSWER_ROUND_STARTED") {
+      if (game.type === "GAME_STARTED") {
+        console.log(game);
+        setGameTime(Math.floor(game.duration / 1000));
+      } else if (game.type === "ANSWER_ROUND_STARTED") {
         setGameStateMessage({ title: game.type, message: game.message });
         setGameStateMessageVisible(true);
       } else if (game.type === "GAME_ENDED") {
@@ -145,7 +149,7 @@ const GameQuestionRound = () => {
           <div className="round-title">Round: {room.gameRound}</div>
         </div>
         <div className="game-round-header-right">
-          <TimerComponent initialSeconds={60} />
+          {gameTime > 0 ? <TimerComponent initialSeconds={gameTime} /> : <></>}
         </div>
       </div>
 
