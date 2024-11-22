@@ -21,12 +21,23 @@ const WelcomePage = () => {
   const [error, setError] = useState(null);
 
   const logError = (error) => {
-    console.log(error);
     if (error) {
       if (error.response) {
         if (error.response.data) {
           if (error.response.data.message) {
             setError(error.response.data.message);
+          } else if (error.response.data.error) {
+            const errorData = error.response.data.error;
+            if (errorData.name === "TokenExpiredError") {
+              alert("You session has expired!");
+              handleSignOut();
+            }
+
+            if (error.response.data.error.message) {
+              setError(error.response.data.error.message);
+            } else {
+              setError(error.response.data.error);
+            }
           } else {
             setError(error.response.data);
           }
@@ -63,25 +74,29 @@ const WelcomePage = () => {
     }
   };
 
-  const handleSignOutButton = (e) => {
-    e.preventDefault();
+  const handleSignOut = () => {
     const success = signOut.signout();
     if (success) {
       navigate("/signin");
     }
   };
 
+  const handleSignOutButton = (e) => {
+    e.preventDefault();
+    handleSignOut();
+  };
+
   const handleJoinGameButton = async (e) => {
     e.preventDefault();
     if (roomCode.trim() === "") {
-      setError({ message: "Please enter the room code to join the game!" });
+      setError("Please enter the room code to join the game!");
       return;
     }
     const checkedIn = await roomCheckIn.checkin(user, { roomId: roomCode });
     if (checkedIn) {
       navigate("/roomlobby");
     } else {
-      setError({ message: roomCheckIn.error });
+      setError(roomCheckIn.error);
     }
   };
 
