@@ -34,6 +34,8 @@ const GameAnswerRound = () => {
   const [gameTime, setGameTime] = useState(0);
   const [error, setError] = useState(null);
   const [qAndA, setQAndA] = useState(null);
+  const [correctAnswer, setCorrectAnswer] = useState("");
+  const [playerQAndA, setPlayerQAndA] = useState({});
   const [gameStateMessageVisible, setGameStateMessageVisible] = useState(false);
   const [gameStateMessage, setGameStateMessage] = useState({
     title: "Game State",
@@ -55,14 +57,17 @@ const GameAnswerRound = () => {
       )
       .then((response) => {
         if (response.status === 200) {
-          let qAndAs = [];
+          const tmpQAndA = [];
+          const tmpPlayerQAndA = {};
           for (let qa of response.data) {
-            qAndAs.push({
+            // Q&A for rendering
+            tmpQAndA.push({
               question: qa.question,
               answers: JSON.parse(qa.answer),
             });
+            tmpPlayerQAndA[qa.answer] = "";
           }
-          setQAndA(qAndAs);
+          setQAndA(tmpQAndA);
         }
       })
       .catch((error) => {
@@ -70,31 +75,34 @@ const GameAnswerRound = () => {
       });
   };
 
-  const handleDoneClick = () => {
-    navigate("/summary");
+  const handleDoneClick = (questionIndex) => {
+    const tmpPlayerAnswers = playerQAndA;
+    tmpPlayerAnswers[qAndA[questionIndex].question] = correctAnswer;
+    setPlayerQAndA(tmpPlayerAnswers);
   };
 
   const handleGameEnded = () => {
-    navigate("/roomlobby");
-    dispatch({ type: "GAME_OVER", payload: null });
+    dispatch({
+      type: "GAME_ANSWERS",
+      payload: { playerAnswers: playerQAndA },
+    });
+    navigate("/summary");
   };
 
   const handleGameStateContinueButton = (e) => {
-    if (game.type === "ANSWER_ROUND_STARTED") {
-      navigate("/answers");
-    } else if (game.type === "GAME_ENDED") {
+    if (game.type === "GAME_ENDED") {
       handleGameEnded();
     }
     setGameStateMessageVisible(false);
   };
 
-  useEffect(() => {
-    if (game) {
-      if (game.type === "GAME_ENDED") {
-        handleGameEnded();
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (game) {
+  //     if (game.type === "GAME_ENDED") {
+  //       handleGameEnded();
+  //     }
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (game) {
@@ -127,6 +135,14 @@ const GameAnswerRound = () => {
         onClick={() => navigate("/roomlobby")}
       >
         Lobby
+      </Button>
+      <Button
+        className="submit-and-finish-btn"
+        variant="contained"
+        color="primary"
+        onClick={() => navigate("/summary")}
+      >
+        Submit & Finish
       </Button>
       <Dialog
         onClose={() => setGameStateMessageVisible(false)}
@@ -174,23 +190,35 @@ const GameAnswerRound = () => {
                         defaultValue="female"
                         name="radio-buttons-group"
                       >
-                        {qa &&
-                          qa.answers.map((item, i) => {
+                        {qa.answers.length > 0 ? (
+                          qa.answers.map((item, j) => {
                             return (
                               <FormControlLabel
-                                key={i}
+                                key={j}
                                 className="choice-item"
                                 value={item}
                                 control={<Radio />}
                                 label={item}
+                                onClick={() => setCorrectAnswer(item)}
                               />
                             );
-                          })}
+                          })
+                        ) : (
+                          <TextField
+                            className="correct-answer-text"
+                            variant="standard"
+                            value={correctAnswer}
+                            onChange={(e) => setCorrectAnswer(e.target.value)}
+                          />
+                        )}
                       </RadioGroup>
                     </FormControl>
                   </div>
                   <div style={{ marginTop: 10 }}>
-                    <ButtonComponent label={"Done"} onClick={handleDoneClick} />
+                    <ButtonComponent
+                      label={"Done"}
+                      onClick={() => handleDoneClick(i)}
+                    />
                   </div>
                 </div>
               </>
