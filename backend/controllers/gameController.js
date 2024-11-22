@@ -153,12 +153,27 @@ const getQuizzes = async (req, res) => {
     const quizzesExceptMe = [];
 
     const quizzes = await _getQuizzesByRoom(room.roomId);
-    for (let quiz of quizzes) {
-      if (quiz.userId != user.userId) {
-        quizzesExceptMe.push({
-          question: quiz.quizQuestion,
-          answer: quiz.quizAnswer,
-        });
+
+    if (room.gameEnd < Date.now()) {
+      // A player is trying to access quizzes before the game ended (so correct answer is not there)
+      for (let quiz of quizzes) {
+        if (quiz.userId != user.userId) {
+          quizzesExceptMe.push({
+            question: quiz.quizQuestion,
+            answer: quiz.quizAnswer,
+            correct: quiz.correctAnswer,
+          });
+        }
+      }
+      // A player is trying the access quizzes after the game ended (so correct answer is there)
+    } else {
+      for (let quiz of quizzes) {
+        if (quiz.userId != user.userId) {
+          quizzesExceptMe.push({
+            question: quiz.quizQuestion,
+            answer: quiz.quizAnswer,
+          });
+        }
       }
     }
 
