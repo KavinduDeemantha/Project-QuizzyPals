@@ -28,7 +28,7 @@ const GameQuestionRound = () => {
   const { user } = useAuthContext();
   const { game, socket, dispatch } = useGameContext();
   const [addedChoices, setAddedChoices] = useState([]);
-  const [freeAnswer, setFreeAnswer] = useState("");
+  const [correctAnswer, setCorrectAnswer] = useState("");
   const [newChoiceVisible, setNewChoiceVisible] = useState(false);
   const [newChoiceText, setNewChoiceText] = useState("");
   const [quizQuestion, setQuizQuestion] = useState("");
@@ -80,6 +80,7 @@ const GameQuestionRound = () => {
       userId: user.userId,
       quizQuestion: quizQuestion,
       quizAnswer: JSON.stringify(addedChoices),
+      correctAnswer: correctAnswer,
     };
 
     await axios
@@ -217,8 +218,16 @@ const GameQuestionRound = () => {
                 onChange={(e) => setQuizQuestion(e.target.value)}
               />
             </div>
-            <div className="inner-container-row correct-answer">
-              Expected Correct Answer: <p className="correct-answer-text"></p>
+            <div>
+              {/* <div className="inner-container-row correct-answer"> */}
+              Expected Correct Answer:
+              <TextField
+                className="correct-answer-text"
+                variant="standard"
+                value={correctAnswer}
+                onChange={(e) => setCorrectAnswer(e.target.value)}
+              />
+              {/* <p className="correct-answer-text"></p> */}
             </div>
             <div className="inner-container-row">
               <ButtonComponent

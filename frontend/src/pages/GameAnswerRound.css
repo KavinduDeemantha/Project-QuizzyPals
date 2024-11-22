@@ -67,6 +67,11 @@
   position: fixed;
 }
 
+.submit-and-finish-btn {
+  width: 200px;
+  position: fixed;
+}
+
 .inner-container-row {
   margin-top: 1vh;
 }
