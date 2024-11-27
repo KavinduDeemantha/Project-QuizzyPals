@@ -129,6 +129,9 @@ const createQuiz = async (req, res) => {
       correctAnswer: correctAnswer,
     });
 
+    quiz.quizId = quiz._id;
+    await quiz.save();
+
     res.status(StatusCodes.OK).json(quiz);
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
@@ -184,9 +187,99 @@ const getQuizzes = async (req, res) => {
   }
 };
 
+const submitAnswers = async (req, res) => {
+  const { userId, answers } = req.body;
+
+  try {
+    const user = await _getUserById(userId);
+
+    if (!user) {
+      throw Error("Invalid user");
+    }
+
+    const room = await _getRoomById(user.roomId);
+
+    if (!room) {
+      throw Error("User is not joined to a room");
+    }
+
+    const quizzes = await _getQuizzesByRoom(room.roomId);
+    const answerMap = new Map();
+    for (let answer of answers) {
+      answerMap.set(answer.quizQuestion, answer.playerAnswer);
+    }
+
+    const startTime = new Date();
+    const endTime = room.gameEnd;
+    const duration = endTime - startTime;
+
+    if (duration > 0) {
+      // A player is trying to access quizzes before the game ended (so correct answer is not there)
+      for (let quiz of quizzes) {
+        if (quiz.userId == user.userId) {
+          console.log("skipped");
+          continue;
+        }
+
+        if (answerMap.has(quiz.quizQuestion)) {
+          if (answerMap.get(quiz.quizQuestion) == quiz.correctAnswer) {
+            user.score += 1;
+          }
+        }
+      }
+    } else {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "Times up!" });
+      return;
+    }
+
+    res.status(StatusCodes.OK).json({ answers });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+const getTimeRemaining = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const user = await _getUserById(userId);
+
+    if (!user) {
+      throw Error("Invalid user");
+    }
+
+    const room = await _getRoomById(user.roomId);
+
+    if (!room) {
+      throw Error("User is not joined to a room");
+    }
+
+    if (!(room.gameStart && room.gameEnd)) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Game is not started yet!" });
+      return;
+    }
+
+    const startTime = new Date();
+    const endTime = room.gameEnd;
+    const duration = endTime - startTime;
+
+    res.status(StatusCodes.OK).json({ remainingTime: `${duration / 1000}s` });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
 module.exports = {
   createQuiz,
   startGame,
   endGame,
   getQuizzes,
+  submitAnswers,
+  getTimeRemaining,
 };

@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const quizSchema = new mongoose.Schema({
+  quizId: {
+    type: String,
+    required: false,
+  },
   roomId: {
     type: String,
     required: true,
