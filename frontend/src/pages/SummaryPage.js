@@ -15,6 +15,7 @@ const SummaryPage = () => {
   const { game } = useGameContext();
   const { user } = useAuthContext();
   const [questions, setQuestions] = useState([]);
+  const [playerAnswers, setPlayerAnswers] = useState(null);
   const [error, setError] = useState(null);
 
   const requestHeaders = {
@@ -32,6 +33,7 @@ const SummaryPage = () => {
       )
       .then((response) => {
         if (response.status === 200) {
+          console.log(response.data);
           const tmpQAndA = [];
           for (let qa of response.data) {
             // Q&A for rendering
@@ -39,15 +41,16 @@ const SummaryPage = () => {
               owner: user.email,
               question: qa.question,
               answers: JSON.parse(qa.answer),
-              correctAnswer: qa.correctAnswer,
-              playerAnswer: game.player,
+              correctAnswer: qa.correct,
+              playerAnswer: playerAnswers[qa.question],
             });
           }
           setQuestions(tmpQAndA);
-          console.log(questions);
+          console.log("Questions", questions);
         }
       })
       .catch((error) => {
+        console.log(error);
         setError(error);
       });
   };
@@ -97,7 +100,12 @@ const SummaryPage = () => {
   };
 
   useEffect(() => {
-    console.log(game.playerAnswers);
+    if (game) {
+      console.log(game.playerAnswers);
+      setPlayerAnswers(game.playerAnswers);
+    } else {
+      console.log("Game destroyed!");
+    }
     getAndSetQuestions();
   }, []);
 
@@ -111,7 +119,7 @@ const SummaryPage = () => {
           <div className="round-title">SUMMARY</div>
         </div>
         <div className="summary-right">
-          <div className="game-timer">01</div>
+          <div className="game-timer">{room && room.gameRound}</div>
         </div>
       </div>
       {questions.length > 0 ? (
@@ -135,6 +143,9 @@ const SummaryPage = () => {
               </div>
               <div className="correct-answer">
                 <b>Correct answer: {currentQuestion.correctAnswer}</b>
+              </div>
+              <div className="correct-answer">
+                <b>Your answer: {currentQuestion.playerAnswer}</b>
               </div>
               <div className="answer-list-container">
                 {currentQuestion.answers.map((answer, index) => (

@@ -140,7 +140,7 @@ const GameAnswerRound = () => {
         className="submit-and-finish-btn"
         variant="contained"
         color="primary"
-        onClick={() => navigate("/summary")}
+        onClick={handleGameEnded}
       >
         Submit & Finish
       </Button>
