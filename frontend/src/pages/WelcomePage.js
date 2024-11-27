@@ -42,6 +42,8 @@ const WelcomePage = () => {
             setError(error.response.data);
           }
         }
+      } else if (error.message) {
+        setError(error.message);
       }
     }
   };
@@ -96,7 +98,8 @@ const WelcomePage = () => {
     if (checkedIn) {
       navigate("/roomlobby");
     } else {
-      setError(roomCheckIn.error);
+      console.log("Join error", roomCheckIn.error);
+      logError(roomCheckIn.error);
     }
   };
 

@@ -35,7 +35,7 @@ const GameAnswerRound = () => {
   const [error, setError] = useState(null);
   const [qAndA, setQAndA] = useState(null);
   const [correctAnswer, setCorrectAnswer] = useState("");
-  const [playerQAndA, setPlayerQAndA] = useState({});
+  const [playerQAndA, setPlayerQAndA] = useState({ question: "answer" });
   const [gameStateMessageVisible, setGameStateMessageVisible] = useState(false);
   const [gameStateMessage, setGameStateMessage] = useState({
     title: "Game State",
@@ -175,10 +175,8 @@ const GameAnswerRound = () => {
         {qAndA ? (
           qAndA.map((qa, i) => {
             return (
-              <>
-                <div key={i} className="topic-label">
-                  Answer the question
-                </div>
+              <div key={i}>
+                <div className="topic-label">Answer the question</div>
                 <div className="question-inner-container">
                   <div className="inner-container-row question-text">
                     {qa.question}
@@ -221,7 +219,7 @@ const GameAnswerRound = () => {
                     />
                   </div>
                 </div>
-              </>
+              </div>
             );
           })
         ) : (
