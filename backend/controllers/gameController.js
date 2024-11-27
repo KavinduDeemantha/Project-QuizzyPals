@@ -99,7 +99,7 @@ const endGame = async (req, res) => {
 };
 
 const createQuiz = async (req, res) => {
-  const { userId, quizQuestion, quizAnswer } = req.body;
+  const { userId, quizQuestion, quizAnswer, correctAnswer } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -126,6 +126,7 @@ const createQuiz = async (req, res) => {
       userId: userId,
       quizQuestion: quizQuestion,
       quizAnswer: quizAnswer,
+      correctAnswer: correctAnswer,
     });
 
     res.status(StatusCodes.OK).json(quiz);
