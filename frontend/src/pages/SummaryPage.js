@@ -33,7 +33,6 @@ const SummaryPage = () => {
       )
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
           const tmpQAndA = [];
           for (let qa of response.data) {
             // Q&A for rendering
@@ -42,11 +41,11 @@ const SummaryPage = () => {
               question: qa.question,
               answers: JSON.parse(qa.answer),
               correctAnswer: qa.correct,
-              playerAnswer: playerAnswers[qa.question],
+              playerAnswer: playerAnswers && playerAnswers[qa.question],
             });
           }
+
           setQuestions(tmpQAndA);
-          console.log("Questions", questions);
         }
       })
       .catch((error) => {
@@ -101,12 +100,11 @@ const SummaryPage = () => {
 
   useEffect(() => {
     if (game) {
-      console.log(game.playerAnswers);
       setPlayerAnswers(game.playerAnswers);
+      getAndSetQuestions();
     } else {
-      console.log("Game destroyed!");
+      console.error("Game destroyed!");
     }
-    getAndSetQuestions();
   }, []);
 
   const currentQuestion = questions[currentQuestionIndex];
