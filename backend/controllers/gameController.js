@@ -227,6 +227,8 @@ const submitAnswers = async (req, res) => {
           }
         }
       }
+
+      await user.save();
     } else {
       res.status(StatusCodes.BAD_REQUEST).json({ message: "Times up!" });
       return;
