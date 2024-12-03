@@ -217,13 +217,13 @@ const submitAnswers = async (req, res) => {
       // A player is trying to access quizzes before the game ended (so correct answer is not there)
       for (let quiz of quizzes) {
         if (quiz.userId == user.userId) {
-          console.log("skipped");
           continue;
         }
 
         if (answerMap.has(quiz.quizQuestion)) {
           if (answerMap.get(quiz.quizQuestion) == quiz.correctAnswer) {
             user.score += 1;
+            await user.save();
           }
         }
       }

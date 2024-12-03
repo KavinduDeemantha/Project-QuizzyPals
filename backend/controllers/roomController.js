@@ -128,7 +128,7 @@ const getUsersByRoomId = async (req, res) => {
 
     const roomMates = [];
     for (let user of users) {
-      roomMates.push({ email: user.email });
+      roomMates.push({ email: user.email, score: user.score });
     }
 
     res.status(StatusCodes.OK).json(roomMates);

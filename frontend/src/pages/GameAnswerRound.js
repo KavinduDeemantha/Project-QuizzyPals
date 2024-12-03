@@ -75,9 +75,41 @@ const GameAnswerRound = () => {
       });
   };
 
+  const submitQuizAnswer = async (question, answer) => {
+    const answerData = {
+      userId: user.userId,
+      answers: [
+        {
+          quizQuestion: question,
+          playerAnswer: answer,
+        },
+      ],
+    };
+
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/api/game/submitanswers`,
+        answerData,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          console.log("Answer submitted successfully!");
+        } else {
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setError(error);
+      });
+  };
+
   const handleDoneClick = (questionIndex) => {
     const tmpPlayerAnswers = playerQAndA;
+    const question = qAndA[questionIndex].question;
     tmpPlayerAnswers[qAndA[questionIndex].question] = correctAnswer;
+    submitQuizAnswer(question, correctAnswer);
     setPlayerQAndA(tmpPlayerAnswers);
   };
 
