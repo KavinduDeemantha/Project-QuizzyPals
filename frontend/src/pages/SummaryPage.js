@@ -14,7 +14,7 @@ const SummaryPage = () => {
   const { room } = useRoomContext();
   const { game } = useGameContext();
   const { user } = useAuthContext();
-  const [questions, setQuestions] = useState(null);
+  const [questions, setQuestions] = useState([]);
   const [playerAnswers, setPlayerAnswers] = useState(null);
   const [error, setError] = useState(null);
 
@@ -111,7 +111,7 @@ const SummaryPage = () => {
     initializeSummary();
   }, []);
 
-  const currentQuestion = questions ? questions[currentQuestionIndex] : null;
+  const currentQuestion = questions ? questions[currentQuestionIndex] : {};
 
   return (
     <div className="main-container">
