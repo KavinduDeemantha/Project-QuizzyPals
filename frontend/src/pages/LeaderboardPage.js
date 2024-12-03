@@ -66,7 +66,7 @@ const LeaderboardPage = () => {
         if (response.status === 200) {
           const players = [];
           for (let player of response.data) {
-            players.push({ name: player.email, score: 0 });
+            players.push({ name: player.email, score: player.score });
           }
 
           setPlayersInRoom(players);

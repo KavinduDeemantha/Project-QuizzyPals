@@ -13,6 +13,8 @@ import {
   ListItemText,
   responsiveFontSizes,
   TextField,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useRoomContext } from "../hook/useRoomContext";
@@ -27,7 +29,7 @@ const RoomLobbyPage = () => {
 
   const [error, setError] = useState(null);
   const [startDialogVisible, setStartDialogVisible] = useState(false);
-  const [gameDurationSeconds, setGameDurationSeconds] = useState(10);
+  const [gameDurationSeconds, setGameDurationSeconds] = useState(20);
   const roomContext = useRoomContext();
   const { room } = roomContext;
   const { user } = useAuthContext();
@@ -137,9 +139,11 @@ const RoomLobbyPage = () => {
         if (response.status === 200) {
           console.log(response.data);
           if (response.data.message == "Game started") {
+            const tmpGameData = gameData;
+            tmpGameData.durationSeconds /= 2;
             const startGameRequest = {
               type: "GAME_START",
-              ...gameData,
+              ...tmpGameData,
             };
 
             socket.current.send(JSON.stringify(startGameRequest));
@@ -243,6 +247,10 @@ const RoomLobbyPage = () => {
           variant="outlined"
           label={"Single round time duration (seconds)"}
           onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
+        />
+        <FormControlLabel
+          control={<Switch defaultChecked />}
+          label="Save Data"
         />
         <ButtonComponent label={"Start Game"} onClick={(e) => startGame()} />
       </Dialog>

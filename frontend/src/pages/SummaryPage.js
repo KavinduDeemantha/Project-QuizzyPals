@@ -14,7 +14,7 @@ const SummaryPage = () => {
   const { room } = useRoomContext();
   const { game } = useGameContext();
   const { user } = useAuthContext();
-  const [questions, setQuestions] = useState(null);
+  const [questions, setQuestions] = useState([]);
   const [playerAnswers, setPlayerAnswers] = useState(null);
   const [error, setError] = useState(null);
 
@@ -26,6 +26,7 @@ const SummaryPage = () => {
   };
 
   const getAndSetQuestions = async () => {
+    console.log(playerAnswers);
     await axios
       .get(
         `${process.env.REACT_APP_BASE_URL}/api/game/getquizzes/${user.userId}`,
@@ -40,7 +41,7 @@ const SummaryPage = () => {
               owner: user.email,
               question: qa.question,
               answers: JSON.parse(qa.answer),
-              correctAnswer: qa.correct,
+              correctAnswer: qa.correct || "No correct answer provided",
             });
           }
 
@@ -110,7 +111,7 @@ const SummaryPage = () => {
     initializeSummary();
   }, []);
 
-  const currentQuestion = questions ? questions[currentQuestionIndex] : null;
+  const currentQuestion = questions ? questions[currentQuestionIndex] : {};
 
   return (
     <div className="main-container">
@@ -123,7 +124,7 @@ const SummaryPage = () => {
           <div className="game-timer">{room && room.gameRound}</div>
         </div>
       </div>
-      {questions ? (
+      {currentQuestion ? (
         <div className="questions-main-container">
           <div className="prev-btn prevStart-btns" onClick={handlePrev}>
             Prev
