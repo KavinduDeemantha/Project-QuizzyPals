@@ -14,7 +14,7 @@ const SummaryPage = () => {
   const { room } = useRoomContext();
   const { game } = useGameContext();
   const { user } = useAuthContext();
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState(null);
   const [playerAnswers, setPlayerAnswers] = useState(null);
   const [error, setError] = useState(null);
 
@@ -41,7 +41,6 @@ const SummaryPage = () => {
               question: qa.question,
               answers: JSON.parse(qa.answer),
               correctAnswer: qa.correct,
-              playerAnswer: playerAnswers && playerAnswers[qa.question],
             });
           }
 
@@ -49,7 +48,7 @@ const SummaryPage = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setError(error);
       });
   };
@@ -98,16 +97,20 @@ const SummaryPage = () => {
     navigate("/leaderboard");
   };
 
-  useEffect(() => {
+  const initializeSummary = () => {
     if (game) {
       setPlayerAnswers(game.playerAnswers);
       getAndSetQuestions();
     } else {
       console.error("Game destroyed!");
     }
+  };
+
+  useEffect(() => {
+    initializeSummary();
   }, []);
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = questions ? questions[currentQuestionIndex] : null;
 
   return (
     <div className="main-container">
@@ -120,7 +123,7 @@ const SummaryPage = () => {
           <div className="game-timer">{room && room.gameRound}</div>
         </div>
       </div>
-      {questions.length > 0 ? (
+      {questions ? (
         <div className="questions-main-container">
           <div className="prev-btn prevStart-btns" onClick={handlePrev}>
             Prev
@@ -128,7 +131,8 @@ const SummaryPage = () => {
           <div className="question-outer-container">
             <div className="topic-label">
               Question {currentQuestionIndex + 1}{" "}
-              {currentQuestion.correctAnswer === currentQuestion.playerAnswer
+              {currentQuestion.correctAnswer ===
+              playerAnswers[currentQuestion.question]
                 ? "✅🎉"
                 : "❌"}
             </div>
@@ -143,7 +147,7 @@ const SummaryPage = () => {
                 <b>Correct answer: {currentQuestion.correctAnswer}</b>
               </div>
               <div className="correct-answer">
-                <b>Your answer: {currentQuestion.playerAnswer}</b>
+                <b>Your answer: {playerAnswers[currentQuestion.question]}</b>
               </div>
               <div className="answer-list-container">
                 {currentQuestion.answers.map((answer, index) => (
