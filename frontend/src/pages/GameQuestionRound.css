@@ -46,6 +46,10 @@
   text-align: left;
 }
 
+.emoji-reaction {
+  text-align: right;
+}
+
 .choice-box {
   display: flex;
   flex-direction: column;

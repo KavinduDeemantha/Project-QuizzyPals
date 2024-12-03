@@ -11,7 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { resolvePath, useNavigate } from "react-router-dom";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircleOutlined";
 import "./GameQuestionRound.css";
 import ButtonComponent from "../components/ButtonComponent";
@@ -34,6 +34,7 @@ const GameQuestionRound = () => {
   const [quizQuestion, setQuizQuestion] = useState("");
   const [gameStateMessageVisible, setGameStateMessageVisible] = useState(false);
   const [gameTime, setGameTime] = useState(0);
+  const [currentEmoji, setCurrentEmoji] = useState(null);
   const [gameStateMessage, setGameStateMessage] = useState({
     title: "Game State",
     message: "Hi!",
@@ -112,6 +113,82 @@ const GameQuestionRound = () => {
     setGameStateMessageVisible(false);
   };
 
+  const analyzeSentiment = async () => {
+    const url1 =
+      "https://api.edenai.run/v2/workflow/44219089-83df-4366-94bf-b0e4f0b106f2/execution/";
+
+    const payload = { text: quizQuestion };
+    const requestHeaders = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.REACT_APP_EDENAI_API_KEY}`,
+      },
+    };
+
+    const executionId = await axios
+      .post(url1, payload, requestHeaders)
+      .then((response) => {
+        if (response.status === 201) {
+          return response.data.id;
+        }
+
+        return 0;
+      })
+      .catch((error) => {
+        return -1;
+      });
+
+    const url2 = `https://api.edenai.run/v2/workflow/44219089-83df-4366-94bf-b0e4f0b106f2/execution/${executionId}/`;
+
+    return await axios
+      .get(url2, requestHeaders)
+      .then((response) => {
+        if (response.status === 200) {
+          response = response.data;
+          const data =
+            response["content"]["results"]["text__sentiment_analysis"][
+              "results"
+            ][0];
+          const { sentiment, sentiment_rate } = data["items"][0];
+
+          return { sentiment, sentiment_rate };
+        }
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+  };
+
+  const emojiMapper = {
+    "🙄": "1f644",
+    "🫢": "1fae2",
+    "🫣": "1fae3",
+    "🤐": "1f910",
+    "🧐": "1f9d0",
+  };
+
+  const handleQuizQuestionSentiment = async (e) => {
+    try {
+      const sentimentResults = await analyzeSentiment();
+      if (sentimentResults) {
+        if (sentimentResults.sentiment == "Neutral") {
+          let items = ["🧐", "🙄"];
+          let index = items[Math.floor(Math.random() * items.length)];
+          setCurrentEmoji(emojiMapper[index]);
+        } else if (sentimentResults.sentiment == "Negative") {
+          let items = ["🫣", "🫢", "🤐"];
+          let index = items[Math.floor(Math.random() * items.length)];
+          setCurrentEmoji(emojiMapper[index]);
+        } else {
+          setCurrentEmoji(null);
+        }
+        console.log(sentimentResults);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
   useEffect(() => {
     if (game) {
       if (game.type === "ANSWER_ROUND_STARTED") {
@@ -123,7 +200,6 @@ const GameQuestionRound = () => {
   useEffect(() => {
     if (game) {
       if (game.type === "GAME_STARTED") {
-        console.log(game);
         setGameTime(Math.floor(game.duration / 1000));
       } else if (game.type === "ANSWER_ROUND_STARTED") {
         setGameStateMessage({ title: game.type, message: game.message });
@@ -209,7 +285,25 @@ const GameQuestionRound = () => {
                 variant="outlined"
                 value={quizQuestion}
                 onChange={(e) => setQuizQuestion(e.target.value)}
+                onBlur={handleQuizQuestionSentiment}
               />
+              <div className="emoji-reaction">
+                {currentEmoji ? (
+                  <picture>
+                    <source
+                      srcSet={`https://fonts.gstatic.com/s/e/notoemoji/latest/${currentEmoji}/512.webp`}
+                      type="image/webp"
+                    ></source>
+                    <img
+                      src={`https://fonts.gstatic.com/s/e/notoemoji/latest/${currentEmoji}/512.gif`}
+                      width="32"
+                      height="32"
+                    ></img>
+                  </picture>
+                ) : (
+                  <div></div>
+                )}
+              </div>
             </div>
             <div>
               {/* <div className="inner-container-row correct-answer"> */}
