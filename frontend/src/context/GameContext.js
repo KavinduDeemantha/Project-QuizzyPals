@@ -10,17 +10,10 @@ export const GameContext = createContext(null);
 
 export const gameReducer = (state, action) => {
   console.log("Game reducer", action);
-  // switch (action.type) {
-  //   case "GAME_STARTED":
-  //     return { game: action.payload };
-  //   case "CHECK_OUT":
-  //     return { game: null };
-  //   case "ERROR":
-  //     return { game: null };
-  //   default:
-  //     return state;
-  // }
-  return { game: action.payload };
+  switch (action.type) {
+    default:
+      return { game: action.payload };
+  }
 };
 
 export const GameContextProvider = ({ children }) => {
