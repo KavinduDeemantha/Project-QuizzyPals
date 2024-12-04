@@ -13,14 +13,16 @@ const handleGameStartForNonHost = (ws, rooms, data) => {
   console.log("Starting game...");
   const roomData = rooms.get(data.roomId).data;
 
-  console.log(rooms);
   const time1 = new Date();
   const time2 = new Date(roomData.endTime);
 
   const duration = time2 - time1;
-  console.log("non host user duration", duration);
 
   const timerId = setTimeout(() => {
+    if (!rooms.has(data.roomId)) {
+      return;
+    }
+
     ws.send(
       JSON.stringify({
         type: "ANSWER_ROUND_STARTED",
@@ -51,6 +53,9 @@ const handleAnswerRoundTimesUp = (ws, rooms, data) => {
   const duration = time2 - time1;
 
   setTimeout(() => {
+    if (!rooms.has(data.roomId)) {
+      return;
+    }
     ws.send(
       JSON.stringify({
         type: "GAME_ENDED",
@@ -59,13 +64,14 @@ const handleAnswerRoundTimesUp = (ws, rooms, data) => {
     );
 
     rooms.delete(data.roomId);
-    console.log("Answer round finished!", roomData);
   }, duration);
 };
 
 // Handle the request to start the game from user.
 const handleGameStart = (ws, rooms, data) => {
   console.log("Starting game...");
+
+  console.log(data);
 
   // If the roomId is in the rooms datastructure already means that a room is
   // created before and still in use. So we return "You can't create a room with
@@ -169,22 +175,24 @@ const handleAnswerRound = (ws, rooms, data) => {
 const handleGameEnd = (ws, rooms, data) => {
   console.log("Game ending...");
 
+  // console.log(rooms);
+
   if (!rooms.has(data.roomId)) {
     ws.send(
       JSON.stringify({
         type: "ERROR",
-        message: "game has not started yet!",
+        message: "Game has not started yet!",
       })
     );
     return;
   }
 
   const roomData = rooms.get(data.roomId);
-  if (roomData.data.host !== data.host) {
+  if (roomData.data.userId !== data.userId) {
     ws.send(
       JSON.stringify({
         type: "ERROR",
-        message: "only the host can end the game!",
+        message: "Only the host can end the game!",
       })
     );
     return;
