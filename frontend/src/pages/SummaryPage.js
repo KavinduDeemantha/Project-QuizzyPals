@@ -14,7 +14,7 @@ const SummaryPage = () => {
   const { room } = useRoomContext();
   const { game } = useGameContext();
   const { user } = useAuthContext();
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState(null);
   const [playerAnswers, setPlayerAnswers] = useState(null);
   const [error, setError] = useState(null);
 
@@ -111,7 +111,7 @@ const SummaryPage = () => {
     initializeSummary();
   }, []);
 
-  const currentQuestion = questions ? questions[currentQuestionIndex] : {};
+  const currentQuestion = questions ? questions[currentQuestionIndex] : null;
 
   return (
     <div className="main-container">
@@ -171,8 +171,37 @@ const SummaryPage = () => {
         </div>
       ) : (
         <div>
-          <CircularProgress />
-          <div>Fetching data...</div>
+          {!questions ? (
+            <div>
+              <CircularProgress />
+              <div>Fetching data...</div>
+            </div>
+          ) : (
+            <div>
+              <h1
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                Seems like you don't have any questions and answers{" "}
+                <picture>
+                  <source
+                    srcSet="https://fonts.gstatic.com/s/e/notoemoji/latest/1f914/512.webp"
+                    type="image/webp"
+                  ></source>
+                  <img
+                    src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f914/512.gif"
+                    alt="🤔"
+                    width="128"
+                    height="128"
+                  ></img>
+                </picture>
+              </h1>
+              <ButtonComponent label={"Continue"} onClick={handleDoneBtn} />
+            </div>
+          )}
         </div>
       )}
     </div>
