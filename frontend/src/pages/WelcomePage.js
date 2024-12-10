@@ -20,6 +20,34 @@ const WelcomePage = () => {
   const [joinWithRoom, setJoinWithRoom] = useState(false);
   const [error, setError] = useState(null);
 
+  const logError = (error) => {
+    if (error) {
+      if (error.response) {
+        if (error.response.data) {
+          if (error.response.data.message) {
+            setError(error.response.data.message);
+          } else if (error.response.data.error) {
+            const errorData = error.response.data.error;
+            if (errorData.name === "TokenExpiredError") {
+              alert("You session has expired!");
+              handleSignOut();
+            }
+
+            if (error.response.data.error.message) {
+              setError(error.response.data.error.message);
+            } else {
+              setError(error.response.data.error);
+            }
+          } else {
+            setError(error.response.data);
+          }
+        }
+      } else if (error.message) {
+        setError(error.message);
+      }
+    }
+  };
+
   const handleCreateARoomButton = async (e) => {
     setError(null);
     const requestHeaders = {
@@ -44,30 +72,34 @@ const WelcomePage = () => {
         }
       }
     } catch (error) {
-      setError({ message: error.response.data.message });
-      console.log(error.response.data);
+      logError(error);
     }
   };
 
-  const handleSignOutButton = (e) => {
-    e.preventDefault();
+  const handleSignOut = () => {
     const success = signOut.signout();
     if (success) {
       navigate("/signin");
     }
   };
 
+  const handleSignOutButton = (e) => {
+    e.preventDefault();
+    handleSignOut();
+  };
+
   const handleJoinGameButton = async (e) => {
     e.preventDefault();
     if (roomCode.trim() === "") {
-      setError({ message: "Please enter the room code to join the game!" });
+      setError("Please enter the room code to join the game!");
       return;
     }
     const checkedIn = await roomCheckIn.checkin(user, { roomId: roomCode });
     if (checkedIn) {
       navigate("/roomlobby");
     } else {
-      setError({ message: roomCheckIn.error });
+      console.log("Join error", roomCheckIn.error);
+      logError(roomCheckIn.error);
     }
   };
 
@@ -139,7 +171,7 @@ const WelcomePage = () => {
                 />
               </div>
             )}
-            {error && <div className="error-message">{error.message}</div>}
+            {error && <div className="error-message">{error}</div>}
           </div>
         </Grid>
       </Grid>

@@ -11,16 +11,24 @@ const handleAnswerRoundTimesUpNonHost = (ws, duration) => {
 
 const handleGameStartForNonHost = (ws, rooms, data) => {
   console.log("Starting game...");
-  const roomData = rooms.get(data.roomId).data;
 
-  console.log(rooms);
+  const roomData = rooms.get(data.roomId).data;
+  if (!("players" in roomData)) {
+    roomData["players"] = [ws];
+  } else {
+    roomData["players"].push(ws);
+  }
+
   const time1 = new Date();
   const time2 = new Date(roomData.endTime);
 
   const duration = time2 - time1;
-  console.log("non host user duration", duration);
 
   const timerId = setTimeout(() => {
+    if (!rooms.has(data.roomId)) {
+      return;
+    }
+
     ws.send(
       JSON.stringify({
         type: "ANSWER_ROUND_STARTED",
@@ -51,6 +59,9 @@ const handleAnswerRoundTimesUp = (ws, rooms, data) => {
   const duration = time2 - time1;
 
   setTimeout(() => {
+    if (!rooms.has(data.roomId)) {
+      return;
+    }
     ws.send(
       JSON.stringify({
         type: "GAME_ENDED",
@@ -59,7 +70,6 @@ const handleAnswerRoundTimesUp = (ws, rooms, data) => {
     );
 
     rooms.delete(data.roomId);
-    console.log("Answer round finished!", roomData);
   }, duration);
 };
 
@@ -71,7 +81,6 @@ const handleGameStart = (ws, rooms, data) => {
   // created before and still in use. So we return "You can't create a room with
   // that id".
   if (rooms.has(data.roomId)) {
-    console.log("debug: ", data.userId, rooms.get(data.roomId).data.userId);
     if (data.userId == rooms.get(data.roomId).data.userId) {
       ws.send(
         JSON.stringify({
@@ -100,6 +109,7 @@ const handleGameStart = (ws, rooms, data) => {
       JSON.stringify({
         type: "ANSWER_ROUND_STARTED",
         message: "Quiz creation time is up! Now answer quizzes!",
+        duration: duration,
       })
     );
 
@@ -173,21 +183,33 @@ const handleGameEnd = (ws, rooms, data) => {
     ws.send(
       JSON.stringify({
         type: "ERROR",
-        message: "game has not started yet!",
+        message: "Game has not started yet!",
       })
     );
     return;
   }
 
   const roomData = rooms.get(data.roomId);
-  if (roomData.data.host !== data.host) {
+  if (roomData.data.userId !== data.userId) {
     ws.send(
       JSON.stringify({
         type: "ERROR",
-        message: "only the host can end the game!",
+        message: "Only the host can end the game!",
       })
     );
     return;
+  }
+
+  if ("players" in roomData.data) {
+    for (const player of roomData.data.players) {
+      player.send(
+        JSON.stringify({
+          type: "GAME_ENDED",
+          room: data.roomId,
+          message: "Game ended by the host",
+        })
+      );
+    }
   }
 
   clearTimeout(roomData.timerId);
@@ -198,9 +220,30 @@ const handleGameEnd = (ws, rooms, data) => {
     JSON.stringify({
       type: "GAME_ENDED",
       room: data.roomId,
-      message: "Game ended by the host!",
+      message: "You ended the game before!",
     })
   );
+};
+
+const handleGameStatus = (ws, rooms, data) => {
+  console.log("Finding game status...");
+
+  if (rooms.has(data.roomId)) {
+    const roomData = rooms.get(data.roomId);
+    ws.send(
+      JSON.stringify({
+        type: "GAME_STATUS",
+        status: roomData.gameState,
+      })
+    );
+  } else {
+    ws.send(
+      JSON.stringify({
+        type: "ERROR",
+        message: "No game in the room",
+      })
+    );
+  }
 };
 
 const messageHandler = (ws, rooms) => {
@@ -219,6 +262,10 @@ const messageHandler = (ws, rooms) => {
       }
       case "GAME_END": {
         handleGameEnd(ws, rooms, data);
+        break;
+      }
+      case "GAME_STATUS": {
+        handleGameStatus(ws, rooms, data);
         break;
       }
       default:

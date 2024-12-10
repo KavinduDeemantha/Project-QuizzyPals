@@ -1,5 +1,6 @@
 const Room = require("../models/roomModel");
 const User = require("../models/userModel");
+const Quiz = require("../models/quizModel");
 
 const { StatusCodes } = require("http-status-codes");
 
@@ -92,6 +93,8 @@ const deleteRoomByUserId = async (req, res) => {
       throw Error("The room cannot be deleted!");
     }
 
+    await Quiz.deleteMany({ roomId: room.roomId });
+
     res.status(StatusCodes.OK).json({ message: "Room deleted successfully" });
   } catch (error) {
     console.log(error.message);
@@ -125,7 +128,7 @@ const getUsersByRoomId = async (req, res) => {
 
     const roomMates = [];
     for (let user of users) {
-      roomMates.push({ email: user.email });
+      roomMates.push({ email: user.email, score: user.score });
     }
 
     res.status(StatusCodes.OK).json(roomMates);

@@ -13,6 +13,7 @@ import {
   TextField,
   DialogContent,
   DialogContentText,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,22 +24,18 @@ import axios from "axios";
 import { useAuthContext } from "../hook/useAuthContext";
 import { useRoomContext } from "../hook/useRoomContext";
 import { useGameContext } from "../hook/useGameContext";
+import { Label } from "@mui/icons-material";
 
 const GameAnswerRound = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { room } = useRoomContext();
   const { game, dispatch } = useGameContext();
+  const [gameTime, setGameTime] = useState(0);
   const [error, setError] = useState(null);
-  const [addedChoices, setAddedChoices] = useState([
-    "Choice A",
-    "Choice B",
-    "Choice C",
-    "Choice D",
-  ]);
-  const [question, setQuestion] = useState(
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-  );
+  const [qAndA, setQAndA] = useState(null);
+  const [correctAnswer, setCorrectAnswer] = useState("");
+  const [playerQAndA, setPlayerQAndA] = useState({ question: "answer" });
   const [gameStateMessageVisible, setGameStateMessageVisible] = useState(false);
   const [gameStateMessage, setGameStateMessage] = useState({
     title: "Game State",
@@ -60,15 +57,17 @@ const GameAnswerRound = () => {
       )
       .then((response) => {
         if (response.status === 200) {
-          const questions = [];
-          const choices = [];
-          console.log(response.data);
+          const tmpQAndA = [];
+          const tmpPlayerQAndA = {};
           for (let qa of response.data) {
-            questions.push(qa.question);
-            choices.push(JSON.parse(qa.answer));
+            // Q&A for rendering
+            tmpQAndA.push({
+              question: qa.question,
+              answers: JSON.parse(qa.answer),
+            });
+            tmpPlayerQAndA[qa.answer] = "";
           }
-          setQuestion(questions);
-          setAddedChoices(choices);
+          setQAndA(tmpQAndA);
         }
       })
       .catch((error) => {
@@ -76,35 +75,72 @@ const GameAnswerRound = () => {
       });
   };
 
-  const handleDoneClick = () => {
-    navigate("/summary");
+  const submitQuizAnswer = async (question, answer) => {
+    const answerData = {
+      userId: user.userId,
+      answers: [
+        {
+          quizQuestion: question,
+          playerAnswer: answer,
+        },
+      ],
+    };
+
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/api/game/submitanswers`,
+        answerData,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          console.log("Answer submitted successfully!");
+        } else {
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setError(error);
+      });
+  };
+
+  const handleDoneClick = (questionIndex) => {
+    const tmpPlayerAnswers = playerQAndA;
+    const question = qAndA[questionIndex].question;
+    tmpPlayerAnswers[qAndA[questionIndex].question] = correctAnswer;
+    submitQuizAnswer(question, correctAnswer);
+    setPlayerQAndA(tmpPlayerAnswers);
   };
 
   const handleGameEnded = () => {
-    navigate("/roomlobby");
-    dispatch({ game: null });
+    dispatch({
+      type: "GAME_ANSWERS",
+      payload: { playerAnswers: playerQAndA },
+    });
+    navigate("/summary");
   };
 
   const handleGameStateContinueButton = (e) => {
-    if (game.type === "ANSWER_ROUND_STARTED") {
-      navigate("/answers");
-    } else if (game.type === "GAME_ENDED") {
+    if (game.type === "GAME_ENDED") {
       handleGameEnded();
     }
     setGameStateMessageVisible(false);
   };
 
-  useEffect(() => {
-    if (game) {
-      if (game.type === "GAME_ENDED") {
-        handleGameEnded();
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (game) {
+  //     if (game.type === "GAME_ENDED") {
+  //       handleGameEnded();
+  //     }
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (game) {
-      if (game.type === "GAME_ENDED") {
+      if (game.type === "ANSWER_ROUND_STARTED") {
+        setGameTime(Math.floor(game.duration / 1000));
+      } else if (game.type === "GAME_ENDED") {
         setGameStateMessage({ title: game.type, message: game.message });
         setGameStateMessageVisible(true);
       }
@@ -132,6 +168,14 @@ const GameAnswerRound = () => {
       >
         Lobby
       </Button>
+      <Button
+        className="submit-and-finish-btn"
+        variant="contained"
+        color="primary"
+        onClick={handleGameEnded}
+      >
+        Submit & Finish
+      </Button>
       <Dialog
         onClose={() => setGameStateMessageVisible(false)}
         open={gameStateMessageVisible}
@@ -156,39 +200,66 @@ const GameAnswerRound = () => {
           <div className="round-title">Round: {room && room.gameRound}</div>
         </div>
         <div className="game-round-header-right">
-          <TimerComponent initialSeconds={60} />
+          {gameTime > 0 ? <TimerComponent initialSeconds={gameTime} /> : <></>}
         </div>
       </div>
       <div className="question-outer-container">
-        <div className="topic-label">Answer the question</div>
-        <div className="question-inner-container">
-          <div className="inner-container-row question-text">{question}</div>
-          <div className="inner-container-row choice-box">
-            <FormControl>
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
-                name="radio-buttons-group"
-              >
-                {addedChoices.map((item, i) => {
-                  return (
-                    <FormControlLabel
-                      key={i}
-                      className="choice-item"
-                      value={item}
-                      control={<Radio />}
-                      label={item}
+        {qAndA ? (
+          qAndA.map((qa, i) => {
+            return (
+              <div key={i}>
+                <div className="topic-label">Answer the question</div>
+                <div className="question-inner-container">
+                  <div className="inner-container-row question-text">
+                    {qa.question}
+                  </div>
+                  <div className="inner-container-row choice-box">
+                    <FormControl>
+                      <RadioGroup
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        defaultValue="female"
+                        name="radio-buttons-group"
+                      >
+                        {qa.answers.length > 0 ? (
+                          qa.answers.map((item, j) => {
+                            return (
+                              <FormControlLabel
+                                key={j}
+                                className="choice-item"
+                                value={item}
+                                control={<Radio />}
+                                label={item}
+                                onClick={() => setCorrectAnswer(item)}
+                              />
+                            );
+                          })
+                        ) : (
+                          <TextField
+                            className="correct-answer-text"
+                            variant="standard"
+                            value={correctAnswer}
+                            onChange={(e) => setCorrectAnswer(e.target.value)}
+                          />
+                        )}
+                      </RadioGroup>
+                    </FormControl>
+                  </div>
+                  <div style={{ marginTop: 10 }}>
+                    <ButtonComponent
+                      label={"Done"}
+                      onClick={() => handleDoneClick(i)}
                     />
-                  );
-                })}
-              </RadioGroup>
-            </FormControl>
-            <List></List>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div>
+            <CircularProgress />
+            <div>Fetching data...</div>
           </div>
-          <div style={{ marginTop: 10 }}>
-            <ButtonComponent label={"Done"} onClick={handleDoneClick} />
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    score: {
+      type: Number,
+      required: false,
+    },
     roomId: {
       type: String,
       required: false,
@@ -52,6 +56,7 @@ userSchema.statics.signup = async function (email, password) {
   // We store the hashed password, not the original password
   const newUser = await this.create({ email, password: hashedPassword });
   newUser.userId = newUser._id;
+  newUser.score = 0;
   await newUser.save();
 
   return newUser;
