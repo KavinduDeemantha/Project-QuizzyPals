@@ -258,21 +258,24 @@ const RoomLobbyPage = () => {
         <Grid size={8}>
           <div className="header-container">
             <div className="header">QuizzyPals</div>
-            <div className="start-btn">
+            <div className="start-btn lobbyBtnContainer">
               <ButtonComponent
+                className={"lobbyBtn"}
                 label={"Start Game"}
                 onClick={handleStartGameButton}
               />
             </div>
-            <div className="end-btn">
+            <div className="end-btn lobbyBtnContainer">
               <ButtonComponent
+                className={"lobbyBtn"}
                 label={"End Game"}
                 onClick={handleEndGameButton}
               />
             </div>
             {room.host === user.email ? (
-              <div className="end-btn">
+              <div className="end-btn lobbyBtnContainer">
                 <ButtonComponent
+                  className={"lobbyBtn"}
                   label={"Delete Room"}
                   onClick={handleDeleteRoomButton}
                 />

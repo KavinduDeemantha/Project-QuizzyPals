@@ -136,14 +136,6 @@ const GameQuestionRound = () => {
 
   return (
     <div className="main-container">
-      <Button
-        className="lobby-btn"
-        variant="contained"
-        color="error"
-        onClick={() => navigate("/roomlobby")}
-      >
-        Lobby
-      </Button>
       <div className="game-round-header">
         <div className="game-round-header-left">
           <div className="room-code">Room: {room.roomId}</div>
@@ -251,6 +243,16 @@ const GameQuestionRound = () => {
             </div>
             <div className="margin-top-10">
               <ButtonComponent label={"Done"} onClick={handleDoneClick} />
+            </div>
+            <div className="lobby-btn-container">
+              <Button
+                className="lobby-btn"
+                variant="contained"
+                color="error"
+                onClick={() => navigate("/roomlobby")}
+              >
+                Lobby
+              </Button>
             </div>
           </div>
         </div>
