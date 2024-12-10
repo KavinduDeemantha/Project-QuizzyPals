@@ -159,23 +159,7 @@ const GameAnswerRound = () => {
   }, []);
 
   return (
-    <div className="main-container">
-      <Button
-        className="lobby-btn"
-        variant="contained"
-        color="error"
-        onClick={() => navigate("/roomlobby")}
-      >
-        Lobby
-      </Button>
-      <Button
-        className="submit-and-finish-btn"
-        variant="contained"
-        color="primary"
-        onClick={handleGameEnded}
-      >
-        Submit & Finish
-      </Button>
+    <div className="main-container answers-main">
       <Dialog
         onClose={() => setGameStateMessageVisible(false)}
         open={gameStateMessageVisible}
@@ -261,6 +245,22 @@ const GameAnswerRound = () => {
           </div>
         )}
       </div>
+      <Button
+        className="lobby-btn"
+        variant="contained"
+        color="error"
+        onClick={() => navigate("/roomlobby")}
+      >
+        Lobby
+      </Button>
+      <Button
+        className="submit-and-finish-btn"
+        variant="contained"
+        color="primary"
+        onClick={handleGameEnded}
+      >
+        Submit & Finish
+      </Button>
     </div>
   );
 };
