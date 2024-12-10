@@ -70,6 +70,7 @@
 .submit-and-finish-btn {
   width: 200px;
   position: fixed;
+  margin-top: 1rem !important;
 }
 
 .inner-container-row {
@@ -92,4 +93,8 @@
 
 .topic-label {
   font-size: 24px;
+}
+
+.answers-main {
+  align-items: center;
 }

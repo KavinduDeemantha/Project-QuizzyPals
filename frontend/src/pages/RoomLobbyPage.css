@@ -43,3 +43,11 @@
   color: red;
   margin-top: 10px;
 }
+
+.lobbyBtnContainer {
+  width: 100%;
+}
+
+.lobbyBtn {
+  width: 23% !important;
+}
