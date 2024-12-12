@@ -92,6 +92,7 @@ const GameQuestionRound = () => {
       .then((response) => {
         if (response.status === 200) {
           setQuizQuestion("");
+          setCorrectAnswer("");
           setAddedChoices([]);
         }
       })

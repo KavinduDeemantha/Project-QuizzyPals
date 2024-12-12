@@ -29,7 +29,8 @@ const RoomLobbyPage = () => {
 
   const [error, setError] = useState(null);
   const [startDialogVisible, setStartDialogVisible] = useState(false);
-  const [gameDurationSeconds, setGameDurationSeconds] = useState(20);
+  const [gameDurationSeconds, setGameDurationSeconds] = useState(0);
+  const [gameDurationMinutes, setGameDurationMinutes] = useState(0);
   const roomContext = useRoomContext();
   const { room } = roomContext;
   const { user } = useAuthContext();
@@ -54,6 +55,14 @@ const RoomLobbyPage = () => {
     }
 
     setGameDurationSeconds(val);
+  };
+  const handleSetGameDurationMinutes = (val) => {
+    val = parseInt(val);
+    if (val < 0 || val > 59) {
+      return;
+    }
+
+    setGameDurationMinutes(val);
   };
 
   const getAndSetRoomPlayers = async (roomId) => {
@@ -125,7 +134,7 @@ const RoomLobbyPage = () => {
       userId: user.userId,
       roomId: room.roomId,
       durationHours: 0,
-      durationMinutes: 0,
+      durationMinutes: gameDurationMinutes,
       durationSeconds: gameDurationSeconds,
     };
 
@@ -225,14 +234,15 @@ const RoomLobbyPage = () => {
     // socket.current.send(JSON.stringify(gameStatusRequest));
   }, []);
 
-  // useEffect(() => {
-  //   console.log("[DEBUG] RoomLobbyPage: game state changed ->", game);
-  //   if (game) {
-  //     if (game.type === "GAME_STARTED") {
-  //       startGame();
-  //     }
-  //   }
-  // }, [game]);
+  useEffect(() => {
+    if (game) {
+      if (game.type === "GAME_STARTED_BY_HOST") {
+        alert(
+          "Host has started the game click on `START GAME` to join the game!"
+        );
+      }
+    }
+  }, [game]);
 
   return room ? (
     <div>
@@ -241,6 +251,14 @@ const RoomLobbyPage = () => {
         open={startDialogVisible}
       >
         <DialogTitle>Start game settings</DialogTitle>
+        <TextField
+          value={gameDurationMinutes}
+          type="number"
+          variant="outlined"
+          label={"Single round time duration (minutes)"}
+          onChange={(e) => handleSetGameDurationMinutes(e.target.value)}
+        />
+        <div style={{ marginTop: 20 }}></div>
         <TextField
           value={gameDurationSeconds}
           type="number"
