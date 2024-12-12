@@ -9,15 +9,21 @@ import { useSignOut } from "../hook/useSignout";
 import { useAuthContext } from "../hook/useAuthContext";
 import axios from "axios";
 import { useRoomCheckIn } from "../hook/useRoomCheckIn";
+import { useGameContext } from "../hook/useGameContext";
+import { useRoomContext } from "../hook/useRoomContext";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
   const signOut = useSignOut();
   const { user } = useAuthContext();
   const roomCheckIn = useRoomCheckIn();
+  const gameContext = useGameContext();
+  const { socket } = gameContext;
 
   const [roomCode, setRoomCode] = useState("");
   const [joinWithRoom, setJoinWithRoom] = useState(false);
+  const roomContext = useRoomContext();
+
   const [error, setError] = useState(null);
 
   const logError = (error) => {
@@ -96,6 +102,17 @@ const WelcomePage = () => {
     }
     const checkedIn = await roomCheckIn.checkin(user, { roomId: roomCode });
     if (checkedIn) {
+      const gameData = {
+        userId: user.userId,
+        roomId: roomCode,
+      };
+
+      const joinRoomRequest = {
+        type: "JOIN_ROOM",
+        ...gameData,
+      };
+
+      socket.current.send(JSON.stringify(joinRoomRequest));
       navigate("/roomlobby");
     } else {
       console.log("Join error", roomCheckIn.error);

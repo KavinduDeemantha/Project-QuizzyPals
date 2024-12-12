@@ -13,12 +13,6 @@ const handleGameStartForNonHost = (ws, rooms, data) => {
   console.log("Starting game...");
 
   const roomData = rooms.get(data.roomId).data;
-  if (!("players" in roomData)) {
-    roomData["players"] = [ws];
-  } else {
-    roomData["players"].push(ws);
-  }
-
   const time1 = new Date();
   const time2 = new Date(roomData.endTime);
 
@@ -33,6 +27,7 @@ const handleGameStartForNonHost = (ws, rooms, data) => {
       JSON.stringify({
         type: "ANSWER_ROUND_STARTED",
         message: "Quiz creation time is up! Now answer quizzes!",
+        duration: duration,
       })
     );
 
@@ -52,6 +47,7 @@ const handleGameStartForNonHost = (ws, rooms, data) => {
 };
 
 const handleAnswerRoundTimesUp = (ws, rooms, data) => {
+  console.log("Ending answer round...");
   const roomData = rooms.get(data.roomId).data;
 
   const time1 = new Date(roomData.startTime);
@@ -81,17 +77,25 @@ const handleGameStart = (ws, rooms, data) => {
   // created before and still in use. So we return "You can't create a room with
   // that id".
   if (rooms.has(data.roomId)) {
-    if (data.userId == rooms.get(data.roomId).data.userId) {
-      ws.send(
-        JSON.stringify({
-          type: "ERROR",
-          message: "Game has already started!",
-        })
-      );
-    } else {
-      handleGameStartForNonHost(ws, rooms, data);
+    const gameState = rooms.get(data.roomId)?.gameState;
+    if (
+      gameState != "GAME_NOT_STARTED" ||
+      gameState === "GAME_ENDED" ||
+      gameState === undefined ||
+      gameState === null
+    ) {
+      if (data.userId == rooms.get(data.roomId).data.userId) {
+        ws.send(
+          JSON.stringify({
+            type: "ERROR",
+            message: "Game has already started!",
+          })
+        );
+      } else {
+        handleGameStartForNonHost(ws, rooms, data);
+      }
+      return;
     }
-    return;
   }
 
   const time1 = new Date();
@@ -124,15 +128,39 @@ const handleGameStart = (ws, rooms, data) => {
     handleAnswerRoundTimesUp(ws, rooms, data);
   }, duration);
 
+  const room = rooms.get(data.roomId);
+  const roomData = room ? room.data : {};
+
+  // room.gameStat = "GAME_STARTED";
+  // room.timerId = timerId;
+  // roomData.startTime = time1;
+  // roomData.endTime = time2;
+
   rooms.set(data.roomId, {
     timerId: timerId,
     data: {
       ...data,
+      ...roomData,
       startTime: time1,
       endTime: time2,
     },
     gameState: "GAME_STARTED",
   });
+
+  console.log(rooms);
+
+  // Let other players know that the host has started the game
+  if ("players" in roomData) {
+    for (const player of roomData.players) {
+      player.send(
+        JSON.stringify({
+          type: "GAME_STARTED_BY_HOST",
+          room: data.roomId,
+          message: "Game started by the host",
+        })
+      );
+    }
+  }
 
   ws.send(
     JSON.stringify({
@@ -246,12 +274,37 @@ const handleGameStatus = (ws, rooms, data) => {
   }
 };
 
+const handleRoomJoin = (ws, rooms, data) => {
+  if (!rooms.has(data.roomId)) {
+    rooms.set(data.roomId, {
+      data: {},
+      gameState: "GAME_NOT_STARTED",
+    });
+  }
+  const roomData = rooms.get(data.roomId).data;
+  if (!("players" in roomData)) {
+    roomData["players"] = [ws];
+  } else {
+    roomData["players"].push(ws);
+  }
+  ws.send(
+    JSON.stringify({
+      type: "JOINED_TO_ROOM",
+      status: roomData.gameState,
+    })
+  );
+};
+
 const messageHandler = (ws, rooms) => {
   function incoming(msg) {
     console.log(`Message received: ${msg}`);
     const data = JSON.parse(msg);
 
     switch (data.type) {
+      case "JOIN_ROOM": {
+        handleRoomJoin(ws, rooms, data);
+        break;
+      }
       case "GAME_START": {
         handleGameStart(ws, rooms, data);
         break;
