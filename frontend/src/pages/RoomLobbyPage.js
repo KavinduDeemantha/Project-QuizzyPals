@@ -29,6 +29,7 @@ const RoomLobbyPage = () => {
 
   const [error, setError] = useState(null);
   const [startDialogVisible, setStartDialogVisible] = useState(false);
+  const [saveGameData, setSaveGameData] = useState(false);
   const [gameDurationSeconds, setGameDurationSeconds] = useState(0);
   const [gameDurationMinutes, setGameDurationMinutes] = useState(0);
   const roomContext = useRoomContext();
@@ -46,6 +47,10 @@ const RoomLobbyPage = () => {
       Authorization: `Bearer ${user.userJWT}`,
       "Content-Type": "application/json",
     },
+  };
+
+  const handleSaveDataSwitch = (e) => {
+    setSaveGameData(e.target.checked);
   };
 
   const handleSetGameDurationSeconds = (val) => {
@@ -133,6 +138,7 @@ const RoomLobbyPage = () => {
     const gameData = {
       userId: user.userId,
       roomId: room.roomId,
+      saveData: saveGameData,
       durationHours: 0,
       durationMinutes: gameDurationMinutes,
       durationSeconds: gameDurationSeconds,
@@ -267,7 +273,13 @@ const RoomLobbyPage = () => {
           onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
         />
         <FormControlLabel
-          control={<Switch defaultChecked />}
+          control={
+            <Switch
+              checked={saveGameData}
+              onChange={handleSaveDataSwitch}
+              defaultChecked
+            />
+          }
           label="Save Data"
         />
         <ButtonComponent label={"Start Game"} onClick={(e) => startGame()} />

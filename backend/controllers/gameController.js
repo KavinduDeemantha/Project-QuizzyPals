@@ -16,7 +16,8 @@ const _getQuizzesByRoom = async (roomId) => {
 };
 
 const startGame = async (req, res) => {
-  const { userId, durationHours, durationMinutes, durationSeconds } = req.body;
+  const { userId, saveData, durationHours, durationMinutes, durationSeconds } =
+    req.body;
 
   try {
     const user = await User.findOne({ userId: userId });
@@ -50,6 +51,12 @@ const startGame = async (req, res) => {
       throw Error("Durations should be integer values");
     }
 
+    if (room.saveData != undefined && room.saveData != null) {
+      if (room.saveData === false) {
+        await Quiz.deleteMany({ roomId: room.roomId });
+      }
+    }
+
     room.gameStart = Date.now();
     const endsAt = new Date();
     endsAt.setHours(room.gameStart.getHours() + parseInt(durationHours));
@@ -57,6 +64,7 @@ const startGame = async (req, res) => {
     endsAt.setSeconds(room.gameStart.getSeconds() + parseInt(durationSeconds));
     room.gameEnd = endsAt;
     room.gameRound = room.gameRound ? room.gameRound + 1 : 1;
+    room.saveData = saveData;
     await room.save();
 
     room.host = user.email;
