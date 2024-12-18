@@ -21,6 +21,10 @@ const roomSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
+  answerRoundEnd: {
+    type: Date,
+    required: false,
+  },
   saveData: {
     type: Boolean,
     required: false,

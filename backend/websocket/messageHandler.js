@@ -31,8 +31,8 @@ const handleGameStartForNonHost = (ws, rooms, data) => {
       })
     );
 
-    let _time1 = new Date(roomData.startTime);
-    let _time2 = new Date(roomData.endTime);
+    let _time1 = new Date(roomData.endTime);
+    let _time2 = new Date(roomData.endAnswerTime);
     let _duration = _time2 - _time1;
 
     handleAnswerRoundTimesUpNonHost(ws, _duration);
@@ -50,8 +50,8 @@ const handleAnswerRoundTimesUp = (ws, rooms, data) => {
   console.log("Ending answer round...");
   const roomData = rooms.get(data.roomId).data;
 
-  const time1 = new Date(roomData.startTime);
-  const time2 = new Date(roomData.endTime);
+  const time1 = new Date(roomData.endTime);
+  const time2 = new Date(roomData.endAnswerTime);
   const duration = time2 - time1;
 
   setTimeout(() => {
@@ -104,7 +104,12 @@ const handleGameStart = (ws, rooms, data) => {
   time2.setMinutes(time2.getMinutes() + data.durationMinutes);
   time2.setSeconds(time2.getSeconds() + data.durationSeconds);
 
+  const time3 = new Date(time2);
+  time3.setMinutes(time3.getMinutes() + data.answerDurationMinutes);
+  time3.setSeconds(time3.getSeconds() + data.answerDurationSeconds);
+
   const duration = time2 - time1;
+  const duration2 = time3 - time2;
 
   // Start a timer to keep track of the game state. When the time interval is
   // finished we send a ws message to the client to the change its state.
@@ -113,7 +118,7 @@ const handleGameStart = (ws, rooms, data) => {
       JSON.stringify({
         type: "ANSWER_ROUND_STARTED",
         message: "Quiz creation time is up! Now answer quizzes!",
-        duration: duration,
+        duration: duration2,
       })
     );
 
@@ -143,6 +148,7 @@ const handleGameStart = (ws, rooms, data) => {
       ...roomData,
       startTime: time1,
       endTime: time2,
+      endAnswerTime: time3,
     },
     gameState: "GAME_STARTED",
   });

@@ -120,9 +120,9 @@ const SummaryPage = () => {
           <div className="room-code">Room: {room && room.roomId}</div>
           <div className="round-title">SUMMARY</div>
         </div>
-        <div className="summary-right">
+        {/* <div className="summary-right">
           <div className="game-timer">{room && room.gameRound}</div>
-        </div>
+        </div> */}
       </div>
       {currentQuestion ? (
         <div className="questions-main-container">
