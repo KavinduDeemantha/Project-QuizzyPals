@@ -16,8 +16,15 @@ const _getQuizzesByRoom = async (roomId) => {
 };
 
 const startGame = async (req, res) => {
-  const { userId, saveData, durationHours, durationMinutes, durationSeconds } =
-    req.body;
+  const {
+    userId,
+    saveData,
+    answerDurationMinutes,
+    answerDurationSeconds,
+    durationHours,
+    durationMinutes,
+    durationSeconds,
+  } = req.body;
 
   try {
     const user = await User.findOne({ userId: userId });
@@ -53,17 +60,32 @@ const startGame = async (req, res) => {
 
     if (room.saveData != undefined && room.saveData != null) {
       if (room.saveData === false) {
+        const users = await User.find({ roomId: room.roomId });
+
+        for (let user of users) {
+          user.score = 0;
+          await user.save();
+        }
+
         await Quiz.deleteMany({ roomId: room.roomId });
       }
     }
 
     room.gameStart = Date.now();
     const endsAt = new Date();
+    const answerRoundEnds = new Date(endsAt);
     endsAt.setHours(room.gameStart.getHours() + parseInt(durationHours));
     endsAt.setMinutes(room.gameStart.getMinutes() + parseInt(durationMinutes));
     endsAt.setSeconds(room.gameStart.getSeconds() + parseInt(durationSeconds));
     room.gameEnd = endsAt;
     room.gameRound = room.gameRound ? room.gameRound + 1 : 1;
+    answerRoundEnds.setMinutes(
+      room.gameEnd.getMinutes() + parseInt(answerDurationMinutes)
+    );
+    answerRoundEnds.setSeconds(
+      room.gameEnd.getSeconds() + parseInt(answerDurationSeconds)
+    );
+    room.answerRoundEnd = answerRoundEnds;
     room.saveData = saveData;
     await room.save();
 

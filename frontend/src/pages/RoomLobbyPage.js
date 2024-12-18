@@ -31,7 +31,9 @@ const RoomLobbyPage = () => {
   const [startDialogVisible, setStartDialogVisible] = useState(false);
   const [saveGameData, setSaveGameData] = useState(false);
   const [gameDurationSeconds, setGameDurationSeconds] = useState(0);
+  const [gameAnswerDurationSeconds, setGameAnswerDurationSeconds] = useState(0);
   const [gameDurationMinutes, setGameDurationMinutes] = useState(0);
+  const [gameDurationAnswerMinutes, setGameAnswerDurationMinutes] = useState(0);
   const roomContext = useRoomContext();
   const { room } = roomContext;
   const { user } = useAuthContext();
@@ -68,6 +70,23 @@ const RoomLobbyPage = () => {
     }
 
     setGameDurationMinutes(val);
+  };
+
+  const handleSetGameAnswerDurationSeconds = (val) => {
+    val = parseInt(val);
+    if (val < 0 || val > 59) {
+      return;
+    }
+
+    setGameAnswerDurationSeconds(val);
+  };
+  const handleSetGameAnswerDurationMinutes = (val) => {
+    val = parseInt(val);
+    if (val < 0 || val > 59) {
+      return;
+    }
+
+    setGameAnswerDurationMinutes(val);
   };
 
   const getAndSetRoomPlayers = async (roomId) => {
@@ -139,6 +158,8 @@ const RoomLobbyPage = () => {
       userId: user.userId,
       roomId: room.roomId,
       saveData: saveGameData,
+      answerDurationMinutes: gameDurationAnswerMinutes,
+      answerDurationSeconds: gameAnswerDurationSeconds,
       durationHours: 0,
       durationMinutes: gameDurationMinutes,
       durationSeconds: gameDurationSeconds,
@@ -155,7 +176,6 @@ const RoomLobbyPage = () => {
           console.log(response.data);
           if (response.data.message == "Game started") {
             const tmpGameData = gameData;
-            tmpGameData.durationSeconds /= 2;
             const startGameRequest = {
               type: "GAME_START",
               ...tmpGameData,
@@ -271,6 +291,21 @@ const RoomLobbyPage = () => {
           variant="outlined"
           label={"Single round time duration (seconds)"}
           onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
+        />
+        <TextField
+          value={gameDurationAnswerMinutes}
+          type="number"
+          variant="outlined"
+          label={"Single round time answer duration (minutes)"}
+          onChange={(e) => handleSetGameAnswerDurationMinutes(e.target.value)}
+        />
+        <div style={{ marginTop: 20 }}></div>
+        <TextField
+          value={gameAnswerDurationSeconds}
+          type="number"
+          variant="outlined"
+          label={"Single round time answer duration (seconds)"}
+          onChange={(e) => handleSetGameAnswerDurationSeconds(e.target.value)}
         />
         <FormControlLabel
           control={

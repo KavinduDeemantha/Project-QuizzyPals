@@ -182,7 +182,7 @@ const GameAnswerRound = () => {
       <div className="game-round-header">
         <div className="game-round-header-left">
           <div className="room-code">Room: {room && room.roomId}</div>
-          <div className="round-title">Round: {room && room.gameRound}</div>
+          <div className="round-title">Answer Round</div>
         </div>
         <div className="game-round-header-right">
           {gameTime > 0 ? <TimerComponent initialSeconds={gameTime} /> : <></>}

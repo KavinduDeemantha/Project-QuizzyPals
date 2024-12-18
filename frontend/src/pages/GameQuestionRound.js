@@ -8,6 +8,11 @@ import {
   List,
   ListItem,
   ListItemText,
+  RadioGroup,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -22,6 +27,7 @@ import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { useGameContext } from "../hook/useGameContext";
 import { useEffect } from "react";
+import { RadioButtonChecked } from "@mui/icons-material";
 
 const GameQuestionRound = () => {
   const { room } = useRoomContext();
@@ -145,11 +151,15 @@ const GameQuestionRound = () => {
       .then((response) => {
         if (response.status === 200) {
           response = response.data;
+          console.log(response);
           const data =
-            response["content"]["results"]["text__sentiment_analysis"][
-              "results"
-            ][0];
-          const { sentiment, sentiment_rate } = data["items"][0];
+            response["content"]["results"]["text__sentiment_analysis"];
+          if (data["status"] === "failed") {
+            console.error("AI:", data["errors"][0]["type"]);
+            return null;
+          }
+          const results = data["results"][0];
+          const { sentiment, sentiment_rate } = results["items"][0];
 
           return { sentiment, sentiment_rate };
         }
@@ -216,7 +226,7 @@ const GameQuestionRound = () => {
       <div className="game-round-header">
         <div className="game-round-header-left">
           <div className="room-code">Room: {room.roomId}</div>
-          <div className="round-title">Round: {room.gameRound}</div>
+          <div className="round-title">Question Round</div>
         </div>
         <div className="game-round-header-right">
           {gameTime > 0 ? <TimerComponent initialSeconds={gameTime} /> : <></>}
@@ -323,18 +333,45 @@ const GameQuestionRound = () => {
               />
             </div>
             <div className="inner-container-row choice-box">
-              <List>
-                {addedChoices.map((item, i) => {
-                  return (
-                    <ListItem key={i} className="choice-item">
-                      <IconButton onClick={() => removeChoice(i)}>
-                        <RemoveCircleIcon />
-                      </IconButton>
-                      <ListItemText primary={item} />
-                    </ListItem>
-                  );
-                })}
-              </List>
+              <FormControl>
+                <FormLabel id="demo-radio-buttons-group-label">
+                  Gender
+                </FormLabel>
+                <RadioGroup
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  defaultValue="female"
+                  name="radio-buttons-group"
+                >
+                  <List>
+                    {addedChoices.map((item, i) => {
+                      return (
+                        <ListItem key={i} className="choice-item">
+                          <IconButton onClick={() => removeChoice(i)}>
+                            <RemoveCircleIcon />
+                          </IconButton>
+                          <div
+                            style={{
+                              overflowX: "auto",
+                              width: "60%",
+                            }}
+                          >
+                            {item}
+                          </div>
+                          {/* <ListItemText primary={item} /> */}
+                          <FormControlLabel
+                            value={item}
+                            style={{
+                              marginLeft: 5,
+                            }}
+                            control={<Radio />}
+                            // label={"make this correct"}
+                          />
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </RadioGroup>
+              </FormControl>
             </div>
             <div className="margin-top-10">
               <ButtonComponent label={"Done"} onClick={handleDoneClick} />
