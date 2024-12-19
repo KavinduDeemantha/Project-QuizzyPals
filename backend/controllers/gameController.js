@@ -114,14 +114,14 @@ const endGame = async (req, res) => {
       throw Error("The user is not attached a room to end the game");
     }
 
-    if (room.host != user.userId) {
+    if (room.host == user.userId) {
       room.gameEnd = null;
       room.gameStart = null;
       await room.save();
+    } else {
+      user.roomId = null;
+      await user.save();
     }
-
-    user.roomId = "";
-    await user.save();
 
     res.status(StatusCodes.OK).json(room);
   } catch (error) {
