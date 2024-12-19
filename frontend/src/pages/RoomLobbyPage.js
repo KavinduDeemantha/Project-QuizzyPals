@@ -201,7 +201,13 @@ const RoomLobbyPage = () => {
   };
 
   const handleEndGameButton = async (e) => {
-    if (room.host === user.email) {
+    const endGameRequest = {
+      type: "GAME_END",
+      userId: user.userId,
+      roomId: room.roomId,
+    };
+
+    if (room.host !== user.email) {
       await axios
         .get(
           `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
@@ -209,19 +215,25 @@ const RoomLobbyPage = () => {
         )
         .then((response) => {
           if (response.status === 200) {
-            const endGameRequest = {
-              type: "GAME_END",
-              userId: user.userId,
-              roomId: room.roomId,
-            };
-
+            endGameRequest.type = "EXIT_ROOM";
             socket.current.send(JSON.stringify(endGameRequest));
             navigate("/");
           }
         })
         .catch(logError);
     } else {
-      navigate("/");
+      await axios
+        .get(
+          `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
+          requestHeaders
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            socket.current.send(JSON.stringify(endGameRequest));
+            navigate("/");
+          }
+        })
+        .catch(logError);
     }
   };
 
@@ -275,6 +287,9 @@ const RoomLobbyPage = () => {
         );
       } else if (game.type === "JOINED_TO_ROOM") {
         console.log("A new player has joined to the room!");
+        getAndSetRoomPlayers(room.roomId);
+      } else if (game.type === "EXIT_FROM_ROOM") {
+        console.log("A player has left the room!");
         getAndSetRoomPlayers(room.roomId);
       }
     }
