@@ -293,12 +293,15 @@ const handleRoomJoin = (ws, rooms, data) => {
   } else {
     roomData["players"].push(ws);
   }
-  ws.send(
-    JSON.stringify({
-      type: "JOINED_TO_ROOM",
-      status: roomData.gameState,
-    })
-  );
+
+  for (const player of roomData["players"]) {
+    player.send(
+      JSON.stringify({
+        type: "JOINED_TO_ROOM",
+        status: roomData.gameState,
+      })
+    );
+  }
 };
 
 const messageHandler = (ws, rooms) => {
