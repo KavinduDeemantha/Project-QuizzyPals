@@ -165,32 +165,39 @@ const RoomLobbyPage = () => {
       durationSeconds: gameDurationSeconds,
     };
 
-    await axios
-      .post(
-        "http://localhost:4000/api/game/startgame",
-        gameData,
-        requestHeaders
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          console.log(response.data);
-          if (response.data.message == "Game started") {
-            const tmpGameData = gameData;
-            const startGameRequest = {
-              type: "GAME_START",
-              ...tmpGameData,
-            };
+    if (
+      gameData.answerDurationMinutes !== 0 &&
+      gameData.durationMinutes !== 0
+    ) {
+      await axios
+        .post(
+          "http://localhost:4000/api/game/startgame",
+          gameData,
+          requestHeaders
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            console.log(response.data);
+            if (response.data.message === "Game started") {
+              const tmpGameData = gameData;
+              const startGameRequest = {
+                type: "GAME_START",
+                ...tmpGameData,
+              };
 
-            socket.current.send(JSON.stringify(startGameRequest));
-            roomContext.dispatch({
-              type: "ROOM_UPDATE",
-              payload: response.data.room,
-            });
-            navigate("/createquiz");
+              socket.current.send(JSON.stringify(startGameRequest));
+              roomContext.dispatch({
+                type: "ROOM_UPDATE",
+                payload: response.data.room,
+              });
+              navigate("/createquiz");
+            }
           }
-        }
-      })
-      .catch(logError);
+        })
+        .catch(logError);
+    } else {
+      alert("Please select time durations");
+    }
   };
 
   const handleEndGameButton = async (e) => {
@@ -283,6 +290,7 @@ const RoomLobbyPage = () => {
           variant="outlined"
           label={"Single round time duration (minutes)"}
           onChange={(e) => handleSetGameDurationMinutes(e.target.value)}
+          className="startGameDialog"
         />
         <div style={{ marginTop: 20 }}></div>
         <TextField
@@ -291,6 +299,7 @@ const RoomLobbyPage = () => {
           variant="outlined"
           label={"Single round time duration (seconds)"}
           onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
+          className="startGameDialog"
         />
         <TextField
           value={gameDurationAnswerMinutes}
@@ -298,6 +307,7 @@ const RoomLobbyPage = () => {
           variant="outlined"
           label={"Single round time answer duration (minutes)"}
           onChange={(e) => handleSetGameAnswerDurationMinutes(e.target.value)}
+          className="startGameDialog"
         />
         <div style={{ marginTop: 20 }}></div>
         <TextField
@@ -306,6 +316,7 @@ const RoomLobbyPage = () => {
           variant="outlined"
           label={"Single round time answer duration (seconds)"}
           onChange={(e) => handleSetGameAnswerDurationSeconds(e.target.value)}
+          className="startGameDialog"
         />
         <FormControlLabel
           control={
@@ -316,6 +327,7 @@ const RoomLobbyPage = () => {
             />
           }
           label="Save Data"
+          className="saveDataLabel"
         />
         <ButtonComponent label={"Start Game"} onClick={(e) => startGame()} />
       </Dialog>

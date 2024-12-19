@@ -51,3 +51,14 @@
 .lobbyBtn {
   width: 23% !important;
 }
+
+.startGameDialog {
+  padding: 10px !important;
+}
+
+.saveDataLabel {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+}
