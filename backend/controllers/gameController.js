@@ -122,6 +122,9 @@ const endGame = async (req, res) => {
     room.gameStart = null;
     await room.save();
 
+    user.roomId = null;
+    await user.save();
+
     res.status(StatusCodes.OK).json(room);
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });

@@ -107,11 +107,13 @@ const GameQuestionRound = () => {
   };
 
   const handleDoneClick = async (e) => {
-    await submitQuiz(e);
+    alert("Wait for others... 🫷");
+    // await submitQuiz(e);
   };
 
-  const handleGameStateContinueButton = (e) => {
+  const handleGameStateContinueButton = async (e) => {
     if (game.type === "ANSWER_ROUND_STARTED") {
+      await submitQuiz();
       navigate("/answers");
     } else if (game.type === "GAME_ENDED") {
       navigate("/roomlobby");
@@ -349,8 +351,9 @@ const GameQuestionRound = () => {
                             style={{
                               marginLeft: 5,
                             }}
+                            onClick={(e) => setCorrectAnswer(e.target.value)}
                             control={<Radio />}
-                            // label={"make this correct"}
+                            label={"make this correct"}
                           />
                         </ListItem>
                       );
@@ -360,7 +363,11 @@ const GameQuestionRound = () => {
               </FormControl>
             </div>
             <div className="margin-top-10">
-              <ButtonComponent className={"doneBtn"} label={"Done"} onClick={handleDoneClick} />
+              <ButtonComponent
+                className={"doneBtn"}
+                label={"Done"}
+                onClick={handleDoneClick}
+              />
             </div>
             <div className="lobby-btn-container">
               <Button

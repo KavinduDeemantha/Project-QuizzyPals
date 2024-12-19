@@ -273,6 +273,9 @@ const RoomLobbyPage = () => {
         alert(
           "Host has started the game click on `START GAME` to join the game!"
         );
+      } else if (game.type === "JOINED_TO_ROOM") {
+        console.log("A new player has joined to the room!");
+        getAndSetRoomPlayers(room.roomId);
       }
     }
   }, [game]);
@@ -284,40 +287,42 @@ const RoomLobbyPage = () => {
         open={startDialogVisible}
       >
         <DialogTitle>Start game settings</DialogTitle>
-        <TextField
-          value={gameDurationMinutes}
-          type="number"
-          variant="outlined"
-          label={"Single round time duration (minutes)"}
-          onChange={(e) => handleSetGameDurationMinutes(e.target.value)}
-          className="startGameDialog"
-        />
-        <div style={{ marginTop: 20 }}></div>
-        <TextField
-          value={gameDurationSeconds}
-          type="number"
-          variant="outlined"
-          label={"Single round time duration (seconds)"}
-          onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
-          className="startGameDialog"
-        />
-        <TextField
-          value={gameDurationAnswerMinutes}
-          type="number"
-          variant="outlined"
-          label={"Single round time answer duration (minutes)"}
-          onChange={(e) => handleSetGameAnswerDurationMinutes(e.target.value)}
-          className="startGameDialog"
-        />
-        <div style={{ marginTop: 20 }}></div>
-        <TextField
-          value={gameAnswerDurationSeconds}
-          type="number"
-          variant="outlined"
-          label={"Single round time answer duration (seconds)"}
-          onChange={(e) => handleSetGameAnswerDurationSeconds(e.target.value)}
-          className="startGameDialog"
-        />
+        <div style={{ display: "flex" }}>
+          <TextField
+            value={gameDurationMinutes}
+            type="number"
+            variant="outlined"
+            label={"Question Round Duration (minutes)"}
+            onChange={(e) => handleSetGameDurationMinutes(e.target.value)}
+            className="startGameDialog"
+          />
+          {/* <TextField
+            value={gameDurationSeconds}
+            type="number"
+            variant="outlined"
+            label={"Single round time duration (seconds)"}
+            onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
+            className="startGameDialog"
+          /> */}
+        </div>
+        <div style={{ display: "flex" }}>
+          <TextField
+            value={gameDurationAnswerMinutes}
+            type="number"
+            variant="outlined"
+            label={"Answer Round Duration (minutes)"}
+            onChange={(e) => handleSetGameAnswerDurationMinutes(e.target.value)}
+            className="startGameDialog"
+          />
+          {/* <TextField
+            value={gameAnswerDurationSeconds}
+            type="number"
+            variant="outlined"
+            label={"Single round time answer duration (seconds)"}
+            onChange={(e) => handleSetGameAnswerDurationSeconds(e.target.value)}
+            className="startGameDialog"
+          /> */}
+        </div>
         <FormControlLabel
           control={
             <Switch
@@ -360,6 +365,13 @@ const RoomLobbyPage = () => {
             ) : (
               <></>
             )}
+            <div className="end-btn lobbyBtnContainer">
+              <ButtonComponent
+                className={"lobbyBtn"}
+                label={"How to Play?"}
+                onClick={() => {}}
+              />
+            </div>
             {error && <div className="error-message">{error}</div>}
           </div>
         </Grid>
