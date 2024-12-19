@@ -62,10 +62,6 @@ const SignInPage = () => {
             value={password}
             onChange={(evt) => setPassword(evt.target.value)}
           />
-
-          <div className="margin-top-10">
-            <Link href="#">Forgot password?</Link>
-          </div>
         </div>
 
         <div className="continue-btn">

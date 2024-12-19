@@ -86,11 +86,6 @@
   flex-direction: column;
 }
 
-.choice-box .choice-item {
-  text-align: left;
-  margin-left: 5vw;
-}
-
 .topic-label {
   font-size: 24px;
 }

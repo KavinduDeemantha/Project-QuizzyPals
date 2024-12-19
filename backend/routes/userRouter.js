@@ -25,4 +25,6 @@ router.delete("/:email", deleteUser);
 // Get user room id
 router.get("/roomid/:email", getUserRoomId);
 
+router.get("/", getUserRoomId);
+
 module.exports = router;

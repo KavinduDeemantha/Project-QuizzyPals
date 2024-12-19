@@ -23,6 +23,7 @@ const WelcomePage = () => {
   const [roomCode, setRoomCode] = useState("");
   const [joinWithRoom, setJoinWithRoom] = useState(false);
   const roomContext = useRoomContext();
+  const [roomId, setRoomId] = useState(null);
 
   const [error, setError] = useState(null);
 
@@ -130,10 +131,37 @@ const WelcomePage = () => {
     window.location.reload();
   };
 
+  const getRoomId = async (e) => {
+    const requestHeaders = {
+      headers: {
+        Authorization: `Bearer ${user.userJWT}`,
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/users/roomid/${user.email}`,
+        requestHeaders
+      );
+      console.log(response);
+      if (response.status === 200) {
+        console.log(response);
+        setRoomId(response.data.roomId);
+      } else {
+        console.log("error")
+
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   // Redirect to / if no user is logged in
   useEffect(() => {
     if (!user) {
       navigate("/signin");
+    } else {
+      getRoomId();
     }
   }, [user, navigate]);
 
@@ -149,6 +177,11 @@ const WelcomePage = () => {
           <div className="page-title-container">
             <div className="page-title">WELCOME</div>
             <div className="sub-title">{user.email}</div>
+            <h3 className="roomID">
+              {roomId
+                ? `You already have a room: Room ID = ${roomId}`
+                : ""}
+            </h3>
             {joinWithRoom ? (
               <>
                 <FormInputComponent
