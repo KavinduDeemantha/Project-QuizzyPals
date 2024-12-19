@@ -334,15 +334,12 @@ const GameQuestionRound = () => {
             </div>
             <div className="inner-container-row choice-box">
               <FormControl>
-                <FormLabel id="demo-radio-buttons-group-label">
-                  Gender
-                </FormLabel>
                 <RadioGroup
                   aria-labelledby="demo-radio-buttons-group-label"
                   defaultValue="female"
                   name="radio-buttons-group"
                 >
-                  <List>
+                  <List className="answer-list">
                     {addedChoices.map((item, i) => {
                       return (
                         <ListItem key={i} className="choice-item">

@@ -56,8 +56,10 @@
 }
 
 .choice-box .choice-item {
+  width: 100%;
   text-align: left;
-  margin-left: 5vw;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .topic-label {
@@ -151,4 +153,8 @@
 
 .lobby-btn-container {
   margin-top: 1rem;
+}
+
+.answer-list {
+  width: 100%;
 }

@@ -29,7 +29,7 @@ const SignUpPage = () => {
     e.preventDefault();
 
     if (password != confirmPassword) {
-      alert("Password you entered do not match with the confirm password");
+      alert("Passwords did not match. Please re-enter");
       return;
     } else {
       const userData = {

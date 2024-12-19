@@ -87,6 +87,9 @@ const deleteRoomByUserId = async (req, res) => {
       throw Error("You cannot delete room if host is not you");
     }
 
+    host.roomId = "";
+    await host.save();
+
     const deleted = await Room.findOneAndDelete({ roomId: room.roomId });
 
     if (!deleted) {
