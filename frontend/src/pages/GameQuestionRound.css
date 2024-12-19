@@ -82,7 +82,7 @@
 }
 
 .lobby-btn {
-  width: 100px;
+  width: 10% !important;
   position: fixed;
 }
 
@@ -157,4 +157,8 @@
 
 .answer-list {
   width: 100%;
+}
+
+.doneBtn {
+  width: 10% !important;
 }

@@ -315,17 +315,6 @@ const GameQuestionRound = () => {
                 )}
               </div>
             </div>
-            <div>
-              {/* <div className="inner-container-row correct-answer"> */}
-              Expected Correct Answer:
-              <TextField
-                className="correct-answer-text"
-                variant="standard"
-                value={correctAnswer}
-                onChange={(e) => setCorrectAnswer(e.target.value)}
-              />
-              {/* <p className="correct-answer-text"></p> */}
-            </div>
             <div className="inner-container-row">
               <ButtonComponent
                 label={"+ Add New Choice"}
@@ -371,7 +360,7 @@ const GameQuestionRound = () => {
               </FormControl>
             </div>
             <div className="margin-top-10">
-              <ButtonComponent label={"Done"} onClick={handleDoneClick} />
+              <ButtonComponent className={"doneBtn"} label={"Done"} onClick={handleDoneClick} />
             </div>
             <div className="lobby-btn-container">
               <Button
