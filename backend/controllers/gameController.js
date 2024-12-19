@@ -115,14 +115,12 @@ const endGame = async (req, res) => {
     }
 
     if (room.host != user.userId) {
-      throw Error("Only the host can end the game");
+      room.gameEnd = null;
+      room.gameStart = null;
+      await room.save();
     }
 
-    room.gameEnd = null;
-    room.gameStart = null;
-    await room.save();
-
-    user.roomId = null;
+    user.roomId = "";
     await user.save();
 
     res.status(StatusCodes.OK).json(room);

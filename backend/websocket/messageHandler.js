@@ -304,6 +304,34 @@ const handleRoomJoin = (ws, rooms, data) => {
   }
 };
 
+const handleRoomExit = (ws, rooms, data) => {
+  if (!rooms.has(data.roomId)) {
+    rooms.set(data.roomId, {
+      data: {},
+      gameState: "GAME_NOT_STARTED",
+    });
+  }
+  const roomData = rooms.get(data.roomId).data;
+  if ("players" in roomData) {
+    let n = roomData["players"].length;
+    for (let i = 0; i < n; i++) {
+      if (roomData["players"][i] === ws) {
+        roomData["players"].splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  for (const player of roomData["players"]) {
+    player.send(
+      JSON.stringify({
+        type: "EXIT_FROM_ROOM",
+        status: roomData.gameState,
+      })
+    );
+  }
+};
+
 const messageHandler = (ws, rooms) => {
   function incoming(msg) {
     console.log(`Message received: ${msg}`);
@@ -312,6 +340,10 @@ const messageHandler = (ws, rooms) => {
     switch (data.type) {
       case "JOIN_ROOM": {
         handleRoomJoin(ws, rooms, data);
+        break;
+      }
+      case "EXIT_ROOM": {
+        handleRoomExit(ws, rooms, data);
         break;
       }
       case "GAME_START": {
