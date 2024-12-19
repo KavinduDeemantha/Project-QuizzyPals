@@ -149,6 +149,35 @@ const RoomLobbyPage = () => {
     }
   };
 
+  const startGameRequest = async (gameData) => {
+    await axios
+      .post(
+        "http://localhost:4000/api/game/startgame",
+        gameData,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response.data);
+          if (response.data.message === "Game started") {
+            const tmpGameData = gameData;
+            const startGameRequest = {
+              type: "GAME_START",
+              ...tmpGameData,
+            };
+
+            socket.current.send(JSON.stringify(startGameRequest));
+            roomContext.dispatch({
+              type: "ROOM_UPDATE",
+              payload: response.data.room,
+            });
+            navigate("/createquiz");
+          }
+        }
+      })
+      .catch(logError);
+  };
+
   const startGame = async () => {
     // This is because if gameContext keeps previous game states as a cleaning
     // step we clear the payload
@@ -169,34 +198,13 @@ const RoomLobbyPage = () => {
       gameData.answerDurationMinutes !== 0 &&
       gameData.durationMinutes !== 0
     ) {
-      await axios
-        .post(
-          "http://localhost:4000/api/game/startgame",
-          gameData,
-          requestHeaders
-        )
-        .then((response) => {
-          if (response.status === 200) {
-            console.log(response.data);
-            if (response.data.message === "Game started") {
-              const tmpGameData = gameData;
-              const startGameRequest = {
-                type: "GAME_START",
-                ...tmpGameData,
-              };
-
-              socket.current.send(JSON.stringify(startGameRequest));
-              roomContext.dispatch({
-                type: "ROOM_UPDATE",
-                payload: response.data.room,
-              });
-              navigate("/createquiz");
-            }
-          }
-        })
-        .catch(logError);
+      await startGameRequest(gameData);
     } else {
-      alert("Please select time durations");
+      if (room.host === user.email) {
+        alert("Please select time durations");
+      } else {
+        await startGameRequest(gameData);
+      }
     }
   };
 
