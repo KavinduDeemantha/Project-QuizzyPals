@@ -249,7 +249,15 @@ const getPlayerQandA = async (req, res) => {
       questionAndAnswer["questionAndAnswer"] = JSON.parse(
         player.questionAnswer
       );
+
+      // TODO: what if two players create the same question with different answers?
+      const quiz = await Quiz.findOne({
+        quizQuestion: Object.keys(questionAndAnswer["questionAndAnswer"])[0],
+      });
       questionAndAnswer["answeredBy"] = player.email;
+
+      const creator = await _getUserById(quiz.userId);
+      questionAndAnswer["createdBy"] = creator.email;
       response.push(questionAndAnswer);
     }
 
