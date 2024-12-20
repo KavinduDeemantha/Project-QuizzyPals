@@ -75,7 +75,7 @@ const WelcomePage = () => {
         if (checkedIn) {
           const gameData = {
             userId: user.userId,
-            roomId: roomCode,
+            roomId: response.data.roomId,
           };
 
           const joinRoomRequest = {
