@@ -93,7 +93,7 @@ const SummaryPage = () => {
       });
   };
 
-  // Sample questions data
+  // Sample questions datas
   // const questions = [
   //   {
   //     owner: "Owner 1",
@@ -161,7 +161,7 @@ const SummaryPage = () => {
           <div className="round-title">SUMMARY</div>
         </div>
         {/* <div className="summary-right">
-          <div className="game-timer">{room && room.gameRound}</div> 
+          <div className="game-timer">{room && room.gameRound}</div>
         </div> */}
       </div>
       {currentQuestion ? (
