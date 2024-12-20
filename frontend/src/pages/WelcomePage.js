@@ -73,6 +73,17 @@ const WelcomePage = () => {
       if (response.status === 201) {
         const checkedIn = await roomCheckIn.checkin(user, response.data);
         if (checkedIn) {
+          const gameData = {
+            userId: user.userId,
+            roomId: roomCode,
+          };
+
+          const joinRoomRequest = {
+            type: "JOIN_ROOM",
+            ...gameData,
+          };
+
+          socket.current.send(JSON.stringify(joinRoomRequest));
           navigate("/roomlobby");
         } else {
           setError(roomCheckIn.error);
@@ -148,8 +159,7 @@ const WelcomePage = () => {
         console.log(response);
         setRoomId(response.data.roomId);
       } else {
-        console.log("error")
-
+        console.log("error");
       }
     } catch (e) {
       console.log(e);
@@ -178,9 +188,7 @@ const WelcomePage = () => {
             <div className="page-title">WELCOME</div>
             <div className="sub-title">{user.email}</div>
             <h3 className="roomID">
-              {roomId
-                ? `You already have a room: Room ID = ${roomId}`
-                : ""}
+              {roomId ? `You already have a room: Room ID = ${roomId}` : ""}
             </h3>
             {joinWithRoom ? (
               <>
