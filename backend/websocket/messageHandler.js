@@ -155,6 +155,12 @@ const handleGameStart = (ws, rooms, data) => {
     gameState: "GAME_STARTED",
   });
 
+  if (!("players" in roomData)) {
+    roomData["players"] = [ws];
+  } else {
+    roomData["players"].push(ws);
+  }
+
   console.log(rooms);
 
   // Let other players know that the host has started the game
