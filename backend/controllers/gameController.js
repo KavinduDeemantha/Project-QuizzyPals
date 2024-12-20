@@ -280,7 +280,7 @@ const submitAnswers = async (req, res) => {
     }
 
     const startTime = new Date();
-    const endTime = room.gameEnd;
+    const endTime = room.answerRoundEnd;
     const duration = endTime - startTime;
 
     if (duration > 0) {
