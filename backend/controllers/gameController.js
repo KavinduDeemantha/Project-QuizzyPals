@@ -245,9 +245,12 @@ const getPlayerQandA = async (req, res) => {
         continue;
       }
 
-      let content = JSON.parse(player.questionAnswer);
-      content.user = player.email;
-      response.push(content);
+      const questionAndAnswer = {};
+      questionAndAnswer["questionAndAnswer"] = JSON.parse(
+        player.questionAnswer
+      );
+      questionAndAnswer["answeredBy"] = player.email;
+      response.push(questionAndAnswer);
     }
 
     res.status(StatusCodes.OK).json(response);
