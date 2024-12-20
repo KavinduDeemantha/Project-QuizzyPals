@@ -8,6 +8,7 @@ const {
   getQuizzes,
   submitAnswers,
   getTimeRemaining,
+  getPlayerQandA,
 } = require("../controllers/gameController");
 
 const router = express.Router();
@@ -25,6 +26,8 @@ router.get("/endgame/:userId", endGame);
 
 // Get quizzes by room id
 router.get("/getquizzes/:userId", getQuizzes);
+
+router.get("/get-all-player-answers/:roomId", getPlayerQandA);
 
 router.post("/submitanswers", submitAnswers);
 

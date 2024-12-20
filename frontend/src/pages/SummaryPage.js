@@ -26,7 +26,6 @@ const SummaryPage = () => {
   };
 
   const getAndSetQuestions = async () => {
-    console.log(playerAnswers);
     await axios
       .get(
         `${process.env.REACT_APP_BASE_URL}/api/game/getquizzes/${user.userId}`,
@@ -52,9 +51,24 @@ const SummaryPage = () => {
         console.error(error);
         setError(error);
       });
+
+    await axios
+      .get(
+        `${process.env.REACT_APP_BASE_URL}/api/game/get-all-player-answers/${room.roomId}`,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          console.log("all player answers", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error(error.message);
+        setError(error);
+      });
   };
 
-  // Sample questions data
+  // Sample questions datas
   // const questions = [
   //   {
   //     owner: "Owner 1",
@@ -121,7 +135,7 @@ const SummaryPage = () => {
           <div className="round-title">SUMMARY</div>
         </div>
         {/* <div className="summary-right">
-          <div className="game-timer">{room && room.gameRound}</div>
+          <div className="game-timer">{room && room.gameRound}</div> 
         </div> */}
       </div>
       {currentQuestion ? (
@@ -139,7 +153,7 @@ const SummaryPage = () => {
             </div>
             <div className="question-inner-container">
               <div className="inner-container-row question-text">
-                Question Owner: {currentQuestion.owner}
+                Answered by: {currentQuestion.owner}
               </div>
               <div className="questions margin-top-10">
                 {currentQuestion.question}
