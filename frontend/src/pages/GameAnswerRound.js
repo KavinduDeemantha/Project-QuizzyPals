@@ -96,11 +96,11 @@ const GameAnswerRound = () => {
         if (response.status === 200) {
           console.log("Answer submitted successfully!");
         } else {
-          console.log(response);
+          // console.log(response);
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setError(error);
       });
   };
@@ -139,7 +139,7 @@ const GameAnswerRound = () => {
   useEffect(() => {
     if (game) {
       if (game.type === "ANSWER_ROUND_STARTED") {
-        console.log("Timer should work now!");
+        // console.log("Timer should work now!");
         setGameTime(Math.floor(game.duration / 1000));
       } else if (game.type === "GAME_ENDED") {
         setGameStateMessage({ title: game.type, message: game.message });

@@ -71,7 +71,7 @@ const startGame = async (req, res) => {
       }
     }
 
-    room.gameStart = Date.now();
+    room.gameStart = new Date();
     const endsAt = new Date();
     const answerRoundEnds = new Date(endsAt);
     endsAt.setHours(room.gameStart.getHours() + parseInt(durationHours));
@@ -79,6 +79,7 @@ const startGame = async (req, res) => {
     endsAt.setSeconds(room.gameStart.getSeconds() + parseInt(durationSeconds));
     room.gameEnd = endsAt;
     room.gameRound = room.gameRound ? room.gameRound + 1 : 1;
+
     answerRoundEnds.setMinutes(
       room.gameEnd.getMinutes() + parseInt(answerDurationMinutes)
     );
@@ -95,7 +96,6 @@ const startGame = async (req, res) => {
 
     res.status(StatusCodes.OK).json(responseEntity);
   } catch (error) {
-    console.log(error);
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
@@ -148,7 +148,9 @@ const createQuiz = async (req, res) => {
       throw Error("Game is not started yet!");
     }
 
-    if (room.gameEnd < Date.now()) {
+    const nowDate = new Date();
+    const gameEndsAt = new Date(room.gameEnd);
+    if (gameEndsAt < nowDate) {
       throw Error("Quiz creation time is up!");
     }
 
@@ -218,6 +220,44 @@ const getQuizzes = async (req, res) => {
   }
 };
 
+const getPlayerQandA = async (req, res) => {
+  const roomId = req.params.roomId;
+
+  try {
+    if (!roomId) {
+      throw Error("Please provide your roomId!");
+    }
+
+    const room = await _getRoomById(roomId);
+
+    if (!room) {
+      throw Error("There is no active room with this id: ", roomId);
+    }
+
+    const players = await User.find(
+      { roomId },
+      { userId: 0, password: 0, score: 0, roomId: 0 }
+    );
+
+    const response = [];
+    for (const player of players) {
+      if (!player.questionAnswer) {
+        continue;
+      }
+
+      let content = JSON.parse(player.questionAnswer);
+      content.user = player.email;
+      response.push(content);
+    }
+
+    res.status(StatusCodes.OK).json(response);
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
 const submitAnswers = async (req, res) => {
   const { userId, answers } = req.body;
 
@@ -241,7 +281,7 @@ const submitAnswers = async (req, res) => {
     }
 
     const startTime = new Date();
-    const endTime = room.gameEnd;
+    const endTime = room.answerRoundEnd;
     const duration = endTime - startTime;
 
     if (duration > 0) {
@@ -259,6 +299,7 @@ const submitAnswers = async (req, res) => {
         }
       }
 
+      user.questionAnswer = JSON.stringify(Object.fromEntries(answerMap));
       await user.save();
     } else {
       res.status(StatusCodes.BAD_REQUEST).json({ message: "Times up!" });
@@ -315,4 +356,5 @@ module.exports = {
   getQuizzes,
   submitAnswers,
   getTimeRemaining,
+  getPlayerQandA,
 };

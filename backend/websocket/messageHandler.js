@@ -108,7 +108,9 @@ const handleGameStart = (ws, rooms, data) => {
   time3.setMinutes(time3.getMinutes() + data.answerDurationMinutes);
   time3.setSeconds(time3.getSeconds() + data.answerDurationSeconds);
 
+  // Quiz creation duration
   const duration = time2 - time1;
+  // Answering duration
   const duration2 = time3 - time2;
 
   // Start a timer to keep track of the game state. When the time interval is
@@ -152,6 +154,12 @@ const handleGameStart = (ws, rooms, data) => {
     },
     gameState: "GAME_STARTED",
   });
+
+  if (!("players" in roomData)) {
+    roomData["players"] = [ws];
+  } else {
+    roomData["players"].push(ws);
+  }
 
   console.log(rooms);
 
