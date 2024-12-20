@@ -255,6 +255,7 @@ const getPlayerQandA = async (req, res) => {
         quizQuestion: Object.keys(questionAndAnswer["questionAndAnswer"])[0],
       });
       questionAndAnswer["answeredBy"] = player.email;
+      questionAndAnswer["correctAnswer"] = quiz.correctAnswer;
 
       const creator = await _getUserById(quiz.userId);
       questionAndAnswer["createdBy"] = creator.email;
