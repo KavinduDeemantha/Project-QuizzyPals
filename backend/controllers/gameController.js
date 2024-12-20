@@ -191,7 +191,7 @@ const getQuizzes = async (req, res) => {
 
     const quizzes = await _getQuizzesByRoom(room.roomId);
 
-    if (room.gameEnd < Date.now()) {
+    if (room.answerRoundEnd < Date.now()) {
       // A player is trying to access quizzes before the game ended (so correct answer is not there)
       for (let quiz of quizzes) {
         if (quiz.userId != user.userId) {
