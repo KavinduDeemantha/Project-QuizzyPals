@@ -220,6 +220,7 @@ const RoomLobbyPage = () => {
     };
 
     if (room.host !== user.email) {
+      // I am not the host
       await axios
         .get(
           `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
@@ -235,6 +236,7 @@ const RoomLobbyPage = () => {
         })
         .catch(logError);
     } else {
+      // I am the host
       await axios
         .get(
           `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
