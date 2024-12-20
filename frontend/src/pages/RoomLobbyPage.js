@@ -166,6 +166,9 @@ const RoomLobbyPage = () => {
               ...tmpGameData,
             };
 
+            startGameRequest.answerDurationSeconds -= 5;
+            startGameRequest.durationSeconds -= 5;
+
             socket.current.send(JSON.stringify(startGameRequest));
             roomContext.dispatch({
               type: "ROOM_UPDATE",
@@ -188,15 +191,16 @@ const RoomLobbyPage = () => {
       roomId: room.roomId,
       saveData: saveGameData,
       answerDurationMinutes: gameDurationAnswerMinutes,
-      answerDurationSeconds: gameAnswerDurationSeconds,
+      answerDurationSeconds: gameAnswerDurationSeconds + 5,
       durationHours: 0,
       durationMinutes: gameDurationMinutes,
-      durationSeconds: gameDurationSeconds,
+      durationSeconds: gameDurationSeconds + 5,
     };
 
     if (
-      gameData.answerDurationMinutes !== 0 &&
-      gameData.durationMinutes !== 0
+      (gameData.answerDurationMinutes !== 0 ||
+        gameData.answerDurationSeconds !== 0) &&
+      (gameData.durationMinutes !== 0 || gameData.answerDurationSeconds !== 0)
     ) {
       await startGameRequest(gameData);
     } else {
@@ -225,6 +229,7 @@ const RoomLobbyPage = () => {
           if (response.status === 200) {
             endGameRequest.type = "EXIT_ROOM";
             socket.current.send(JSON.stringify(endGameRequest));
+            endGameRequest.type = "GAME_END";
             navigate("/");
           }
         })
@@ -319,14 +324,14 @@ const RoomLobbyPage = () => {
             onChange={(e) => handleSetGameDurationMinutes(e.target.value)}
             className="startGameDialog"
           />
-          {/* <TextField
+          <TextField
             value={gameDurationSeconds}
             type="number"
             variant="outlined"
             label={"Single round time duration (seconds)"}
             onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
             className="startGameDialog"
-          /> */}
+          />
         </div>
         <div style={{ display: "flex" }}>
           <TextField
@@ -337,14 +342,14 @@ const RoomLobbyPage = () => {
             onChange={(e) => handleSetGameAnswerDurationMinutes(e.target.value)}
             className="startGameDialog"
           />
-          {/* <TextField
+          <TextField
             value={gameAnswerDurationSeconds}
             type="number"
             variant="outlined"
             label={"Single round time answer duration (seconds)"}
             onChange={(e) => handleSetGameAnswerDurationSeconds(e.target.value)}
             className="startGameDialog"
-          /> */}
+          />
         </div>
         <FormControlLabel
           control={

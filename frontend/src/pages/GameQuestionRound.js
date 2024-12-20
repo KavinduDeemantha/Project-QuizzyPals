@@ -113,7 +113,6 @@ const GameQuestionRound = () => {
 
   const handleGameStateContinueButton = async (e) => {
     if (game.type === "ANSWER_ROUND_STARTED") {
-      await submitQuiz();
       navigate("/answers");
     } else if (game.type === "GAME_ENDED") {
       navigate("/roomlobby");
@@ -214,6 +213,7 @@ const GameQuestionRound = () => {
       if (game.type === "GAME_STARTED") {
         setGameTime(Math.floor(game.duration / 1000));
       } else if (game.type === "ANSWER_ROUND_STARTED") {
+        submitQuiz();
         setGameStateMessage({ title: game.type, message: game.message });
         setGameStateMessageVisible(true);
       } else if (game.type === "GAME_ENDED") {
