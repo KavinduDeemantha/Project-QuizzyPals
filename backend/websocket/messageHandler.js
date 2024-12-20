@@ -1,4 +1,6 @@
-const handleAnswerRoundTimesUpNonHost = (ws, duration) => {
+const handleAnswerRoundTimesUpNonHost = (ws, duration, timerId) => {
+  clearTimeout(timerId);
+
   setTimeout(() => {
     ws.send(
       JSON.stringify({
@@ -15,8 +17,10 @@ const handleGameStartForNonHost = (ws, rooms, data) => {
   const roomData = rooms.get(data.roomId).data;
   const time1 = new Date();
   const time2 = new Date(roomData.endTime);
+  const time3 = new Date(roomData.endAnswerTime);
 
   const duration = time2 - time1;
+  const duration2 = time3 - time2;
 
   const timerId = setTimeout(() => {
     if (!rooms.has(data.roomId)) {
@@ -27,15 +31,11 @@ const handleGameStartForNonHost = (ws, rooms, data) => {
       JSON.stringify({
         type: "ANSWER_ROUND_STARTED",
         message: "Quiz creation time is up! Now answer quizzes!",
-        duration: duration,
+        duration: duration2,
       })
     );
 
-    let _time1 = new Date(roomData.endTime);
-    let _time2 = new Date(roomData.endAnswerTime);
-    let _duration = _time2 - _time1;
-
-    handleAnswerRoundTimesUpNonHost(ws, _duration);
+    handleAnswerRoundTimesUpNonHost(ws, duration2, timerId);
   }, duration);
 
   ws.send(
