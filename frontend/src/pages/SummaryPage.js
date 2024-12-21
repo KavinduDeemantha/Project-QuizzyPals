@@ -161,7 +161,7 @@ const SummaryPage = () => {
           <div className="round-title">SUMMARY</div>
         </div>
         {/* <div className="summary-right">
-          <div className="game-timer">{room && room.gameRound}</div> 
+          <div className="game-timer">{room && room.gameRound}</div>
         </div> */}
       </div>
       {currentQuestion ? (
@@ -172,10 +172,6 @@ const SummaryPage = () => {
           <div className="question-outer-container">
             <div className="topic-label">
               Question {currentQuestionIndex + 1}{" "}
-              {currentQuestion.correctAnswer ===
-              playerAnswers[currentQuestion.question]
-                ? "✅🎉"
-                : "❌"}
             </div>
             <div className="question-inner-container">
               <div className="inner-container-row question-text">
@@ -187,21 +183,24 @@ const SummaryPage = () => {
               <div className="correct-answer">
                 <b>Correct answer: {currentQuestion.correctAnswer}</b>
               </div>
-              {/* <div className="correct-answer">
-                <b>Your answer: {playerAnswers[currentQuestion.question]}</b>
-              </div> */}
               <div className="answer-list-container">
                 {currentQuestion.answers.map((answer, index) => (
                   <div className="answer-list" key={index}>
                     <p>{answer.answeredBy}</p>
                     <div className="user-answer-container">
                       <p>{answer.answer}</p>
+                      {currentQuestion.correctAnswer === answer.answer
+                        ? "✅🎉"
+                        : "❌"}
                     </div>
                   </div>
                 ))}
               </div>
               <div className="margin-top-10">
-                <ButtonComponent label={"Done"} onClick={handleDoneBtn} />
+                <ButtonComponent
+                  label={"leaderboard"}
+                  onClick={handleDoneBtn}
+                />
               </div>
             </div>
           </div>
