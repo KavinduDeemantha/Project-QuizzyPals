@@ -26,40 +26,65 @@ const SummaryPage = () => {
   };
 
   const getAndSetQuestions = async () => {
-    await axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL}/api/game/getquizzes/${user.userId}`,
-        requestHeaders
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          const tmpQAndA = [];
-          for (let qa of response.data) {
-            // Q&A for rendering
-            tmpQAndA.push({
-              owner: user.email,
-              question: qa.question,
-              answers: JSON.parse(qa.answer),
-              correctAnswer: qa.correct || "No correct answer provided",
-            });
-          }
+    // await axios
+    //   .get(
+    //     `${process.env.REACT_APP_BASE_URL}/api/game/getquizzes/${user.userId}`,
+    //     requestHeaders
+    //   )
+    //   .then((response) => {
+    //     if (response.status === 200) {
+    //       const tmpQAndA = [];
+    //       for (let qa of response.data) {
+    //         // Q&A for rendering
+    //         tmpQAndA.push({
+    //           owner: user.email,
+    //           question: qa.question,
+    //           answers: JSON.parse(qa.answer),
+    //           correctAnswer: qa.correct || "No correct answer provided",
+    //         });
+    //       }
 
-          setQuestions(tmpQAndA);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setError(error);
-      });
+    //       setQuestions(tmpQAndA);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //     setError(error);
+    //   });a
 
     await axios
       .get(
         `${process.env.REACT_APP_BASE_URL}/api/game/get-all-player-answers/${room.roomId}`,
+        // `${process.env.REACT_APP_BASE_URL}/api/game/get-all-player-answers/6765cc0fd3ef2d4bbfe1cf45`,
         requestHeaders
       )
       .then((response) => {
         if (response.status === 200) {
-          console.log("all player answers", response.data);
+          // console.log("all player answers", response.data);
+          const qaMap = new Map();
+          for (const qa of response.data) {
+            qaMap[qa.question] = {
+              question: qa.question,
+              answers: [],
+              correctAnswer: qa.correctAnswer,
+              owner: qa.createdBy,
+            };
+          }
+
+          for (const qa of response.data) {
+            qaMap[qa.question].answers.push({
+              answer: qa.answer,
+              answeredBy: qa.answeredBy,
+            });
+          }
+
+          const tmpQAndA = [];
+          for (let item of Object.keys(qaMap)) {
+            tmpQAndA.push(qaMap[item]);
+          }
+
+          // console.log(qaMap);
+          setQuestions(tmpQAndA);
         }
       })
       .catch((error) => {
@@ -68,7 +93,7 @@ const SummaryPage = () => {
       });
   };
 
-  // Sample questions datas
+  // Sample questions data
   // const questions = [
   //   {
   //     owner: "Owner 1",
@@ -132,6 +157,7 @@ const SummaryPage = () => {
       <div className="summary-header">
         <div className="summary-header-left">
           <div className="room-code">Room: {room && room.roomId}</div>
+          {/* <p>I am {user.email}</p> */}
           <div className="round-title">SUMMARY</div>
         </div>
         {/* <div className="summary-right">
@@ -153,7 +179,7 @@ const SummaryPage = () => {
             </div>
             <div className="question-inner-container">
               <div className="inner-container-row question-text">
-                Answered by: {currentQuestion.owner}
+                Question by: {currentQuestion.owner}
               </div>
               <div className="questions margin-top-10">
                 {currentQuestion.question}
@@ -161,15 +187,15 @@ const SummaryPage = () => {
               <div className="correct-answer">
                 <b>Correct answer: {currentQuestion.correctAnswer}</b>
               </div>
-              <div className="correct-answer">
+              {/* <div className="correct-answer">
                 <b>Your answer: {playerAnswers[currentQuestion.question]}</b>
-              </div>
+              </div> */}
               <div className="answer-list-container">
                 {currentQuestion.answers.map((answer, index) => (
                   <div className="answer-list" key={index}>
-                    <p>Answer {index + 1}</p>
+                    <p>{answer.answeredBy}</p>
                     <div className="user-answer-container">
-                      <p>{answer}</p>
+                      <p>{answer.answer}</p>
                     </div>
                   </div>
                 ))}

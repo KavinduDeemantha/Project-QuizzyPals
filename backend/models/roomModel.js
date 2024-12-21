@@ -29,6 +29,10 @@ const roomSchema = new mongoose.Schema({
     type: Boolean,
     required: false,
   },
+  questionAnswer: {
+    type: String,
+    required: false,
+  },
 });
 
 module.exports = mongoose.model("Room", roomSchema);

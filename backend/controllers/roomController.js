@@ -100,7 +100,7 @@ const deleteRoomByUserId = async (req, res) => {
 
     res.status(StatusCodes.OK).json({ message: "Room deleted successfully" });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });

@@ -234,36 +234,68 @@ const getPlayerQandA = async (req, res) => {
       throw Error("There is no active room with this id: ", roomId);
     }
 
-    const players = await User.find(
-      { roomId },
-      { userId: 0, password: 0, score: 0, roomId: 0 }
-    );
+    // const players = await User.find(
+    //   { roomId },
+    //   { userId: 0, password: 0, score: 0, roomId: 0 }
+    // );
+
+    // const response = [];
+    // for (const player of players) {
+    //   if (!player.questionAnswer) {
+    //     continue;
+    //   }
+
+    //   const questionAndAnswer = {};
+    //   questionAndAnswer["questionAndAnswer"] = JSON.parse(
+    //     player.questionAnswer
+    //   );
+
+    //   for (let question of Object.keys(
+    //     questionAndAnswer["questionAndAnswer"]
+    //   )) {
+    //     // TODO: what if two players create the same question with different answers?
+    //     const quizzes = await Quiz.find({
+    //       quizQuestion: question,
+    //     });
+    //     for (const quiz of quizzes) {
+    //       console.log(quiz);
+    //       questionAndAnswer["answeredBy"] = player.email;
+    //       questionAndAnswer["correctAnswer"] = quiz.correctAnswer;
+
+    //       const creator = await _getUserById(quiz.userId);
+    //       questionAndAnswer["createdBy"] = creator.email;
+    //       response.push(questionAndAnswer);
+    //     }
+    //   }
+    // }
 
     const response = [];
-    for (const player of players) {
-      if (!player.questionAnswer) {
-        continue;
+    const qAndAs = JSON.parse(room.questionAnswer);
+    // console.log(qAndAs);
+    for (const qAndA of Object.values(qAndAs)) {
+      // console.log(Object.values(qAndA));
+      const q = Object.keys(qAndA)[0];
+      for (const ans of Object.values(qAndA)) {
+        const questionAndAnswer = { question: q };
+
+        // TODO: what if two players create the same question with different answers?
+        const quiz = await Quiz.findOne({
+          quizQuestion: q,
+        });
+        questionAndAnswer["answeredBy"] = ans.player; // player.email;
+        questionAndAnswer["answer"] = ans.answer;
+        questionAndAnswer["correctAnswer"] = quiz.correctAnswer;
+
+        const creator = await _getUserById(quiz.userId);
+        questionAndAnswer["createdBy"] = creator.email;
+        response.push(questionAndAnswer);
       }
-
-      const questionAndAnswer = {};
-      questionAndAnswer["questionAndAnswer"] = JSON.parse(
-        player.questionAnswer
-      );
-
-      // TODO: what if two players create the same question with different answers?
-      const quiz = await Quiz.findOne({
-        quizQuestion: Object.keys(questionAndAnswer["questionAndAnswer"])[0],
-      });
-      questionAndAnswer["answeredBy"] = player.email;
-      questionAndAnswer["correctAnswer"] = quiz.correctAnswer;
-
-      const creator = await _getUserById(quiz.userId);
-      questionAndAnswer["createdBy"] = creator.email;
-      response.push(questionAndAnswer);
     }
 
+    // console.log(response);
     res.status(StatusCodes.OK).json(response);
   } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });
@@ -289,14 +321,17 @@ const submitAnswers = async (req, res) => {
     const quizzes = await _getQuizzesByRoom(room.roomId);
     const answerMap = new Map();
     for (let answer of answers) {
-      answerMap.set(answer.quizQuestion, answer.playerAnswer);
+      answerMap.set(answer.quizQuestion, {
+        answer: answer.playerAnswer,
+        player: user.email,
+      });
     }
 
     const startTime = new Date();
     const endTime = room.answerRoundEnd;
     const duration = endTime - startTime;
 
-    if (duration > 0) {
+    if (duration > 0 || true) {
       // A player is trying to access quizzes before the game ended (so correct answer is not there)
       for (let quiz of quizzes) {
         if (quiz.userId == user.userId) {
@@ -304,14 +339,22 @@ const submitAnswers = async (req, res) => {
         }
 
         if (answerMap.has(quiz.quizQuestion)) {
-          if (answerMap.get(quiz.quizQuestion) == quiz.correctAnswer) {
+          if (answerMap.get(quiz.quizQuestion).answer == quiz.correctAnswer) {
             user.score += 1;
             await user.save();
           }
         }
       }
 
-      user.questionAnswer = JSON.stringify(Object.fromEntries(answerMap));
+      if (room.questionAnswer) {
+        const existingData = JSON.parse(room.questionAnswer);
+        const data = Object.fromEntries(answerMap);
+        const newData = [...existingData, data];
+        room.questionAnswer = JSON.stringify(newData);
+      } else {
+        room.questionAnswer = JSON.stringify([Object.fromEntries(answerMap)]);
+      }
+      await room.save();
       await user.save();
     } else {
       res.status(StatusCodes.BAD_REQUEST).json({ message: "Times up!" });
