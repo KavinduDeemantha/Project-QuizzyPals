@@ -92,11 +92,11 @@ const LeaderboardPage = () => {
           <div className="header">QuizzyPals</div>
           <div className="three-btn-container ">
             <div className="button-container">
-              <ButtonComponent
+              {/* <ButtonComponent
                 className="leaderboard-btns"
                 label={"Start new game"}
                 onClick={() => navigate("/createquiz")}
-              />
+              /> */}
             </div>
             <div>
               <ButtonComponent

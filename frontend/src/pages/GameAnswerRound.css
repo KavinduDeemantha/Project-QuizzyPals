@@ -93,3 +93,8 @@
 .answers-main {
   align-items: center;
 }
+
+.answers-container {
+  padding: 0 28%;
+  overflow: auto;
+}

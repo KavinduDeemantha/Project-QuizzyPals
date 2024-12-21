@@ -389,13 +389,13 @@ const GameQuestionRound = () => {
                 </RadioGroup>
               </FormControl>
             </div>
-            <div className="margin-top-10">
+            {/* <div className="margin-top-10">
               <ButtonComponent
                 className={"doneBtn"}
                 label={"Done"}
                 onClick={handleDoneClick}
               />
-            </div>
+            </div> */}
             <div className="lobby-btn-container">
               <Button
                 className="lobby-btn"

@@ -198,7 +198,7 @@ const GameAnswerRound = () => {
                   <div className="inner-container-row question-text">
                     {qa.question}
                   </div>
-                  <div className="inner-container-row choice-box">
+                  <div className="inner-container-row choice-box answers-container">
                     <FormControl>
                       <RadioGroup
                         aria-labelledby="demo-radio-buttons-group-label"
