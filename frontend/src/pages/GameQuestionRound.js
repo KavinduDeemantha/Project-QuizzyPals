@@ -41,6 +41,7 @@ const GameQuestionRound = () => {
   const [gameStateMessageVisible, setGameStateMessageVisible] = useState(false);
   const [gameTime, setGameTime] = useState(0);
   const [currentEmoji, setCurrentEmoji] = useState(null);
+  const [showWaitForOthers, setShowWaitForOthers] = useState(false);
   const [gameStateMessage, setGameStateMessage] = useState({
     title: "Game State",
     message: "Hi!",
@@ -89,7 +90,7 @@ const GameQuestionRound = () => {
       quizAnswer: JSON.stringify(addedChoices),
       correctAnswer: correctAnswer,
     };
-    if ((quizData.quizQuestion === "")) {
+    if (quizData.quizQuestion === "") {
       return;
     }
     await axios
@@ -109,7 +110,8 @@ const GameQuestionRound = () => {
   };
 
   const handleDoneClick = async (e) => {
-    alert("Wait for others... 🫷");
+    // alert("Wait for others... 🫷");
+    setShowWaitForOthers(true);
     await submitQuiz(e);
   };
 
@@ -236,6 +238,25 @@ const GameQuestionRound = () => {
           {gameTime > 0 ? <TimerComponent initialSeconds={gameTime} /> : <></>}
         </div>
       </div>
+
+      <Dialog
+        onClose={() => setShowWaitForOthers(false)}
+        open={showWaitForOthers}
+      >
+        <DialogTitle>Don't hurry! ⌛</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Wait for others...🫷</DialogContentText>
+        </DialogContent>
+        <div className="yes-no-btn-container">
+          <Button
+            className="yes-no-btn"
+            variant="contained"
+            onClick={handleGameStateContinueButton}
+          >
+            Continue
+          </Button>
+        </div>
+      </Dialog>
 
       <Dialog
         onClose={() => setNewChoiceVisible(false)}
