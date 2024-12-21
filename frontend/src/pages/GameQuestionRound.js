@@ -308,7 +308,7 @@ const GameQuestionRound = () => {
       <div className="questions-main-container">
         <div className="question-outer-container">
           <div className="topic-label">
-            Write a question to ask from your friends.
+            Write a question to ask from your friends & wait for duration ends
           </div>
           <div className="question-inner-container">
             <div className="inner-container-row question-text">
