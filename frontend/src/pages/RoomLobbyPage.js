@@ -65,6 +65,10 @@ const RoomLobbyPage = () => {
   };
   const handleSetGameDurationMinutes = (val) => {
     val = parseInt(val);
+    if (val === "") {
+      setGameDurationMinutes(1);
+      return;
+    }
     if (val < 0 || val > 59) {
       return;
     }
@@ -82,6 +86,10 @@ const RoomLobbyPage = () => {
   };
   const handleSetGameAnswerDurationMinutes = (val) => {
     val = parseInt(val);
+    if (val === "") {
+      setGameDurationMinutes(1);
+      return;
+    }
     if (val < 0 || val > 59) {
       return;
     }
@@ -189,19 +197,34 @@ const RoomLobbyPage = () => {
       durationSeconds: gameDurationSeconds + 5,
     };
 
-    if (
-      (gameData.answerDurationMinutes !== 0 ||
-        gameData.answerDurationSeconds !== 0) &&
-      (gameData.durationMinutes !== 0 || gameData.answerDurationSeconds !== 0)
-    ) {
-      await startGameRequest(gameData);
-    } else {
-      if (room.host === user.email) {
-        alert("Please select time durations");
-      } else {
-        await startGameRequest(gameData);
-      }
-    }
+    await startGameRequest(gameData);
+
+    // if (
+    //   (gameData.answerDurationMinutes !== 0 ||
+    //     gameData.answerDurationSeconds !== 0) &&
+    //   (gameData.durationMinutes !== 0 || gameData.answerDurationSeconds !== 0)
+    // ) {
+    //   await startGameRequest(gameData);
+    // } else {
+    //   if (room.host === user.email) {
+    //     alert("Please select time durations");
+    //   } else {
+    //     await startGameRequest(gameData);
+    //   }
+    // }
+
+    // if (
+    //   gameData.answerDurationMinutes === "" ||
+    //   gameData.durationMinutes === "" ||
+    //   gameData.answerDurationMinutes === 0 ||
+    //   gameData.durationMinutes === 0
+    // ) {
+    //   if (room.host === user.email) {
+    //     alert("Please select time durations");
+    //   }
+    // } else {
+    //   await startGameRequest(gameData);
+    // }
   };
 
   const handleEndGameButton = async (e) => {
@@ -258,6 +281,15 @@ const RoomLobbyPage = () => {
       .catch(logError);
   };
 
+  const validateAndStartGame = () => {
+    if (!gameDurationMinutes || !gameDurationAnswerMinutes) {
+      alert("Please input time duration");
+      return;
+    }
+    setError("");
+    startGame();
+  };
+
   useEffect(() => {
     if (!room) {
       navigate("/");
@@ -298,14 +330,7 @@ const RoomLobbyPage = () => {
             label={"Question Round Duration (minutes)"}
             onChange={(e) => handleSetGameDurationMinutes(e.target.value)}
             className="startGameDialog"
-          />
-          <TextField
-            value={gameDurationSeconds}
-            type="number"
-            variant="outlined"
-            label={"Single round time duration (seconds)"}
-            onChange={(e) => handleSetGameDurationSeconds(e.target.value)}
-            className="startGameDialog"
+            required={true}
           />
         </div>
         <div style={{ display: "flex" }}>
@@ -316,14 +341,7 @@ const RoomLobbyPage = () => {
             label={"Answer Round Duration (minutes)"}
             onChange={(e) => handleSetGameAnswerDurationMinutes(e.target.value)}
             className="startGameDialog"
-          />
-          <TextField
-            value={gameAnswerDurationSeconds}
-            type="number"
-            variant="outlined"
-            label={"Single round time answer duration (seconds)"}
-            onChange={(e) => handleSetGameAnswerDurationSeconds(e.target.value)}
-            className="startGameDialog"
+            required={true}
           />
         </div>
         <FormControlLabel
@@ -337,7 +355,10 @@ const RoomLobbyPage = () => {
           label="Save Data"
           className="saveDataLabel"
         />
-        <ButtonComponent label={"Start Game"} onClick={(e) => startGame()} />
+        <ButtonComponent
+          label={"Start Game"}
+          onClick={(e) => validateAndStartGame()}
+        />
       </Dialog>
       <Grid container columns={16}>
         <Grid size={8}>

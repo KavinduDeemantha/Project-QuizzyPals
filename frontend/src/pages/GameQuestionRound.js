@@ -111,9 +111,7 @@ const GameQuestionRound = () => {
   };
 
   const handleDoneClick = async (e) => {
-    // alert("Wait for others... 🫷");
     setShowWaitForOthers(true);
-    await submitQuiz(e);
   };
 
   const handleGameStateContinueButton = async (e) => {
@@ -258,7 +256,6 @@ const GameQuestionRound = () => {
           </Button>
         </div>
       </Dialog>
-
       <Dialog
         onClose={() => setNewChoiceVisible(false)}
         open={newChoiceVisible}
@@ -365,7 +362,7 @@ const GameQuestionRound = () => {
                           <div
                             style={{
                               overflowX: "auto",
-                              width: "60%",
+                              width: "70%",
                             }}
                           >
                             {item}
@@ -375,6 +372,7 @@ const GameQuestionRound = () => {
                             value={item}
                             style={{
                               marginLeft: 5,
+                              width: "24%",
                             }}
                             onClick={(e) => {
                               setCorrectAnswer(e.target.value);
