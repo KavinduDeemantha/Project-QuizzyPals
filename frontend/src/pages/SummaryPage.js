@@ -59,6 +59,7 @@ const SummaryPage = () => {
         requestHeaders
       )
       .then((response) => {
+        console.log(response);
         if (response.status === 200) {
           // console.log("all player answers", response.data);
           const qaMap = new Map();
@@ -160,9 +161,6 @@ const SummaryPage = () => {
           {/* <p>I am {user.email}</p> */}
           <div className="round-title">SUMMARY</div>
         </div>
-        {/* <div className="summary-right">
-          <div className="game-timer">{room && room.gameRound}</div> 
-        </div> */}
       </div>
       {currentQuestion ? (
         <div className="questions-main-container">
@@ -173,7 +171,7 @@ const SummaryPage = () => {
             <div className="topic-label">
               Question {currentQuestionIndex + 1}{" "}
               {currentQuestion.correctAnswer ===
-              playerAnswers[currentQuestion.question]
+              currentQuestion.answers
                 ? "✅🎉"
                 : "❌"}
             </div>
@@ -198,7 +196,7 @@ const SummaryPage = () => {
                       <p>{answer.answer}</p>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
               <div className="margin-top-10">
                 <ButtonComponent label={"Done"} onClick={handleDoneBtn} />

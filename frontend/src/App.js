@@ -8,6 +8,7 @@ import SummaryPage from "./pages/SummaryPage";
 import SignUpPage from "./pages/SignUpPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import GameAnswerRound from "./pages/GameAnswerRound";
+import HowToPlay from "./pages/HowToPlay";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/summary" element={<SummaryPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/answers" element={<GameAnswerRound />} />
+          <Route path="/howToPlay" element={<HowToPlay />} />
         </Routes>
       </BrowserRouter>
     </div>

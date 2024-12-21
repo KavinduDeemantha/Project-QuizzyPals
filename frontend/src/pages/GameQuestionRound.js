@@ -89,7 +89,9 @@ const GameQuestionRound = () => {
       quizAnswer: JSON.stringify(addedChoices),
       correctAnswer: correctAnswer,
     };
-
+    if ((quizData.quizQuestion === "")) {
+      return;
+    }
     await axios
       .post(
         `${process.env.REACT_APP_BASE_URL}/api/game/createquiz`,
@@ -108,7 +110,7 @@ const GameQuestionRound = () => {
 
   const handleDoneClick = async (e) => {
     alert("Wait for others... 🫷");
-    // await submitQuiz(e);
+    await submitQuiz(e);
   };
 
   const handleGameStateContinueButton = async (e) => {

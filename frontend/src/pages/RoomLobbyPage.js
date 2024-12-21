@@ -133,14 +133,6 @@ const RoomLobbyPage = () => {
     }
   };
 
-  // const getRoomId = async () => {
-  //   return axios
-  //     .get(`${process.env.REACT_APP_BASE_URL}/api/users/roomid/${user.email}`)
-  //     .then((response) => {
-  //       return response.data;
-  //     });
-  // };
-
   const handleStartGameButton = async (e) => {
     if (room.host === user.email) {
       setStartDialogVisible(true);
@@ -266,18 +258,6 @@ const RoomLobbyPage = () => {
       .catch(logError);
   };
 
-  // useEffect(() => {
-  //   console.log(socket);
-  //   if (socket == null) return;
-
-  //   socket.current.onmessage = (msg) => {
-  //     const data = JSON.parse(msg.data);
-  //     dispatch({ type: data.type, payload: data });
-  //     console.log(game);
-  //     console.log("Received", msg);
-  //   };
-  // }, []);
-
   useEffect(() => {
     if (!room) {
       navigate("/");
@@ -285,13 +265,6 @@ const RoomLobbyPage = () => {
     }
 
     getAndSetRoomPlayers(room.roomId);
-
-    // const gameStatusRequest = {
-    //   type: "GAME_STATUS",
-    //   roomId: room.roomId,
-    // };
-
-    // socket.current.send(JSON.stringify(gameStatusRequest));
   }, []);
 
   useEffect(() => {
@@ -399,7 +372,7 @@ const RoomLobbyPage = () => {
               <ButtonComponent
                 className={"lobbyBtn"}
                 label={"How to Play?"}
-                onClick={() => {}}
+                onClick={() => navigate("/howToPlay")}
               />
             </div>
             {error && <div className="error-message">{error}</div>}
