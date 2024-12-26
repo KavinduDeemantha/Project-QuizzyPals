@@ -353,7 +353,11 @@ const GameQuestionRound = () => {
                 >
                   <List className="answer-list">
                     {addedChoices.map((item, i) => {
-                      console.log(i);
+                      if (correctAnswer == "") {
+                        setCorrectAnswer(item);
+                        console.log(item);
+                      }
+
                       return (
                         <ListItem key={i} className="choice-item">
                           <IconButton onClick={() => removeChoice(i)}>

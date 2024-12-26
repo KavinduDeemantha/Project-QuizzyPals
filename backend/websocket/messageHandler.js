@@ -124,7 +124,11 @@ const handleGameStart = (ws, rooms, data) => {
       })
     );
 
-    let _roomData = rooms.get(data.roomId);
+    const _roomData = rooms.get(data.roomId);
+    if (!_roomData) {
+      console.error("Room data empty!");
+      return;
+    }
     // We change the game state of the room to answer round started in our rooms
     // datastructure.
     _roomData.gameState = "ANSWER_ROUND_STARTED";

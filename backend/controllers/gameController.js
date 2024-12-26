@@ -282,6 +282,7 @@ const getPlayerQandA = async (req, res) => {
         const quiz = await Quiz.findOne({
           quizQuestion: q,
         });
+
         questionAndAnswer["answeredBy"] = ans.player; // player.email;
         questionAndAnswer["answer"] = ans.answer;
         questionAndAnswer["correctAnswer"] = quiz.correctAnswer;

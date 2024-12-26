@@ -49,6 +49,10 @@ const GameAnswerRound = () => {
     },
   };
 
+  const handleSetCorrectAnswer = (value) => {
+    setCorrectAnswer(value);
+  };
+
   const getAndSetQuestions = async () => {
     await axios
       .get(
@@ -214,7 +218,7 @@ const GameAnswerRound = () => {
                                 value={item}
                                 control={<Radio />}
                                 label={item}
-                                onClick={() => setCorrectAnswer(item)}
+                                onClick={() => handleSetCorrectAnswer(item)}
                               />
                             );
                           })
@@ -223,7 +227,9 @@ const GameAnswerRound = () => {
                             className="correct-answer-text"
                             variant="standard"
                             value={correctAnswer}
-                            onChange={(e) => setCorrectAnswer(e.target.value)}
+                            onChange={(e) =>
+                              handleSetCorrectAnswer(e.target.value)
+                            }
                           />
                         )}
                       </RadioGroup>
