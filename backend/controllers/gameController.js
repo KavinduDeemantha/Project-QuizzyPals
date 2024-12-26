@@ -87,6 +87,7 @@ const startGame = async (req, res) => {
       room.gameEnd.getSeconds() + parseInt(answerDurationSeconds)
     );
     room.answerRoundEnd = answerRoundEnds;
+    room.questionAnswer = "";
     room.saveData = saveData;
     await room.save();
 

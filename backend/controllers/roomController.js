@@ -62,7 +62,11 @@ const joinRoomById = async (req, res) => {
 
     res
       .status(StatusCodes.OK)
-      .json({ roomId: roomExist.roomId, host: host.email });
+      .json({
+        roomId: roomExist.roomId,
+        host: host.email,
+        saveData: roomExist.saveData,
+      });
   } catch (err) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
   }
