@@ -60,13 +60,6 @@ const startGame = async (req, res) => {
 
     if (room.saveData != undefined && room.saveData != null) {
       if (room.saveData === false) {
-        const users = await User.find({ roomId: room.roomId });
-
-        for (let user of users) {
-          user.score = 0;
-          await user.save();
-        }
-
         await Quiz.deleteMany({ roomId: room.roomId });
       }
     }
@@ -113,6 +106,12 @@ const endGame = async (req, res) => {
     const room = await Room.findOne({ roomId: user.roomId });
     if (!room) {
       throw Error("The user is not attached a room to end the game");
+    }
+
+    if (room.saveData != undefined && room.saveData != null) {
+      if (room.saveData === false) {
+        await Quiz.deleteMany({ roomId: room.roomId });
+      }
     }
 
     if (room.host == user.userId) {

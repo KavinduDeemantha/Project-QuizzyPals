@@ -300,6 +300,8 @@ const RoomLobbyPage = () => {
   }, []);
 
   useEffect(() => {
+    setSaveGameData(room.saveData);
+
     if (game) {
       if (game.type === "GAME_STARTED_BY_HOST") {
         alert(

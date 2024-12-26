@@ -58,15 +58,20 @@ const joinRoomById = async (req, res) => {
       await user.save();
     }
 
+    const users = await User.find({ roomId: roomExist.roomId });
+
+    for (let user of users) {
+      user.score = 0;
+      await user.save();
+    }
+
     const host = await User.findOne({ userId: roomExist.host });
 
-    res
-      .status(StatusCodes.OK)
-      .json({
-        roomId: roomExist.roomId,
-        host: host.email,
-        saveData: roomExist.saveData,
-      });
+    res.status(StatusCodes.OK).json({
+      roomId: roomExist.roomId,
+      host: host.email,
+      saveData: roomExist.saveData,
+    });
   } catch (err) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
   }
