@@ -11,6 +11,7 @@ import axios from "axios";
 import { useRoomCheckIn } from "../hook/useRoomCheckIn";
 import { useGameContext } from "../hook/useGameContext";
 import { useRoomContext } from "../hook/useRoomContext";
+import { Box } from "@mui/material";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -177,62 +178,97 @@ const WelcomePage = () => {
 
   return (
     user && (
-      <Grid container columns={16}>
-        <Grid size={8}>
-          <div className="header-container">
-            <div className="header">QuizzyPals</div>
-          </div>
-        </Grid>
-        <Grid size={8}>
-          <div className="page-title-container">
-            <div className="page-title">WELCOME</div>
-            <div className="sub-title">{user.email}</div>
-            <h3 className="roomID">
-              {roomId ? `You already have a room: Room ID = ${roomId}` : ""}
-            </h3>
-            {joinWithRoom ? (
-              <>
-                <FormInputComponent
-                  placeholder={"Room Code"}
-                  type={"text"}
-                  label={"Enter the room code"}
-                  value={roomCode}
-                  onChange={(e) => setRoomCode(e.target.value)}
-                  isRequired={true}
-                />
-                <div style={{ marginTop: 20 }}>
+      <Box sx={{ flexGrow: 1 }}>
+        <Grid
+          container
+          // spacing={2}
+          sx={{
+            flexFlow: { lg: "row", md: "column", sm: "column", xs: "column" },
+            justifyContent: { lg: "center", md: "center", xs: "center" },
+            alignItems: "center",
+            height: "100vh",
+            width: "100vw",
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          <Grid
+            item
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              borderRight: { lg: "2px solid #ccc" },
+              paddingRight: { lg: "15vw", xs: 0 },
+            }}
+          >
+            <div className="header-container">
+              <div className="header">QuizzyPals</div>
+            </div>
+          </Grid>
+          <div className="vertical-line"></div>
+          <Grid
+            item
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              height: "100%",
+              paddingLeft: { lg: "15vw" },
+              paddingBottom: 10,
+            }}
+          >
+            <div className="page-title-container">
+              <div className="page-title">WELCOME</div>
+              <div className="sub-title">{user.email}</div>
+              <h3 className="roomID">
+                {roomId ? `You already have a room: Room ID = ${roomId}` : ""}
+              </h3>
+              {joinWithRoom ? (
+                <>
+                  <FormInputComponent
+                    placeholder={"Room Code"}
+                    type={"text"}
+                    label={"Enter the room code"}
+                    value={roomCode}
+                    onChange={(e) => setRoomCode(e.target.value)}
+                    isRequired={true}
+                  />
+                  <div style={{ marginTop: 20 }}>
+                    <ButtonComponent
+                      label={"Join Game"}
+                      onClick={handleJoinGameButton}
+                    />
+                  </div>
+                  <div style={{ marginTop: 20 }}>
+                    <ButtonComponent
+                      label={"Home Page"}
+                      onClick={handleHomePageButton}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="btn-container">
                   <ButtonComponent
-                    label={"Join Game"}
-                    onClick={handleJoinGameButton}
+                    label={"Create a Room"}
+                    onClick={handleCreateARoomButton}
+                  />
+                  <ButtonComponent
+                    label={"Join a Room"}
+                    onClick={handleJoinARoomButton}
+                  />
+                  <ButtonComponent
+                    label={"Sign Out"}
+                    onClick={handleSignOutButton}
                   />
                 </div>
-                <div style={{ marginTop: 20 }}>
-                  <ButtonComponent
-                    label={"Home Page"}
-                    onClick={handleHomePageButton}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="btn-container">
-                <ButtonComponent
-                  label={"Create a Room"}
-                  onClick={handleCreateARoomButton}
-                />
-                <ButtonComponent
-                  label={"Join a Room"}
-                  onClick={handleJoinARoomButton}
-                />
-                <ButtonComponent
-                  label={"Sign Out"}
-                  onClick={handleSignOutButton}
-                />
-              </div>
-            )}
-            {error && <div className="error-message">{error}</div>}
-          </div>
+              )}
+              {error && <div className="error-message">{error}</div>}
+            </div>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     )
   );
 };
