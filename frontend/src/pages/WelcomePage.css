@@ -6,3 +6,21 @@
   flex-direction: column;
   gap: 20px;
 }
+
+.vertical-line {
+  color: black;
+}
+
+/* @media (max-width: 375px) and (max-height: 667px) {
+  .header-container {
+    border: none;
+  }
+
+  .page-title {
+    font-size: 48px;
+  }
+
+  .header {
+    font-size: 72px;
+  }
+} */
