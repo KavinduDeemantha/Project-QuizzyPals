@@ -1,7 +1,14 @@
 import { Button } from "@mui/material";
 import "../App.css";
 
-const ButtonComponent = ({ label, onClick, isDisabled = false, className }) => {
+const ButtonComponent = ({
+  label,
+  onClick,
+  isDisabled = false,
+  className,
+  color,
+  sx,
+}) => {
   return (
     <>
       <Button

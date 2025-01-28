@@ -14,8 +14,10 @@ import {
   FormLabel,
   Radio,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
+import Grid from "@mui/material/Grid2";
 import { resolvePath, useNavigate } from "react-router-dom";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircleOutlined";
 import "./GameQuestionRound.css";
@@ -29,20 +31,46 @@ import { useGameContext } from "../hook/useGameContext";
 import { useEffect } from "react";
 import { RadioButtonChecked } from "@mui/icons-material";
 
+import SpeedDialComponent from "../components/SpeedDialComponent";
+
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import HomeIcon from "@mui/icons-material/Home";
+import { makeStringATitle } from "../utils/StringUtils";
+
 const GameQuestionRound = () => {
   const { room } = useRoomContext();
   const { user } = useAuthContext();
   const { game, socket, dispatch } = useGameContext();
-  const [addedChoices, setAddedChoices] = useState([]);
+  const [addedChoices, setAddedChoices] = useState(() => {
+    const storedChoices = localStorage.getItem("storedChoices");
+    var res = [];
+    try {
+      res = JSON.parse(storedChoices);
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+
+    return res || [];
+  });
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [newChoiceVisible, setNewChoiceVisible] = useState(false);
   const [newChoiceText, setNewChoiceText] = useState("");
-  const [quizQuestion, setQuizQuestion] = useState("");
+  const [quizQuestion, setQuizQuestion] = useState(() => {
+    const storedQuestion = localStorage.getItem("storedQuestion");
+    return storedQuestion || "";
+  });
   const [gameStateMessageVisible, setGameStateMessageVisible] = useState(false);
   const [gameTime, setGameTime] = useState(0);
   const [currentEmoji, setCurrentEmoji] = useState(null);
   const [showWaitForOthers, setShowWaitForOthers] = useState(false);
-  const [correctChoiceIndex, setCorrectChoiceIndex] = useState(0);
+  const [correctChoiceIndex, setCorrectChoiceIndex] = useState(() => {
+    const selectedChoiceIndex = parseInt(
+      localStorage.getItem("selectedChoiceIndex")
+    );
+
+    return selectedChoiceIndex || 0;
+  });
   const [gameStateMessage, setGameStateMessage] = useState({
     title: "Game State",
     message: "Hi!",
@@ -110,6 +138,20 @@ const GameQuestionRound = () => {
       .catch(logError);
   };
 
+  const initializeTimeRemaining = async () => {
+    const gameData = {
+      userId: user.userId,
+      roomId: room.roomId,
+    };
+
+    const timeRequest = {
+      type: "TIME_REMAINING_CREATION",
+      ...gameData,
+    };
+
+    socket.current.send(JSON.stringify(timeRequest));
+  };
+
   const handleDoneClick = async (e) => {
     setShowWaitForOthers(true);
   };
@@ -117,10 +159,9 @@ const GameQuestionRound = () => {
   const handleGameStateContinueButton = async (e) => {
     if (game.type === "ANSWER_ROUND_STARTED") {
       navigate("/answers");
-    } else if (game.type === "GAME_ENDED") {
+    } else if (game.type === "GAME_ENDED" || game.type === "ROOM_DELETED") {
       navigate("/roomlobby");
     }
-    setGameStateMessageVisible(false);
   };
 
   const analyzeSentiment = async () => {
@@ -205,38 +246,145 @@ const GameQuestionRound = () => {
 
   useEffect(() => {
     if (game) {
+      initializeTimeRemaining();
       if (game.type === "ANSWER_ROUND_STARTED") {
         navigate("/answers");
+      } else if (game.type === "TIME_REMAINING") {
+        // console.log(game);
+        setGameTime(Math.floor(game.duration / 1000));
       }
     }
   }, []);
 
   useEffect(() => {
+    localStorage.setItem("storedQuestion", quizQuestion);
+  }, [quizQuestion]);
+
+  useEffect(() => {
+    localStorage.setItem("storedChoices", JSON.stringify(addedChoices));
+  }, [addedChoices]);
+
+  useEffect(() => {
+    localStorage.setItem("selectedChoiceIndex", correctChoiceIndex);
+    setCorrectAnswer(addedChoices[correctChoiceIndex]);
+  }, [correctChoiceIndex]);
+
+  useEffect(() => {
     if (game) {
       if (game.type === "GAME_STARTED") {
-        setGameTime(Math.floor(game.duration / 1000));
+        initializeTimeRemaining();
       } else if (game.type === "ANSWER_ROUND_STARTED") {
         submitQuiz();
-        setGameStateMessage({ title: game.type, message: game.message });
+        setGameStateMessage({
+          title: makeStringATitle(game.type) + "!",
+          message: game.message,
+        });
         setGameStateMessageVisible(true);
       } else if (game.type === "GAME_ENDED") {
-        setGameStateMessage({ title: game.type, message: game.message });
+        setGameStateMessage({
+          title: makeStringATitle(game.type) + "!",
+          message: game.message,
+        });
+        setGameStateMessageVisible(true);
+      } else if (game.type === "TIME_REMAINING") {
+        // console.log(game);
+        setGameTime(Math.floor(game.duration / 1000));
+      } else if (game.type === "ROOM_DELETED") {
+        setGameStateMessage({
+          title: makeStringATitle(game.type) + "!",
+          message: game.message,
+        });
         setGameStateMessageVisible(true);
       }
     }
   }, [game]);
 
+  const actions = [
+    {
+      icon: <HomeIcon />,
+      name: "Home",
+      act: () => {
+        navigate("/welcome");
+      },
+    },
+    {
+      icon: <ExitToAppIcon />,
+      name: "Lobby",
+      act: () => {
+        navigate("/roomlobby");
+      },
+    },
+  ];
+
+  if (!room) {
+    navigate("/welcome");
+    return;
+  }
+
   return (
     <div className="main-container">
-      <div className="game-round-header">
-        <div className="game-round-header-left">
-          <div className="room-code">Room: {room.roomId}</div>
-          <div className="round-title">Question Round</div>
-        </div>
-        <div className="game-round-header-right">
-          {gameTime > 0 ? <TimerComponent initialSeconds={gameTime} /> : <></>}
-        </div>
+      {/* <div className="game-round-header"> */}
+      <div>
+        {/* <div className="game-round-header-left"> */}
+        {/* <div className="room-code">Room: {room.roomId}</div> */}
+        <Grid
+          container
+          sx={{
+            display: "flex",
+            justifyContent: { xs: "space-evenly", md: "space-between" },
+            // justifyContent: {
+            //   xs: "center",
+            //   md: "space-between",
+            // },
+            alignItems: "center",
+            paddingTop: 2,
+            paddingLeft: 10,
+            paddingRight: 10,
+          }}
+        >
+          <Grid
+            item
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "left",
+            }}
+          >
+            <Typography
+              variant="p"
+              sx={{
+                fontSize: { xs: "24px", md: "36px" },
+                textAlign: { xs: "center", md: "left" },
+              }}
+            >
+              Room: {room.roomId}
+            </Typography>
+            <Typography
+              variant="p"
+              sx={{
+                fontSize: { xs: "28px", md: "48px" },
+                fontWeight: "bold",
+                textAlign: { xs: "center", md: "left" },
+              }}
+            >
+              Question Round
+            </Typography>
+          </Grid>
+          <Grid item>
+            {/* <div className="game-round-header-right"> */}
+            {gameTime > 0 ? (
+              <TimerComponent initialSeconds={gameTime} />
+            ) : (
+              <></>
+            )}
+            {/* </div> */}
+          </Grid>
+        </Grid>
+        {/* <div className="round-title">Question Round</div> */}
+        {/* </div> */}
       </div>
+
+      <SpeedDialComponent actions={actions} />
 
       <Dialog
         onClose={() => setShowWaitForOthers(false)}
@@ -305,20 +453,25 @@ const GameQuestionRound = () => {
           </Button>
         </div>
       </Dialog>
-      <div className="questions-main-container">
+      <div className="question-main-container">
         <div className="question-outer-container">
-          <div className="topic-label">
+          {/* <div className="topic-label"> */}
+          <Typography>
             Write a question to ask from your friends & wait for duration ends
-          </div>
+          </Typography>
+          {/* </div> */}
           <div className="question-inner-container">
             <div className="inner-container-row question-text">
               <TextField
-                className="question-field"
+                // className="question-field"
                 label="Enter your question here"
                 variant="outlined"
                 value={quizQuestion}
                 onChange={(e) => setQuizQuestion(e.target.value)}
                 onBlur={handleQuizQuestionSentiment}
+                sx={{
+                  width: "100%",
+                }}
               />
               <div className="emoji-reaction">
                 {currentEmoji ? (
@@ -379,7 +532,6 @@ const GameQuestionRound = () => {
                               width: "24%",
                             }}
                             onClick={(e) => {
-                              setCorrectAnswer(e.target.value);
                               setCorrectChoiceIndex(i);
                             }}
                             checked={i == correctChoiceIndex}

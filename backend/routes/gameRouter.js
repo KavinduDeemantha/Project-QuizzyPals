@@ -22,7 +22,7 @@ router.post("/createquiz", createQuiz);
 router.post("/startgame", startGame);
 
 // End game by the host
-router.get("/endgame/:userId", endGame);
+router.post("/endgame/", endGame);
 
 // Get quizzes by room id
 router.get("/getquizzes/:userId", getQuizzes);

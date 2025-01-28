@@ -1,0 +1,36 @@
+version: '3'
+services:
+  # MongoDB Service
+  mongo_db:
+    container_name: db_container
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+  
+  # NodeJS Service
+  api:
+    build: ./backend
+    # volumes:
+    #   - .:/usr/src/app
+    ports:
+      - 4000:3000
+    environment:
+      - PORT:3000
+      - MONGO_URI:mongodb://mongo_db:27017/quizzy_db
+    depends_on:
+      - mongo_db
+
+  # React Service
+  react_app:
+    build: ./frontend
+    ports:
+      - 3000:3000
+    environment:
+      - REACT_APP_BASE_URL:http://api:4000
+      - REACT_APP_EDENAI_API_KEY:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMmZjYmUzYTQtYTllNS00NzlhLThmNTgtMWZkZjM3NWIzOGQxIiwidHlwZSI6ImFwaV90b2tlbiJ9.Hjqp9hvPCQ3DsEKHilBxEGfcLdE8Z-Txq5GixcDqnu0
+    depends_on:
+      - api
+
+volumes:
+  mongo_db: {}
