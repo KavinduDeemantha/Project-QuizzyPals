@@ -11,7 +11,9 @@ import axios from "axios";
 import { useRoomCheckIn } from "../hook/useRoomCheckIn";
 import { useGameContext } from "../hook/useGameContext";
 import { useRoomContext } from "../hook/useRoomContext";
-import { Box } from "@mui/material";
+import { Box, TextField, Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
+import { Label } from "@mui/icons-material";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -178,97 +180,93 @@ const WelcomePage = () => {
 
   return (
     user && (
-      <Box sx={{ flexGrow: 1 }}>
+      <Grid
+        container
+        sx={{
+          display: "flex",
+          justifyContent: {
+            xs: "center",
+            sm: "center",
+            md: "space-around",
+            lg: "space-evenly",
+          },
+          alignItems: "center",
+          height: "100vh",
+          width: "100vw",
+        }}
+      >
+        <Grid item>
+          <div className="header-container">
+            <div className="header">QuizzyPals</div>
+          </div>
+        </Grid>
         <Grid
-          container
-          // spacing={2}
+          item
           sx={{
-            flexFlow: { lg: "row", md: "column", sm: "column", xs: "column" },
-            justifyContent: { lg: "center", md: "center", xs: "center" },
-            alignItems: "center",
-            height: "100vh",
-            width: "100vw",
-            margin: 0,
-            padding: 0,
+            width: 2,
+            height: { xs: "0", sm: "0", md: "100vh", lg: "100vh" },
+            backgroundColor: "#ccc",
+          }}
+        ></Grid>
+        <Grid
+          item
+          sx={{
+            paddingBottom: 20,
           }}
         >
-          <Grid
-            item
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-              borderRight: { lg: "2px solid #ccc" },
-              paddingRight: { lg: "15vw", xs: 0 },
-            }}
-          >
-            <div className="header-container">
-              <div className="header">QuizzyPals</div>
-            </div>
-          </Grid>
-          <div className="vertical-line"></div>
-          <Grid
-            item
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              height: "100%",
-              paddingLeft: { lg: "15vw" },
-              paddingBottom: 10,
-            }}
-          >
-            <div className="page-title-container">
-              <div className="page-title">WELCOME</div>
-              <div className="sub-title">{user.email}</div>
-              <h3 className="roomID">
-                {roomId ? `You already have a room: Room ID = ${roomId}` : ""}
-              </h3>
-              {joinWithRoom ? (
-                <>
-                  <FormInputComponent
-                    placeholder={"Room Code"}
-                    type={"text"}
-                    label={"Enter the room code"}
-                    value={roomCode}
-                    onChange={(e) => setRoomCode(e.target.value)}
-                    isRequired={true}
-                  />
-                  <div style={{ marginTop: 20 }}>
-                    <ButtonComponent
-                      label={"Join Game"}
-                      onClick={handleJoinGameButton}
-                    />
-                  </div>
-                  <div style={{ marginTop: 20 }}>
-                    <ButtonComponent
-                      label={"Home Page"}
-                      onClick={handleHomePageButton}
-                    />
-                  </div>
-                </>
-              ) : (
-                <div className="btn-container">
+          <div className="page-title-container">
+            <div className="page-title">WELCOME</div>
+            <div className="sub-title">{user.email}</div>
+            <h3 className="roomID">
+              {roomId ? `You already have a room: Room ID = ${roomId}` : ""}
+            </h3>
+            {joinWithRoom ? (
+              <>
+                <FormInputComponent
+                  placeholder={"Room Code"}
+                  type={"text"}
+                  label={"Enter the room code"}
+                  value={roomCode}
+                  onChange={(e) => setRoomCode(e.target.value)}
+                  isRequired={true}
+                />
+                <div style={{ marginTop: 20 }}>
                   <ButtonComponent
-                    label={"Create a Room"}
-                    onClick={handleCreateARoomButton}
-                  />
-                  <ButtonComponent
-                    label={"Join a Room"}
-                    onClick={handleJoinARoomButton}
-                  />
-                  <ButtonComponent
-                    label={"Sign Out"}
-                    onClick={handleSignOutButton}
+                    label={"Join Game"}
+                    onClick={handleJoinGameButton}
                   />
                 </div>
-              )}
-              {error && <div className="error-message">{error}</div>}
-            </div>
-          </Grid>
+                <div style={{ marginTop: 20 }}>
+                  <ButtonComponent
+                    label={"Home Page"}
+                    onClick={handleHomePageButton}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="btn-container">
+                <ButtonComponent
+                  label={"Create a Room"}
+                  onClick={handleCreateARoomButton}
+                />
+                <ButtonComponent
+                  label={"Join a Room"}
+                  onClick={handleJoinARoomButton}
+                />
+                <ButtonComponent
+                  label={"Sign Out"}
+                  onClick={handleSignOutButton}
+                />
+              </div>
+            )}
+            {error && (
+              <Typography variant="body1" className="error-message">
+                {error}
+              </Typography>
+            )}
+          </div>
         </Grid>
-      </Box>
+      </Grid>
     )
   );
 };

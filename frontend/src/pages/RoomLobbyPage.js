@@ -362,8 +362,22 @@ const RoomLobbyPage = () => {
           onClick={(e) => validateAndStartGame()}
         />
       </Dialog>
-      <Grid container columns={16}>
-        <Grid size={8}>
+      <Grid
+        container
+        sx={{
+          display: "flex",
+          justifyContent: {
+            xs: "center",
+            sm: "center",
+            md: "space-around",
+            lg: "space-evenly",
+          },
+          alignItems: "center",
+          height: "100vh",
+          width: "100vw",
+        }}
+      >
+        <Grid item>
           <div className="header-container">
             <div className="header">QuizzyPals</div>
             <div className="start-btn lobbyBtnContainer">
@@ -401,7 +415,21 @@ const RoomLobbyPage = () => {
             {error && <div className="error-message">{error}</div>}
           </div>
         </Grid>
-        <Grid size={8}>
+        <Grid
+          item
+          sx={{
+            width: 2,
+            position: "fixed",
+            height: { xs: "0", sm: "0", md: "100%", lg: "100%" },
+            backgroundColor: "#ccc",
+          }}
+        ></Grid>
+        <Grid
+          item
+          sx={{
+            paddingBottom: { xs: 10, lg: 0 },
+          }}
+        >
           <div className="lobby-container">
             <div className="page-title">LOBBY</div>
             <div className="sub-title">Room Id: {room.roomId}</div>

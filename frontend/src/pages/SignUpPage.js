@@ -46,30 +46,47 @@ const SignUpPage = () => {
   };
 
   return (
-    <Grid container columns={16}>
-      <Grid size={8}>
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <div className="bigname">QuizzyPals</div>
+    <Grid
+      container
+      sx={{
+        flexFlow: { lg: "row", md: "column", sm: "column", xs: "column" },
+        justifyContent: { lg: "center", md: "center", xs: "center" },
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        margin: 0,
+        padding: 0,
+      }}
+    >
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          borderRight: { lg: "2px solid #ccc" },
+          paddingTop: 20,
+          paddingRight: { lg: "15vw", xs: 0 },
+        }}
+      >
+        <div className="header-container">
+          <div className="header">QuizzyPals</div>
         </div>
       </Grid>
-      <Grid size={8}>
-        <div
-          style={{
-            borderLeft: "1px solid black",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyItems: "center",
-          }}
-        >
-          <div className="pagetitle">SIGN UP</div>
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          height: "100%",
+          paddingLeft: { lg: "15vw" },
+          paddingBottom: 20,
+        }}
+      >
+        <div className="page-title-container">
+          <div className="page-title">SIGN UP</div>
 
           <FormInputComponent
             placeholder={"john.doe@example.com"}
@@ -94,25 +111,24 @@ const SignUpPage = () => {
             value={confirmPassword}
             onChange={(evt) => setConfirmPassword(evt.target.value)}
           />
-          <div
-            style={{
-              marginTop: "10vh",
-            }}
-          >
-            <ButtonComponent
-              label={"CONTINUE"}
-              onClick={handleContinueButton}
-              fontSize={24}
-              isDisabled={signUp.isLoading}
-            />
-            {signUp.error && (
-              <div className="error-message">{signUp.error}</div>
-            )}
-            <div className="custom-links">
-              <Link href="/signin">Already have an account</Link>
-            </div>
+        </div>
+        <div
+          style={{
+            marginTop: "10vh",
+          }}
+        >
+          <ButtonComponent
+            label={"CONTINUE"}
+            onClick={handleContinueButton}
+            fontSize={24}
+            isDisabled={signUp.isLoading}
+          />
+          {signUp.error && <div className="error-message">{signUp.error}</div>}
+          <div className="custom-links">
+            <Link href="/signin">Already have an account</Link>
           </div>
         </div>
+        {/* </div> */}
       </Grid>
     </Grid>
   );

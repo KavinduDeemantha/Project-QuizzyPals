@@ -35,13 +35,45 @@ const SignInPage = () => {
   };
 
   return (
-    <Grid container columns={16}>
-      <Grid size={8}>
+    <Grid
+      container
+      sx={{
+        flexFlow: { lg: "row", md: "column", sm: "column", xs: "column" },
+        justifyContent: { lg: "center", md: "center", xs: "center" },
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        margin: 0,
+        padding: 0,
+      }}
+    >
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          borderRight: { lg: "2px solid #ccc" },
+          paddingTop: 20,
+          paddingRight: { lg: "15vw", xs: 0 },
+        }}
+      >
         <div className="header-container">
           <div className="header">QuizzyPals</div>
         </div>
       </Grid>
-      <Grid size={8}>
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          height: "100%",
+          paddingLeft: { lg: "15vw" },
+          paddingBottom: 20,
+        }}
+      >
         {signIn.isLoading && <LinearProgress />}
 
         <div className="page-title-container">
