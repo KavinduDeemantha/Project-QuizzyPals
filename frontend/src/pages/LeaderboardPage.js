@@ -86,8 +86,28 @@ const LeaderboardPage = () => {
   }, []);
 
   return (
-    <Grid container columns={16}>
-      <Grid size={8}>
+    <Grid
+      container
+      sx={{
+        display: "flex",
+        justifyContent: {
+          xs: "center",
+          sm: "center",
+          md: "space-around",
+          lg: "space-evenly",
+        },
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <Grid
+        item
+        sx={{
+          paddingTop: 20,
+          paddingBottom: 20,
+        }}
+      >
         <div className="header-container">
           <div className="header">QuizzyPals</div>
           <div className="three-btn-container ">
@@ -115,7 +135,20 @@ const LeaderboardPage = () => {
           </div>
         </div>
       </Grid>
-      <Grid size={8}>
+      <Grid
+        item
+        sx={{
+          width: 2,
+          height: { xs: "0", sm: "0", md: "100vh", lg: "100vh" },
+          backgroundColor: "#ccc",
+        }}
+      ></Grid>
+      <Grid
+        item
+        sx={{
+          paddingBottom: 20,
+        }}
+      >
         <div className="page-title-container">
           <div className="page-title">LEADERBOARD</div>
           <div className="sub-title">RoomCode: {room && room.roomId}</div>

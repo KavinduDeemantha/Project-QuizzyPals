@@ -9,16 +9,24 @@ const userQuizSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  quizOwnerId: {
+  quizOwner: {
+    type: String,
+    required: false,
+  },
+  answerOwner: {
     type: String,
     required: true,
   },
-  answerOwnerId: {
+  question: {
     type: String,
     required: true,
   },
   playerAnswer: {
     type: String,
+    required: false,
+  },
+  answeredCorrectly: {
+    type: Boolean,
     required: false,
   },
 });

@@ -1,6 +1,7 @@
 const Quiz = require("../models/quizModel");
 const Room = require("../models/roomModel");
 const User = require("../models/userModel");
+const UserQuiz = require("../models/userQuizModel");
 const { StatusCodes } = require("http-status-codes");
 
 const _getUserById = async (userId) => {
@@ -36,7 +37,7 @@ const startGame = async (req, res) => {
     const room = await Room.findOne({ roomId: user.roomId });
 
     if (!room) {
-      throw Error("The user is not attached to an active room!");
+      throw Error(`The user is not attached to an active room! ${user.email}`);
     }
 
     if (room.host != userId) {
@@ -88,14 +89,17 @@ const startGame = async (req, res) => {
     const responseEntity = { room: room, message: "Game started" };
     responseEntity.host = user.email;
 
+    await UserQuiz.deleteMany({ roomId: room.roomId });
+
     res.status(StatusCodes.OK).json(responseEntity);
   } catch (error) {
+    console.error(error);
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
 
 const endGame = async (req, res) => {
-  const userId = req.params.userId;
+  const { userId, type } = req.body;
 
   try {
     const user = await User.findOne({ userId: userId });
@@ -108,15 +112,27 @@ const endGame = async (req, res) => {
       throw Error("The user is not attached a room to end the game");
     }
 
-    if (room.saveData != undefined && room.saveData != null) {
-      if (room.saveData === false) {
-        await Quiz.deleteMany({ roomId: room.roomId });
-      }
-    }
-
+    // Host ended the game for all
     if (room.host == user.userId) {
       room.gameEnd = null;
       room.gameStart = null;
+
+      if (type === "GAME_END") {
+        if (room.saveData != undefined && room.saveData != null) {
+          if (room.saveData === false) {
+            await Quiz.deleteMany({ roomId: room.roomId });
+          }
+        }
+
+        // await UserQuiz.deleteMany({ roomId: room.roomId });
+
+        // const users = await User.find({ roomId: room.roomId });
+        // for (const user of users) {
+        //   user.roomId = null;
+        //   await user.save();
+        // }
+      }
+
       await room.save();
     } else {
       user.roomId = null;
@@ -125,6 +141,7 @@ const endGame = async (req, res) => {
 
     res.status(StatusCodes.OK).json(room);
   } catch (error) {
+    console.error(error);
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
@@ -133,7 +150,7 @@ const createQuiz = async (req, res) => {
   const { userId, quizQuestion, quizAnswer, correctAnswer } = req.body;
 
   try {
-    const user = await User.findById(userId);
+    const user = await _getUserById(userId);
 
     if (!user) {
       throw Error("Invalid user");
@@ -167,6 +184,7 @@ const createQuiz = async (req, res) => {
 
     res.status(StatusCodes.OK).json(quiz);
   } catch (error) {
+    console.error(error);
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
@@ -191,22 +209,26 @@ const getQuizzes = async (req, res) => {
 
     const quizzes = await _getQuizzesByRoom(room.roomId);
 
-    if (room.answerRoundEnd < Date.now()) {
-      // A player is trying to access quizzes before the game ended (so correct answer is not there)
+    const now = new Date();
+    if (room.answerRoundEnd < now) {
+      // A player is trying the access quizzes after the game ended (so correct answer is there)
       for (let quiz of quizzes) {
+        // console.log(quiz);
         if (quiz.userId != user.userId) {
           quizzesExceptMe.push({
+            quizId: quiz.quizId,
             question: quiz.quizQuestion,
             answer: quiz.quizAnswer,
             correct: quiz.correctAnswer,
           });
         }
       }
-      // A player is trying the access quizzes after the game ended (so correct answer is there)
     } else {
+      // A player is trying to access quizzes before the game ended (so correct answer is not there)
       for (let quiz of quizzes) {
         if (quiz.userId != user.userId) {
           quizzesExceptMe.push({
+            quizId: quiz.quizId,
             question: quiz.quizQuestion,
             answer: quiz.quizAnswer,
           });
@@ -214,8 +236,10 @@ const getQuizzes = async (req, res) => {
       }
     }
 
+    // console.log(quizzesExceptMe);
     res.status(StatusCodes.OK).json(quizzesExceptMe);
   } catch (error) {
+    console.error(error);
     res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
 };
@@ -234,67 +258,25 @@ const getPlayerQandA = async (req, res) => {
       throw Error("There is no active room with this id: ", roomId);
     }
 
-    // const players = await User.find(
-    //   { roomId },
-    //   { userId: 0, password: 0, score: 0, roomId: 0 }
-    // );
+    const responses = [];
+    const playersQA = await UserQuiz.find({ roomId: room.roomId });
+    if (playersQA) {
+      for (const qa of playersQA) {
+        const quiz = await Quiz.findOne({ quizQuestion: qa.question });
+        const owner = await User.findOne({ userId: quiz.userId });
 
-    // const response = [];
-    // for (const player of players) {
-    //   if (!player.questionAnswer) {
-    //     continue;
-    //   }
-
-    //   const questionAndAnswer = {};
-    //   questionAndAnswer["questionAndAnswer"] = JSON.parse(
-    //     player.questionAnswer
-    //   );
-
-    //   for (let question of Object.keys(
-    //     questionAndAnswer["questionAndAnswer"]
-    //   )) {
-    //     // TODO: what if two players create the same question with different answers?
-    //     const quizzes = await Quiz.find({
-    //       quizQuestion: question,
-    //     });
-    //     for (const quiz of quizzes) {
-    //       console.log(quiz);
-    //       questionAndAnswer["answeredBy"] = player.email;
-    //       questionAndAnswer["correctAnswer"] = quiz.correctAnswer;
-
-    //       const creator = await _getUserById(quiz.userId);
-    //       questionAndAnswer["createdBy"] = creator.email;
-    //       response.push(questionAndAnswer);
-    //     }
-    //   }
-    // }
-
-    const response = [];
-    const qAndAs = JSON.parse(room.questionAnswer);
-    // console.log(qAndAs);
-    for (const qAndA of Object.values(qAndAs)) {
-      // console.log(Object.values(qAndA));
-      const q = Object.keys(qAndA)[0];
-      for (const ans of Object.values(qAndA)) {
-        const questionAndAnswer = { question: q };
-
-        // TODO: what if two players create the same question with different answers?
-        const quiz = await Quiz.findOne({
-          quizQuestion: q,
-        });
-
-        questionAndAnswer["answeredBy"] = ans.player; // player.email;
-        questionAndAnswer["answer"] = ans.answer;
-        questionAndAnswer["correctAnswer"] = quiz.correctAnswer;
-
-        const creator = await _getUserById(quiz.userId);
-        questionAndAnswer["createdBy"] = creator.email;
-        response.push(questionAndAnswer);
+        const response = {
+          quizId: quiz.quizId,
+          question: qa.question,
+          answer: qa.playerAnswer,
+          answeredBy: qa.answerOwner,
+          createdBy: owner.email,
+          correctAnswer: quiz.correctAnswer,
+        };
+        responses.push(response);
       }
     }
-
-    // console.log(response);
-    res.status(StatusCodes.OK).json(response);
+    res.status(StatusCodes.OK).json(responses);
   } catch (error) {
     console.error(error);
     res
@@ -304,7 +286,7 @@ const getPlayerQandA = async (req, res) => {
 };
 
 const submitAnswers = async (req, res) => {
-  const { userId, answers } = req.body;
+  const { userId, quizId, quizQuestion, playerAnswer } = req.body;
 
   try {
     const user = await _getUserById(userId);
@@ -319,51 +301,55 @@ const submitAnswers = async (req, res) => {
       throw Error("User is not joined to a room");
     }
 
-    const quizzes = await _getQuizzesByRoom(room.roomId);
-    const answerMap = new Map();
-    for (let answer of answers) {
-      answerMap.set(answer.quizQuestion, {
-        answer: answer.playerAnswer,
-        player: user.email,
-      });
-    }
-
     const startTime = new Date();
     const endTime = room.answerRoundEnd;
     const duration = endTime - startTime;
 
-    if (duration > 0 || true) {
-      // A player is trying to access quizzes before the game ended (so correct answer is not there)
-      for (let quiz of quizzes) {
-        if (quiz.userId == user.userId) {
-          continue;
-        }
+    if (duration > 0) {
+      const quiz = await Quiz.findOne({ quizId });
 
-        if (answerMap.has(quiz.quizQuestion)) {
-          if (answerMap.get(quiz.quizQuestion).answer == quiz.correctAnswer) {
-            user.score += 1;
-            await user.save();
-          }
-        }
+      // console.log(req.body);
+
+      if (user.userId == quiz.userId) {
+        return;
       }
 
-      if (room.questionAnswer) {
-        const existingData = JSON.parse(room.questionAnswer);
-        const data = Object.fromEntries(answerMap);
-        const newData = [...existingData, data];
-        room.questionAnswer = JSON.stringify(newData);
+      let playerQACache = await UserQuiz.findOne({
+        question: quiz.quizQuestion,
+        roomId: room.roomId,
+        answerOwner: user.email,
+      });
+
+      if (!playerQACache) {
+        playerQACache = await UserQuiz.create({
+          question: quiz.quizQuestion,
+          roomId: room.roomId,
+          answerOwner: user.email,
+        });
+      }
+
+      if (playerAnswer == quiz.correctAnswer) {
+        user.score += 1;
+        playerQACache.answeredCorrectly = true;
       } else {
-        room.questionAnswer = JSON.stringify([Object.fromEntries(answerMap)]);
+        if (playerQACache.answeredCorrectly) {
+          user.score -= 1;
+        }
+        playerQACache.answeredCorrectly = false;
       }
-      await room.save();
+
+      playerQACache.playerAnswer = playerAnswer;
+      await playerQACache.save();
       await user.save();
+      res
+        .status(StatusCodes.OK)
+        .json({ message: "Answer submitted successfully!" });
     } else {
       res.status(StatusCodes.BAD_REQUEST).json({ message: "Times up!" });
       return;
     }
-
-    res.status(StatusCodes.OK).json({ answers });
   } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });
@@ -397,8 +383,9 @@ const getTimeRemaining = async (req, res) => {
     const endTime = room.gameEnd;
     const duration = endTime - startTime;
 
-    res.status(StatusCodes.OK).json({ remainingTime: `${duration / 1000}s` });
+    res.status(StatusCodes.OK).json({ remainingTime: duration });
   } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });

@@ -21,7 +21,7 @@ router.post("/signup", signUp);
 router.patch("/:id", updateUser);
 
 // Delete a user
-router.delete("/:email", deleteUser);
+router.delete("/:userId", deleteUser);
 
 // Get user room id
 router.get("/roomid/:email", getUserRoomId);

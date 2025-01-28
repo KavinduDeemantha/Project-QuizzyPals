@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
 
 userSchema.statics.reset_password = async function (email, newPassword) {
   // To create a user both password and email should be not empty
-  if (!email || !password) {
+  if (!email || !newPassword) {
     throw Error("Invalid Credentials: All fields must be filled!");
   }
 

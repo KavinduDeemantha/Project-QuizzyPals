@@ -7,7 +7,7 @@ describe("Authentication API", () => {
         assert.strictEqual(res.status, 200);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        throw error;
       });
   });
 });

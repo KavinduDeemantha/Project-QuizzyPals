@@ -159,7 +159,7 @@ const WelcomePage = () => {
       );
       console.log(response);
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         setRoomId(response.data.roomId);
       } else {
         console.log("error");
@@ -178,6 +178,12 @@ const WelcomePage = () => {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    if (roomId) {
+      setRoomCode(roomId);
+    }
+  }, [roomId]);
+
   return (
     user && (
       <Grid
@@ -195,7 +201,13 @@ const WelcomePage = () => {
           width: "100vw",
         }}
       >
-        <Grid item>
+        <Grid
+          item
+          sx={{
+            paddingTop: 20,
+            paddingBottom: 20,
+          }}
+        >
           <div className="header-container">
             <div className="header">QuizzyPals</div>
           </div>
@@ -260,9 +272,7 @@ const WelcomePage = () => {
               </div>
             )}
             {error && (
-              <Typography variant="body1" className="error-message">
-                {error}
-              </Typography>
+              <Typography className="error-message">{error}</Typography>
             )}
           </div>
         </Grid>

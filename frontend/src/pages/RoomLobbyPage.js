@@ -15,6 +15,11 @@ import {
   TextField,
   Switch,
   FormControlLabel,
+  DialogContent,
+  Typography,
+  DialogActions,
+  DialogContentText,
+  Button,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useRoomContext } from "../hook/useRoomContext";
@@ -29,11 +34,12 @@ const RoomLobbyPage = () => {
 
   const [error, setError] = useState(null);
   const [startDialogVisible, setStartDialogVisible] = useState(false);
+  const [endDialogVisible, setEndDialogVisible] = useState(false);
   const [saveGameData, setSaveGameData] = useState(false);
   const [gameDurationSeconds, setGameDurationSeconds] = useState(0);
   const [gameAnswerDurationSeconds, setGameAnswerDurationSeconds] = useState(0);
-  const [gameDurationMinutes, setGameDurationMinutes] = useState(0);
-  const [gameDurationAnswerMinutes, setGameAnswerDurationMinutes] = useState(0);
+  const [gameDurationMinutes, setGameDurationMinutes] = useState(1);
+  const [gameDurationAnswerMinutes, setGameAnswerDurationMinutes] = useState(1);
   const roomContext = useRoomContext();
   const { room } = roomContext;
   const { user } = useAuthContext();
@@ -158,7 +164,6 @@ const RoomLobbyPage = () => {
       )
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
           if (response.data.message === "Game started") {
             const tmpGameData = gameData;
             const startGameRequest = {
@@ -175,6 +180,8 @@ const RoomLobbyPage = () => {
               payload: response.data.room,
             });
             navigate("/createquiz");
+          } else {
+            alert(response.data?.message);
           }
         }
       })
@@ -198,38 +205,22 @@ const RoomLobbyPage = () => {
     };
 
     await startGameRequest(gameData);
-
-    // if (
-    //   (gameData.answerDurationMinutes !== 0 ||
-    //     gameData.answerDurationSeconds !== 0) &&
-    //   (gameData.durationMinutes !== 0 || gameData.answerDurationSeconds !== 0)
-    // ) {
-    //   await startGameRequest(gameData);
-    // } else {
-    //   if (room.host === user.email) {
-    //     alert("Please select time durations");
-    //   } else {
-    //     await startGameRequest(gameData);
-    //   }
-    // }
-
-    // if (
-    //   gameData.answerDurationMinutes === "" ||
-    //   gameData.durationMinutes === "" ||
-    //   gameData.answerDurationMinutes === 0 ||
-    //   gameData.durationMinutes === 0
-    // ) {
-    //   if (room.host === user.email) {
-    //     alert("Please select time durations");
-    //   }
-    // } else {
-    //   await startGameRequest(gameData);
-    // }
   };
 
-  const handleEndGameButton = async (e) => {
+  const handleEndGameButton = async (e, endType) => {
+    // If host is trying to end the game then ask "Ending game for himself or all?"
+    if (user.email === room.host) {
+      setEndDialogVisible(true);
+      if (endType === "") {
+        return;
+      }
+    }
+
     const endGameRequest = {
-      type: "GAME_END",
+      // endType == EXIT_ROOM means the user is exiting from the current game
+      // endType == GAME_END means host is end the game for all users
+      // endType == "" means EXIT_ROOM
+      type: endType || "EXIT_ROOM",
       userId: user.userId,
       roomId: room.roomId,
     };
@@ -237,30 +228,33 @@ const RoomLobbyPage = () => {
     if (room.host !== user.email) {
       // I am not the host
       await axios
-        .get(
-          `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
+        .post(
+          `${process.env.REACT_APP_BASE_URL}/api/game/endgame/`,
+          endGameRequest,
           requestHeaders
         )
         .then((response) => {
           if (response.status === 200) {
-            endGameRequest.type = "EXIT_ROOM";
             socket.current.send(JSON.stringify(endGameRequest));
-            endGameRequest.type = "GAME_END";
-            navigate("/");
+            navigate("/welcome");
           }
         })
-        .catch(logError);
+        .catch((error) => {
+          logError(error);
+          navigate("/welcome");
+        });
     } else {
       // I am the host
       await axios
-        .get(
-          `${process.env.REACT_APP_BASE_URL}/api/game/endgame/${user.userId}`,
+        .post(
+          `${process.env.REACT_APP_BASE_URL}/api/game/endgame/`,
+          endGameRequest,
           requestHeaders
         )
         .then((response) => {
           if (response.status === 200) {
             socket.current.send(JSON.stringify(endGameRequest));
-            navigate("/");
+            navigate("/welcome");
           }
         })
         .catch(logError);
@@ -268,6 +262,12 @@ const RoomLobbyPage = () => {
   };
 
   const handleDeleteRoomButton = async (e) => {
+    const deleteRoomRequest = {
+      type: "DELETE_ROOM",
+      userId: user.userId,
+      roomId: room.roomId,
+    };
+
     await axios
       .delete(
         `${process.env.REACT_APP_BASE_URL}/api/rooms/deleteroom/${user.userId}`,
@@ -275,7 +275,8 @@ const RoomLobbyPage = () => {
       )
       .then((response) => {
         if (response.status === 200) {
-          navigate("/");
+          socket.current.send(JSON.stringify(deleteRoomRequest));
+          navigate("/welcome");
         }
       })
       .catch(logError);
@@ -291,13 +292,26 @@ const RoomLobbyPage = () => {
   };
 
   useEffect(() => {
+    if (!game) {
+      console.warn("Game context destroyed in client side");
+      navigate("/welcome");
+      return;
+    }
     if (!room) {
-      navigate("/");
+      console.warn("Room context destroyed in client side");
+      navigate("/welcome");
       return;
     }
 
     getAndSetRoomPlayers(room.roomId);
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      console.error("User context destroyed in client side");
+      navigate("/welcome");
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     setSaveGameData(room.saveData);
@@ -317,8 +331,29 @@ const RoomLobbyPage = () => {
     }
   }, [game]);
 
-  return room ? (
-    <div>
+  return (
+    <>
+      <Dialog
+        onClose={() => setEndDialogVisible(false)}
+        open={endDialogVisible}
+      >
+        <DialogTitle>End game settings</DialogTitle>
+        <DialogContent>
+          <DialogContentText>This game is ending for all</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            color={"error"}
+            onClick={(e) => handleEndGameButton(e, "GAME_END")}
+          >
+            All
+          </Button>
+          <Button onClick={(e) => handleEndGameButton(e, "EXIT_ROOM")}>
+            Me
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog
         onClose={() => setStartDialogVisible(false)}
         open={startDialogVisible}
@@ -381,17 +416,34 @@ const RoomLobbyPage = () => {
           <div className="header-container">
             <div className="header">QuizzyPals</div>
             <div className="start-btn lobbyBtnContainer">
-              <ButtonComponent
-                className={"lobbyBtn"}
-                label={"Start Game"}
-                onClick={handleStartGameButton}
-              />
+              {game ? (
+                game.type === "GAME_STARTED" ||
+                game.type === "TIME_REMAINING" ? (
+                  <ButtonComponent
+                    label={"Continue Game"}
+                    onClick={(e) => {
+                      navigate("/createquiz");
+                    }}
+                  />
+                ) : (
+                  <ButtonComponent
+                    label={"Start Game"}
+                    onClick={handleStartGameButton}
+                  />
+                )
+              ) : (
+                <ButtonComponent
+                  label={"Start Game"}
+                  onClick={handleStartGameButton}
+                />
+              )}
             </div>
             <div className="end-btn lobbyBtnContainer">
               <ButtonComponent
                 className={"lobbyBtn"}
                 label={"End Game"}
-                onClick={handleEndGameButton}
+                // Empty game type is used to handle the case when host trying to end the game
+                onClick={(e) => handleEndGameButton(e, "")}
               />
             </div>
             {room.host === user.email ? (
@@ -419,8 +471,7 @@ const RoomLobbyPage = () => {
           item
           sx={{
             width: 2,
-            position: "fixed",
-            height: { xs: "0", sm: "0", md: "100%", lg: "100%" },
+            height: { xs: "0", sm: "0", md: "100vh", lg: "100vh" },
             backgroundColor: "#ccc",
           }}
         ></Grid>
@@ -441,7 +492,7 @@ const RoomLobbyPage = () => {
                   {playersInRoom.map((item, index) => {
                     let name = item;
                     if (item === room.host) {
-                      name += " (Host)";
+                      name = name + " (Host)";
                     }
                     if (item === user.email) {
                       name += " (Me)";
@@ -459,9 +510,7 @@ const RoomLobbyPage = () => {
           </div>
         </Grid>
       </Grid>
-    </div>
-  ) : (
-    <>Room context destroyed in client side</>
+    </>
   );
 };
 

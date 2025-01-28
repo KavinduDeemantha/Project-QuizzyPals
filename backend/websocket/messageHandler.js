@@ -77,6 +77,7 @@ const handleGameStart = (ws, rooms, data) => {
   // created before and still in use. So we return "You can't create a room with
   // that id".
   if (rooms.has(data.roomId)) {
+    // Game is already running
     const gameState = rooms.get(data.roomId)?.gameState;
     if (
       gameState != "GAME_NOT_STARTED" ||
@@ -84,6 +85,7 @@ const handleGameStart = (ws, rooms, data) => {
       gameState === undefined ||
       gameState === null
     ) {
+      // For host
       if (data.userId == rooms.get(data.roomId).data.userId) {
         ws.send(
           JSON.stringify({
@@ -188,39 +190,39 @@ const handleGameStart = (ws, rooms, data) => {
   );
 };
 
-const handleAnswerRound = (ws, rooms, data) => {
-  if (!rooms.has(data.roomId)) {
-    ws.send(
-      JSON.stringify({
-        type: "ERROR",
-        message: "game has not started yet!",
-      })
-    );
-    return;
-  }
+// const handleAnswerRound = (ws, rooms, data) => {
+//   if (!rooms.has(data.roomId)) {
+//     ws.send(
+//       JSON.stringify({
+//         type: "ERROR",
+//         message: "game has not started yet!",
+//       })
+//     );
+//     return;
+//   }
 
-  const room = rooms.get(data.roomId);
-  const roomData = room.data;
+//   const room = rooms.get(data.roomId);
+//   const roomData = room.data;
 
-  if (roomData.gameState !== "GAME_STARTED") {
-    ws.send(
-      JSON.stringify({
-        type: "INFO",
-        message: "please wait others still creating quizzes!",
-      })
-    );
-    return;
-  }
+//   if (roomData.gameState !== "GAME_STARTED") {
+//     ws.send(
+//       JSON.stringify({
+//         type: "INFO",
+//         message: "Please wait others still creating quizzes!",
+//       })
+//     );
+//     return;
+//   }
 
-  handleAnswerRound(ws, rooms, data);
+//   // handleAnswerRound(ws, rooms, data);
 
-  ws.send(
-    JSON.stringify({
-      type: "ANSWER_ROUND_STARTED",
-      duration: duration,
-    })
-  );
-};
+//   ws.send(
+//     JSON.stringify({
+//       type: "ANSWER_ROUND_STARTED",
+//       duration: duration,
+//     })
+//   );
+// };
 
 const handleGameEnd = (ws, rooms, data) => {
   // console.log("Game ending...");
@@ -323,6 +325,7 @@ const handleRoomExit = (ws, rooms, data) => {
       gameState: "GAME_NOT_STARTED",
     });
   }
+
   const roomData = rooms.get(data.roomId).data;
   if ("players" in roomData) {
     let n = roomData["players"].length;
@@ -346,9 +349,70 @@ const handleRoomExit = (ws, rooms, data) => {
   }
 };
 
+const handleTimeRemainingQuizCreation = (ws, rooms, data) => {
+  // console.log(rooms);
+  const roomData = rooms.get(data.roomId).data;
+  const endTime = new Date(roomData.endTime);
+  const now = new Date();
+
+  const duration = endTime - now;
+
+  ws.send(
+    JSON.stringify({
+      type: "TIME_REMAINING",
+      duration: duration,
+    })
+  );
+};
+
+const handleTimeRemainingQuizAnswer = (ws, rooms, data) => {
+  // console.log(rooms);
+  const roomData = rooms.get(data.roomId).data;
+  const endTime = new Date(roomData.endAnswerTime);
+  const now = new Date();
+
+  const duration = endTime - now;
+  // console.log(duration);
+  // console.log(endTime);
+  // console.log(now);
+
+  ws.send(
+    JSON.stringify({
+      type: "TIME_REMAINING",
+      duration: duration,
+    })
+  );
+};
+
+const handleDeleteRoom = (ws, rooms, data) => {
+  if (!rooms.has(data.roomId)) {
+    ws.send(
+      JSON.stringify({
+        type: "ROOM_DELETE",
+        message: "No such room exists",
+      })
+    );
+
+    return;
+  }
+
+  const roomData = rooms.get(data.roomId).data;
+
+  if ("players" in roomData) {
+    for (const player of roomData.players) {
+      player.send(
+        JSON.stringify({
+          type: "ROOM_DELETED",
+          room: data.roomId,
+          message: "Room deleted by the host!",
+        })
+      );
+    }
+  }
+};
+
 const messageHandler = (ws, rooms) => {
   function incoming(msg) {
-    // console.log(`Message received: ${msg}`);
     const data = JSON.parse(msg);
 
     switch (data.type) {
@@ -364,8 +428,20 @@ const messageHandler = (ws, rooms) => {
         handleGameStart(ws, rooms, data);
         break;
       }
-      case "ANSWER_ROUND_START": {
-        handleAnswerRound(ws, rooms, data);
+      case "DELETE_ROOM": {
+        handleDeleteRoom(ws, rooms, data);
+        break;
+      }
+      // case "ANSWER_ROUND_START": {
+      //   handleAnswerRound(ws, rooms, data);
+      //   break;
+      // }
+      case "TIME_REMAINING_ANSWER": {
+        handleTimeRemainingQuizAnswer(ws, rooms, data);
+        break;
+      }
+      case "TIME_REMAINING_CREATION": {
+        handleTimeRemainingQuizCreation(ws, rooms, data);
         break;
       }
       case "GAME_END": {

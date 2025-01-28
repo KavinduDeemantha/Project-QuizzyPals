@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid2";
 import Link from "@mui/material/Link";
 import FormInputComponent from "../components/FormInputComponent";
@@ -14,6 +14,7 @@ import { useAuthContext } from "../hook/useAuthContext";
 const SignInPage = () => {
   const navigate = useNavigate();
 
+  const [errorMessage, setErrorMessage] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -33,6 +34,12 @@ const SignInPage = () => {
       navigate("/");
     }
   };
+
+  useEffect(() => {
+    if (signIn.error) {
+      setErrorMessage(signIn.error);
+    }
+  }, [signIn])
 
   return (
     <Grid
@@ -104,7 +111,7 @@ const SignInPage = () => {
             fontSize={24}
           />
         </div>
-        {signIn.error && <div className="error-message">{signIn.error}</div>}
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
         <div className="margin-top-10">
           <Link href="/signup">Create New Account</Link>
         </div>
