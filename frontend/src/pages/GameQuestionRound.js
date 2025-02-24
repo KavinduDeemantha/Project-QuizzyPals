@@ -166,52 +166,42 @@ const GameQuestionRound = () => {
 
   const analyzeSentiment = async () => {
     const url1 =
-      "https://api.edenai.run/v2/workflow/44219089-83df-4366-94bf-b0e4f0b106f2/execution/";
+      "https://api.edenai.run/v2/workflow/8fb0d1b7-adcb-48a7-9ca5-747da88e9832/execution/";
 
     const payload = { text: quizQuestion };
-    const requestHeaders = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.REACT_APP_EDENAI_API_KEY}`,
-      },
+    const launchExecution = async () => {
+      const response = await fetch(url1, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_EDENAI_API_KEY}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      return result["id"];
+    };
+    const executionId = await launchExecution();
+
+    const url2 = `https://api.edenai.run/v2/workflow/8fb0d1b7-adcb-48a7-9ca5-747da88e9832/execution/${executionId}/`;
+    const getResult = async () => {
+      const response = await fetch(url2, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_EDENAI_API_KEY}`,
+        },
+      });
+      const result = await response.json();
+      // console.log(result);
+      return result["content"]["results"]["text__sentiment_analysis"][
+        "results"
+      ][0]["items"][0];
     };
 
-    const executionId = await axios
-      .post(url1, payload, requestHeaders)
-      .then((response) => {
-        if (response.status === 201) {
-          return response.data.id;
-        }
+    const result = await getResult();
+    // console.log(result);
 
-        return 0;
-      })
-      .catch((error) => {
-        return -1;
-      });
-
-    const url2 = `https://api.edenai.run/v2/workflow/44219089-83df-4366-94bf-b0e4f0b106f2/execution/${executionId}/`;
-
-    return await axios
-      .get(url2, requestHeaders)
-      .then((response) => {
-        if (response.status === 200) {
-          response = response.data;
-          console.log(response);
-          const data =
-            response["content"]["results"]["text__sentiment_analysis"];
-          if (data["status"] === "failed") {
-            console.error("AI:", data["errors"][0]["type"]);
-            return null;
-          }
-          const results = data["results"][0];
-          const { sentiment, sentiment_rate } = results["items"][0];
-
-          return { sentiment, sentiment_rate };
-        }
-      })
-      .catch((error) => {
-        console.warn(error);
-      });
+    return result;
   };
 
   const emojiMapper = {

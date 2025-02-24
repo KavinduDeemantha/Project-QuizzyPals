@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid2";
 import Link from "@mui/material/Link";
+import { Link as RouterLink } from "react-router-dom";
 import FormInputComponent from "../components/FormInputComponent";
 import { useNavigate } from "react-router-dom";
 import { useSignIn } from "../hook/useSignin";
@@ -39,7 +40,7 @@ const SignInPage = () => {
     if (signIn.error) {
       setErrorMessage(signIn.error);
     }
-  }, [signIn])
+  }, [signIn]);
 
   return (
     <Grid
@@ -101,6 +102,10 @@ const SignInPage = () => {
             value={password}
             onChange={(evt) => setPassword(evt.target.value)}
           />
+
+          <RouterLink to={"/signup?password-reset=1"}>
+            Forgot Password?
+          </RouterLink>
         </div>
 
         <div className="continue-btn">

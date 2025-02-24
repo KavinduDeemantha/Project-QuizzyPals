@@ -5,11 +5,14 @@ import Grid from "@mui/material/Grid2";
 import { Button } from "@mui/material";
 import Link from "@mui/material/Link";
 import FormInputComponent from "../components/FormInputComponent";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import "./SignUpPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { useSignUp } from "../hook/useSignup";
+import { useAuthContext } from "../hook/useAuthContext";
+import { useEffect } from "react";
+import { useResetPassword } from "../hook/useResetPassword";
 
 const BootstrapButton = styled(Button)({
   backgroundColor: "#cccccc",
@@ -19,11 +22,14 @@ const BootstrapButton = styled(Button)({
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const signUp = useSignUp();
+  const resetPassword = useResetPassword();
 
   const handleContinueButton = async (e) => {
     e.preventDefault();
@@ -32,15 +38,26 @@ const SignUpPage = () => {
       alert("Passwords did not match. Please re-enter");
       return;
     } else {
-      const userData = {
-        email: username,
-        password: password,
-      };
+      if (queryParams.get("password-reset") == 1) {
+        const userData = {
+          email: username,
+          newPassword: password,
+        };
+        const success = await resetPassword.reset(userData);
 
-      const success = await signUp.signup(userData);
+        if (success) {
+          navigate("/signin");
+        }
+      } else {
+        const userData = {
+          email: username,
+          password: password,
+        };
+        const success = await signUp.signup(userData);
 
-      if (success) {
-        navigate("/signin");
+        if (success) {
+          navigate("/signin");
+        }
       }
     }
   };
@@ -86,7 +103,11 @@ const SignUpPage = () => {
         }}
       >
         <div className="page-title-container">
-          <div className="page-title">SIGN UP</div>
+          <div className="page-title">
+            {
+              queryParams.get("password-reset") == 1 ? "RESET PASSWORD" : "SIGN UP"
+            }
+          </div>
 
           <FormInputComponent
             placeholder={"john.doe@example.com"}
@@ -118,7 +139,9 @@ const SignUpPage = () => {
           }}
         >
           <ButtonComponent
-            label={"CONTINUE"}
+            label={
+              queryParams.get("password-reset") == 1 ? "RESET" : "CONTINUE"
+            }
             onClick={handleContinueButton}
             fontSize={24}
             isDisabled={signUp.isLoading}
