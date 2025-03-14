@@ -379,14 +379,6 @@ const GameAnswerRound = () => {
         >
           Lobby
         </Button>
-        {/* <Button
-        className="submit-and-finish-btn"
-        variant="contained"
-        color="primary"
-        onClick={handleGameEnded}
-      >
-        Submit & Finish
-      </Button> */}
       </div>
     </div>
   );
