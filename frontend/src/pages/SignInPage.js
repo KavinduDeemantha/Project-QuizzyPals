@@ -9,7 +9,6 @@ import { useSignIn } from "../hook/useSignin";
 import "./SignInPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { LinearProgress } from "@mui/material";
-import { useAuthContext } from "../hook/useAuthContext";
 
 const SignInPage = () => {
   const navigate = useNavigate();

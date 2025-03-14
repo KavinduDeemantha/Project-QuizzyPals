@@ -1,8 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid2";
-import { Button } from "@mui/material";
 import Link from "@mui/material/Link";
 import FormInputComponent from "../components/FormInputComponent";
 import { useNavigate } from "react-router-dom";
@@ -10,12 +8,6 @@ import { useNavigate } from "react-router-dom";
 import "./SignUpPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { useSignUp } from "../hook/useSignup";
-
-const BootstrapButton = styled(Button)({
-  backgroundColor: "#cccccc",
-  color: "#000000",
-  fontSize: 24,
-});
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -28,7 +20,7 @@ const SignUpPage = () => {
   const handleContinueButton = async (e) => {
     e.preventDefault();
 
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
       alert("Passwords did not match. Please re-enter");
       return;
     } else {
@@ -128,7 +120,6 @@ const SignUpPage = () => {
             <Link href="/signin">Already have an account</Link>
           </div>
         </div>
-        {/* </div> */}
       </Grid>
     </Grid>
   );
