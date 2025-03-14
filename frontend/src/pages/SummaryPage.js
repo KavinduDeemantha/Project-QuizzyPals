@@ -17,8 +17,8 @@ const SummaryPage = () => {
   const { game } = useGameContext();
   const { user } = useAuthContext();
   const [questions, setQuestions] = useState([]);
-  const [playerAnswers, setPlayerAnswers] = useState(null);
-  const [error, setError] = useState(null);
+  const [setPlayerAnswers] = useState(null);
+  const [setError] = useState(null);
 
   const requestHeaders = {
     headers: {
@@ -28,36 +28,10 @@ const SummaryPage = () => {
   };
 
   const getAndSetQuestions = async () => {
-    // await axios
-    //   .get(
-    //     `${process.env.REACT_APP_BASE_URL}/api/game/getquizzes/${user.userId}`,
-    //     requestHeaders
-    //   )
-    //   .then((response) => {
-    //     if (response.status === 200) {
-    //       const tmpQAndA = [];
-    //       for (let qa of response.data) {
-    //         // Q&A for rendering
-    //         tmpQAndA.push({
-    //           owner: user.email,
-    //           question: qa.question,
-    //           answers: JSON.parse(qa.answer),
-    //           correctAnswer: qa.correct || "No correct answer provided",
-    //         });
-    //       }
-
-    //       setQuestions(tmpQAndA);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     setError(error);
-    //   });a
 
     await axios
       .get(
         `${process.env.REACT_APP_BASE_URL}/api/game/get-all-player-answers/${room.roomId}`,
-        // `${process.env.REACT_APP_BASE_URL}/api/game/get-all-player-answers/6765cc0fd3ef2d4bbfe1cf45`,
         requestHeaders
       )
       .then((response) => {
@@ -93,28 +67,6 @@ const SummaryPage = () => {
         setError(error);
       });
   };
-
-  // Sample questions data
-  // const questions = [
-  //   {
-  //     owner: "Owner 1",
-  //     question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit?",
-  //     correctAnswer: "Suspendisse aliquam et augue sit amet euismod",
-  //     answers: ["Q1 Answer 1", "Q1 Answer 2", "Q1 Answer 3"],
-  //   },
-  //   {
-  //     owner: "Owner 2",
-  //     question: "Quisque non leo at velit commodo suscipit?",
-  //     correctAnswer: "Nullam scelerisque turpis a libero vulputate suscipit",
-  //     answers: ["Q2 Answer 1", "Q2 Answer 2", "Q2 Answer 3"],
-  //   },
-  //   {
-  //     owner: "Owner 3",
-  //     question: "Phasellus sollicitudin quam eget velit feugiat?",
-  //     correctAnswer: "Etiam sit amet tortor a mi aliquam tincidunt",
-  //     answers: ["Q3 Answer 1", "Q3 Answer 2", "Q3 Answer 3"],
-  //   },
-  // ];
 
   // State for the current question index
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -160,25 +112,11 @@ const SummaryPage = () => {
 
   return (
     <div className="main-container">
-      {/* <div className="summary-header">
-        <div className="summary-header-left">
-          <div className="room-code">Room: {room && room.roomId}</div>
-          <p>I am {user.email}</p>
-          <div className="round-title">SUMMARY</div>
-        </div>
-        <div className="summary-right">
-          <div className="game-timer">{room && room.gameRound}</div>
-        </div>
-      </div> */}
       <Grid
         container
         sx={{
           display: "flex",
           justifyContent: { xs: "space-evenly", md: "space-between" },
-          // justifyContent: {
-          //   xs: "center",
-          //   md: "space-between",
-          // },
           alignItems: "center",
           paddingTop: 2,
           paddingLeft: 10,
@@ -220,7 +158,6 @@ const SummaryPage = () => {
           className="question-main-container"
           style={{ flexDirection: "row" }}
         >
-          {/* <div className="summary-container"> */}
           <div className="prev-btn prevStart-btns" onClick={handlePrev}>
             Prev
           </div>
@@ -262,7 +199,6 @@ const SummaryPage = () => {
           <div className="next-btn prevStart-btns" onClick={handleNext}>
             Next
           </div>
-          {/* </div> */}
         </div>
       ) : (
         <div>
@@ -284,7 +220,6 @@ const SummaryPage = () => {
                   paddingBottom: 5,
                 }}
               >
-                {/* <div> */}
                 <Grid item>
                   <Typography
                     sx={{
@@ -308,7 +243,6 @@ const SummaryPage = () => {
                     ></img>
                   </picture>
                 </Grid>
-                {/* </div> */}
               </Grid>
               <ButtonComponent label={"Continue"} onClick={handleDoneBtn} />
             </div>
