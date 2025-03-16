@@ -7,3 +7,7 @@
 .custom-links {
   margin-top: 10px;
 }
+
+.error-message {
+  overflow-x: visible;
+}
