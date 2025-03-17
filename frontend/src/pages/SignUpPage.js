@@ -17,7 +17,7 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const signUp = useSignUp();
 
-  const handleContinueButton = async (e) => {
+  const handleSignUpButton = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -89,7 +89,7 @@ const SignUpPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here"}
+            placeholder={"Enter a password"}
             type={"password"}
             label={"Password"}
             value={password}
@@ -97,7 +97,7 @@ const SignUpPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here to confirm"}
+            placeholder={"Confirm your password"}
             type={"password"}
             label={"Confirm Password"}
             value={confirmPassword}
@@ -111,14 +111,14 @@ const SignUpPage = () => {
           }}
         >
           <ButtonComponent
-            label={"CONTINUE"}
-            onClick={handleContinueButton}
+            label={"Sign Up"}
+            onClick={handleSignUpButton}
             fontSize={24}
             isDisabled={signUp.isLoading}
           />
           {signUp.error && <div className="error-message">{signUp.error}</div>}
           <div className="custom-links">
-            <Link href="/signin">Already have an account</Link>
+            <Link href="/signin">Already have an account?</Link>
           </div>
         </div>
       </Grid>
