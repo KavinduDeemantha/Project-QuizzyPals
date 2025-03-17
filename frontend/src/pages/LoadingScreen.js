@@ -18,7 +18,6 @@ const LoadingScreen = () => {
       {loading && (
         <div className="loading-overlay">
           <div className="logo">Q</div>
-          {/* <img src="/logo.png" alt="Logo" className="logo" /> */}
           <p className="loading-text">Loading game please wait...</p>
         </div>
       )}

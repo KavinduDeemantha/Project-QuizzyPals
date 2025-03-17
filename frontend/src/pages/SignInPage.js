@@ -10,7 +10,6 @@ import { useSignIn } from "../hook/useSignin";
 import "./SignInPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { LinearProgress } from "@mui/material";
-import { useAuthContext } from "../hook/useAuthContext";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -63,7 +62,7 @@ const SignInPage = () => {
           alignItems: "center",
           height: "100%",
           borderRight: { lg: "2px solid #ccc" },
-          paddingTop: 20,
+          paddingTop: 0,
           paddingRight: { lg: "15vw", xs: 0 },
         }}
       >
@@ -96,7 +95,7 @@ const SignInPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here"}
+            placeholder={"Enter your password"}
             type={"password"}
             label={"Password"}
             value={password}
@@ -108,9 +107,9 @@ const SignInPage = () => {
           </RouterLink>
         </div>
 
-        <div className="continue-btn">
+        <div className="SignIn-btn">
           <ButtonComponent
-            label={"CONTINUE"}
+            label={"Sign In"}
             onClick={handleContinueButton}
             isDisabled={signIn.isLoading}
             fontSize={24}

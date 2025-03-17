@@ -123,14 +123,6 @@ const endGame = async (req, res) => {
             await Quiz.deleteMany({ roomId: room.roomId });
           }
         }
-
-        // await UserQuiz.deleteMany({ roomId: room.roomId });
-
-        // const users = await User.find({ roomId: room.roomId });
-        // for (const user of users) {
-        //   user.roomId = null;
-        //   await user.save();
-        // }
       }
 
       await room.save();
@@ -235,8 +227,6 @@ const getQuizzes = async (req, res) => {
         }
       }
     }
-
-    // console.log(quizzesExceptMe);
     res.status(StatusCodes.OK).json(quizzesExceptMe);
   } catch (error) {
     console.error(error);
@@ -307,8 +297,6 @@ const submitAnswers = async (req, res) => {
 
     if (duration > 0) {
       const quiz = await Quiz.findOne({ quizId });
-
-      // console.log(req.body);
 
       if (user.userId == quiz.userId) {
         return;

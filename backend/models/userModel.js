@@ -16,10 +16,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // questionAnswer: {
-    //   type: String,
-    //   required: false,
-    // },
     score: {
       type: Number,
       required: false,
