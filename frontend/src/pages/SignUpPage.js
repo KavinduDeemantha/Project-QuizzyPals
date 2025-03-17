@@ -58,7 +58,7 @@ const SignUpPage = () => {
           alignItems: "center",
           height: "100%",
           borderRight: { lg: "2px solid #ccc" },
-          paddingTop: 20,
+          paddingTop: 0,
           paddingRight: { lg: "15vw", xs: 0 },
         }}
       >
@@ -106,7 +106,8 @@ const SignUpPage = () => {
         </div>
         <div
           style={{
-            marginTop: "10vh",
+            marginTop: "8vh",
+            marginBottom: "5vh",
           }}
         >
           <ButtonComponent

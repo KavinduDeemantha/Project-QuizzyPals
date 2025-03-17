@@ -61,7 +61,7 @@ const SignInPage = () => {
           alignItems: "center",
           height: "100%",
           borderRight: { lg: "2px solid #ccc" },
-          paddingTop: 20,
+          paddingTop: 0,
           paddingRight: { lg: "15vw", xs: 0 },
         }}
       >
