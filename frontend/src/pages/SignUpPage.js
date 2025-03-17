@@ -118,14 +118,14 @@ const SignUpPage = () => {
           }}
         >
           <ButtonComponent
-            label={"CONTINUE"}
+            label={"Sign Up"}
             onClick={handleContinueButton}
             fontSize={24}
             isDisabled={signUp.isLoading}
           />
           {signUp.error && <div className="error-message">{signUp.error}</div>}
           <div className="custom-links">
-            <Link href="/signin">Already have an account</Link>
+            <Link href="/signin">Already have an account?</Link>
           </div>
         </div>
         {/* </div> */}
