@@ -10,7 +10,10 @@ import { useAuthContext } from "../hook/useAuthContext";
 import axios from "axios";
 import { useRoomCheckIn } from "../hook/useRoomCheckIn";
 import { useGameContext } from "../hook/useGameContext";
-import { Typography } from "@mui/material";
+import { useRoomContext } from "../hook/useRoomContext";
+import { Box, TextField, Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
+import { Label } from "@mui/icons-material";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -21,7 +24,9 @@ const WelcomePage = () => {
   const { socket } = gameContext;
 
   const [roomCode, setRoomCode] = useState("");
+  const [hostRoomId, setHostRoomId] = useState("");
   const [joinWithRoom, setJoinWithRoom] = useState(false);
+  const roomContext = useRoomContext();
   const [roomId, setRoomId] = useState(null);
 
   const [error, setError] = useState(null);
@@ -155,6 +160,7 @@ const WelcomePage = () => {
       );
       console.log(response);
       if (response.status === 200) {
+        // console.log(response);
         setRoomId(response.data.roomId);
       } else {
         console.log("error");
@@ -164,20 +170,44 @@ const WelcomePage = () => {
     }
   };
 
+  const fetchHostRoomId = async () => {
+    const requestHeaders = {
+      headers: {
+        Authorization: `Bearer ${user.userJWT}`,
+        "Content-Type": "application/json",
+      },
+    };
+  
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/rooms/hostroomid/${user.email}`,
+        requestHeaders
+      );
+      if (response.status === 200) {
+        if (response.data.roomId) {
+          setHostRoomId(response.data.roomId);
+        }
+      }
+    } catch (error) {
+      logError(error);
+    }
+  };
+
   // Redirect to / if no user is logged in
   useEffect(() => {
     if (!user) {
       navigate("/signin");
     } else {
       getRoomId();
+      fetchHostRoomId();
     }
   }, [user, navigate]);
 
   useEffect(() => {
-    if (roomId) {
-      setRoomCode(roomId);
+    if (hostRoomId) {
+      setHostRoomId(hostRoomId);
     }
-  }, [roomId]);
+  }, [hostRoomId]);
 
   return (
     user && (
@@ -225,7 +255,7 @@ const WelcomePage = () => {
             <div className="page-title">WELCOME</div>
             <div className="sub-title">{user.email}</div>
             <h3 className="roomID">
-              {roomId ? `You already have a room: Room ID = ${roomId}` : ""}
+              {hostRoomId ? `You already have a room: Room ID = ${hostRoomId}` : ""}
             </h3>
             {joinWithRoom ? (
               <>

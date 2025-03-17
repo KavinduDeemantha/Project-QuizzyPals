@@ -1,38 +1,63 @@
 import * as React from "react";
 import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid2";
+import { Button } from "@mui/material";
 import Link from "@mui/material/Link";
 import FormInputComponent from "../components/FormInputComponent";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import "./SignUpPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { useSignUp } from "../hook/useSignup";
+import { useAuthContext } from "../hook/useAuthContext";
+import { useEffect } from "react";
+import { useResetPassword } from "../hook/useResetPassword";
+
+const BootstrapButton = styled(Button)({
+  backgroundColor: "#cccccc",
+  color: "#000000",
+  fontSize: 24,
+});
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const signUp = useSignUp();
+  const resetPassword = useResetPassword();
 
-  const handleSignUpButton = async (e) => {
+  const handleContinueButton = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
+    if (password != confirmPassword) {
       alert("Passwords did not match. Please re-enter");
       return;
     } else {
-      const userData = {
-        email: username,
-        password: password,
-      };
+      if (queryParams.get("password-reset") == 1) {
+        const userData = {
+          email: username,
+          newPassword: password,
+        };
+        const success = await resetPassword.reset(userData);
 
-      const success = await signUp.signup(userData);
+        if (success) {
+          navigate("/signin");
+        }
+      } else {
+        const userData = {
+          email: username,
+          password: password,
+        };
+        const success = await signUp.signup(userData);
 
-      if (success) {
-        navigate("/signin");
+        if (success) {
+          navigate("/signin");
+        }
       }
     }
   };
@@ -58,7 +83,7 @@ const SignUpPage = () => {
           alignItems: "center",
           height: "100%",
           borderRight: { lg: "2px solid #ccc" },
-          paddingTop: 0,
+          paddingTop: 20,
           paddingRight: { lg: "15vw", xs: 0 },
         }}
       >
@@ -78,7 +103,11 @@ const SignUpPage = () => {
         }}
       >
         <div className="page-title-container">
-          <div className="page-title">SIGN UP</div>
+          <div className="page-title">
+            {
+              queryParams.get("password-reset") == 1 ? "RESET PASSWORD" : "SIGN UP"
+            }
+          </div>
 
           <FormInputComponent
             placeholder={"john.doe@example.com"}
@@ -89,7 +118,7 @@ const SignUpPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter a password"}
+            placeholder={"Enter your password here"}
             type={"password"}
             label={"Password"}
             value={password}
@@ -97,7 +126,7 @@ const SignUpPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Confirm your password"}
+            placeholder={"Enter your password here to confirm"}
             type={"password"}
             label={"Confirm Password"}
             value={confirmPassword}
@@ -106,21 +135,23 @@ const SignUpPage = () => {
         </div>
         <div
           style={{
-            marginTop: "8vh",
-            marginBottom: "5vh",
+            marginTop: "10vh",
           }}
         >
           <ButtonComponent
-            label={"Sign Up"}
-            onClick={handleSignUpButton}
+            label={
+              queryParams.get("password-reset") == 1 ? "RESET" : "CONTINUE"
+            }
+            onClick={handleContinueButton}
             fontSize={24}
             isDisabled={signUp.isLoading}
           />
           {signUp.error && <div className="error-message">{signUp.error}</div>}
           <div className="custom-links">
-            <Link href="/signin">Already have an account?</Link>
+            <Link href="/signin">Already have an account</Link>
           </div>
         </div>
+        {/* </div> */}
       </Grid>
     </Grid>
   );

@@ -9,6 +9,7 @@ const {
   signUp,
   getUserRoomId,
   resetPassword,
+  getUser,
 } = require("../controllers/userController");
 
 // Sign in user
@@ -28,6 +29,10 @@ router.get("/roomid/:email", getUserRoomId);
 
 router.get("/", getUserRoomId);
 
+// Reset password
 router.post("/reset-password/", resetPassword);
+
+// Get user by host
+router.post("/get-user", getUser);
 
 module.exports = router;

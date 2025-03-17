@@ -169,10 +169,35 @@ const getUsersByRoomId = async (req, res) => {
   }
 };
 
+const getHostRoomId = async (req, res) => {
+  const email = req.params.email;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw Error("User not found");
+    }
+
+    const room = await Room.findOne({ host: user._id });
+
+    if (!room) {
+      res.status(StatusCodes.OK).json({ roomId: null });
+      return;
+    }
+
+    res.status(StatusCodes.OK).json({ roomId: room.roomId });
+  } catch (error) {
+    console.error(error);
+    res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createRoom,
   getRoomById,
   joinRoomById,
   deleteRoomByUserId,
   getUsersByRoomId,
+  getHostRoomId
 };

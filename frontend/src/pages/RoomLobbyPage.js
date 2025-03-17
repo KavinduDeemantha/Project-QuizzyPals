@@ -11,10 +11,12 @@ import {
   Dialog,
   DialogTitle,
   ListItemText,
+  responsiveFontSizes,
   TextField,
   Switch,
   FormControlLabel,
   DialogContent,
+  Typography,
   DialogActions,
   DialogContentText,
   Button,
@@ -25,6 +27,9 @@ import { useEffect } from "react";
 import { useAuthContext } from "../hook/useAuthContext";
 import { useGameContext } from "../hook/useGameContext";
 
+import DeleteIcon from "@mui/icons-material/Delete";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+
 const RoomLobbyPage = () => {
   const navigate = useNavigate();
   const gameContext = useGameContext();
@@ -34,19 +39,15 @@ const RoomLobbyPage = () => {
   const [startDialogVisible, setStartDialogVisible] = useState(false);
   const [endDialogVisible, setEndDialogVisible] = useState(false);
   const [saveGameData, setSaveGameData] = useState(false);
-  const [gameDurationSeconds] = useState(0);
-  const [gameAnswerDurationSeconds] = useState(0);
+  const [gameDurationSeconds, setGameDurationSeconds] = useState(0);
+  const [gameAnswerDurationSeconds, setGameAnswerDurationSeconds] = useState(0);
   const [gameDurationMinutes, setGameDurationMinutes] = useState(1);
   const [gameDurationAnswerMinutes, setGameAnswerDurationMinutes] = useState(1);
   const roomContext = useRoomContext();
   const { room } = roomContext;
   const { user } = useAuthContext();
 
-  const [playersInRoom, setPlayersInRoom] = useState([
-    "Player 1",
-    "Player 2",
-    "Player 3",
-  ]);
+  const [playersInRoom, setPlayersInRoom] = useState(["Loading players..."]);
 
   const requestHeaders = {
     headers: {
@@ -59,6 +60,14 @@ const RoomLobbyPage = () => {
     setSaveGameData(e.target.checked);
   };
 
+  const handleSetGameDurationSeconds = (val) => {
+    val = parseInt(val);
+    if (val < 0 || val > 59) {
+      return;
+    }
+
+    setGameDurationSeconds(val);
+  };
   const handleSetGameDurationMinutes = (val) => {
     val = parseInt(val);
     if (val === "") {
@@ -68,9 +77,18 @@ const RoomLobbyPage = () => {
     if (val < 0 || val > 59) {
       return;
     }
+
     setGameDurationMinutes(val);
   };
 
+  const handleSetGameAnswerDurationSeconds = (val) => {
+    val = parseInt(val);
+    if (val < 0 || val > 59) {
+      return;
+    }
+
+    setGameAnswerDurationSeconds(val);
+  };
   const handleSetGameAnswerDurationMinutes = (val) => {
     val = parseInt(val);
     if (val === "") {
@@ -139,7 +157,7 @@ const RoomLobbyPage = () => {
   const startGameRequest = async (gameData) => {
     await axios
       .post(
-        "http://localhost:4000/api/game/startgame",
+        `${process.env.REACT_APP_BASE_URL}/api/game/startgame`,
         gameData,
         requestHeaders
       )
@@ -242,6 +260,95 @@ const RoomLobbyPage = () => {
     }
   };
 
+  const deleteUserByHost = async (targetUserEmail) => {
+    const getUserRequest = {
+      hostId: user.userId,
+      targetUserEmail,
+    };
+
+    const targetUserId = await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/api/users/get-user`,
+        getUserRequest,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          return response.data["userId"];
+        }
+      })
+      .catch(logError);
+
+    const deleteUserRequest = {
+      hostId: user.userId,
+      targetUserId,
+    };
+
+    await axios
+      .delete(
+        `${process.env.REACT_APP_BASE_URL}/api/users/${targetUserId}`,
+        deleteUserRequest,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          const deletedUser = {
+            type: "EXIT_ROOM",
+            userId: user.userId,
+            roomId: room.roomId,
+          };
+
+          socket.current.send(JSON.stringify(deletedUser));
+        }
+      })
+      .catch(logError);
+
+    await getAndSetRoomPlayers(room.roomId);
+  };
+
+  const handleKickUserButton = async (targetUserEmail) => {
+    const getUserRequest = {
+      hostId: user.userId,
+      targetUserEmail,
+    };
+
+    const targetUserId = await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/api/users/get-user`,
+        getUserRequest,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          return response.data["userId"];
+        }
+      })
+      .catch(logError);
+
+    const endGameRequest = {
+      type: "EXIT_ROOM",
+      userId: targetUserId,
+      roomId: room.roomId,
+    };
+
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}/api/game/endgame/`,
+        endGameRequest,
+        requestHeaders
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          socket.current.send(JSON.stringify(endGameRequest));
+        }
+      })
+      .catch((error) => {
+        logError(error);
+      });
+
+    await getAndSetRoomPlayers(room.roomId);
+  };
+
   const handleDeleteRoomButton = async (e) => {
     const deleteRoomRequest = {
       type: "DELETE_ROOM",
@@ -273,29 +380,35 @@ const RoomLobbyPage = () => {
   };
 
   useEffect(() => {
-    if (!game) {
-      console.warn("Game context destroyed in client side");
+    if (!user) {
+      console.error("User context destroyed in client side");
       navigate("/welcome");
       return;
     }
+  }, [user, navigate]);
+
+  useEffect(() => {
     if (!room) {
-      console.warn("Room context destroyed in client side");
+      console.error("Room context destroyed in client side");
+      navigate("/welcome");
+      return;
+    }
+  }, [room, navigate]);
+
+  useEffect(() => {
+    if (!game) {
+      console.error("Game context destroyed in client side");
       navigate("/welcome");
       return;
     }
 
     getAndSetRoomPlayers(room.roomId);
-  }, []);
+  }, [game, navigate]);
 
   useEffect(() => {
-    if (!user) {
-      console.error("User context destroyed in client side");
-      navigate("/welcome");
+    if (room) {
+      setSaveGameData(room.saveData);
     }
-  }, [user, navigate]);
-
-  useEffect(() => {
-    setSaveGameData(room.saveData);
 
     if (game) {
       if (game.type === "GAME_STARTED_BY_HOST") {
@@ -311,6 +424,17 @@ const RoomLobbyPage = () => {
       }
     }
   }, [game]);
+
+  // if (!game) {
+  //   console.error("Game context destroyed in client side");
+  //   navigate("/welcome");
+  //   return;
+  // }
+  // if (!room) {
+  //   console.error("Room context destroyed in client side");
+  //   navigate("/welcome");
+  //   return;
+  // }
 
   return (
     <>
@@ -335,7 +459,7 @@ const RoomLobbyPage = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog
+      <Dialog style={{ width: "100%" }}
         onClose={() => setStartDialogVisible(false)}
         open={startDialogVisible}
       >
@@ -362,17 +486,16 @@ const RoomLobbyPage = () => {
             required={true}
           />
         </div>
-        <FormControlLabel
+        {/* <FormControlLabel
           control={
             <Switch
               checked={saveGameData}
               onChange={handleSaveDataSwitch}
-              defaultChecked
             />
           }
           label="Save Data"
           className="saveDataLabel"
-        />
+        /> */}
         <ButtonComponent
           label={"Start Game"}
           onClick={(e) => validateAndStartGame()}
@@ -394,12 +517,26 @@ const RoomLobbyPage = () => {
         }}
       >
         <Grid item>
-          <div className="header-container">
-            <div className="header">QuizzyPals</div>
+          <div
+            className="header-container"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <div
+              className="header"
+              style={{
+                paddingBottom: 50,
+              }}
+            >
+              QuizzyPals
+            </div>
             <div className="start-btn lobbyBtnContainer">
               {game ? (
                 game.type === "GAME_STARTED" ||
-                game.type === "TIME_REMAINING" ? (
+                  game.type === "TIME_REMAINING" ? (
                   <ButtonComponent
                     label={"Continue Game"}
                     onClick={(e) => {
@@ -470,18 +607,38 @@ const RoomLobbyPage = () => {
               <div className="players">Players</div>
               <div className="player-list-box-inner">
                 <List>
-                  {playersInRoom.map((item, index) => {
-                    let name = item;
-                    if (item === room.host) {
+                  {playersInRoom.map((curUser, index) => {
+                    let name = curUser;
+                    if (curUser === room.host) {
                       name = name + " (Host)";
                     }
-                    if (item === user.email) {
+                    if (curUser === user.email) {
                       name += " (Me)";
                     }
 
                     return (
                       <ListItem key={index}>
                         <ListItemText className="players-list" primary={name} />
+                        {curUser !== room.host && user.email === room.host ? (
+                          <>
+                            <div
+                              title="Kick this user"
+                              className="clickable-item"
+                              onClick={() => handleKickUserButton(curUser)}
+                            >
+                              <PersonRemoveIcon color="error" />
+                            </div>
+                            <div
+                              title="Delete this user"
+                              className="clickable-item"
+                              onClick={() => deleteUserByHost(curUser)}
+                            >
+                              <DeleteIcon color="error" />
+                            </div>
+                          </>
+                        ) : (
+                          <></>
+                        )}
                       </ListItem>
                     );
                   })}

@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid2";
 import Link from "@mui/material/Link";
+import { Link as RouterLink } from "react-router-dom";
 import FormInputComponent from "../components/FormInputComponent";
 import { useNavigate } from "react-router-dom";
 import { useSignIn } from "../hook/useSignin";
@@ -9,9 +10,11 @@ import { useSignIn } from "../hook/useSignin";
 import "./SignInPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { LinearProgress } from "@mui/material";
+import { useAuthContext } from "../hook/useAuthContext";
 
 const SignInPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuthContext();
 
   const [errorMessage, setErrorMessage] = useState("");
   const [username, setUsername] = useState("");
@@ -38,7 +41,13 @@ const SignInPage = () => {
     if (signIn.error) {
       setErrorMessage(signIn.error);
     }
-  }, [signIn])
+  }, [signIn]);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   return (
     <Grid
@@ -61,7 +70,7 @@ const SignInPage = () => {
           alignItems: "center",
           height: "100%",
           borderRight: { lg: "2px solid #ccc" },
-          paddingTop: 0,
+          paddingTop: 20,
           paddingRight: { lg: "15vw", xs: 0 },
         }}
       >
@@ -94,17 +103,21 @@ const SignInPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password"}
+            placeholder={"Enter your password here"}
             type={"password"}
             label={"Password"}
             value={password}
             onChange={(evt) => setPassword(evt.target.value)}
           />
+
+          <RouterLink to={"/signup?password-reset=1"} className="forgot-password-link">
+            Forgot Password?
+          </RouterLink>
         </div>
 
-        <div className="SignIn-btn">
+        <div className="continue-btn">
           <ButtonComponent
-            label={"Sign In"}
+            label={"CONTINUE"}
             onClick={handleContinueButton}
             isDisabled={signIn.isLoading}
             fontSize={24}

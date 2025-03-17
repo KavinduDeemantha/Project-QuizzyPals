@@ -3,12 +3,41 @@ import { useState } from "react";
 import Grid from "@mui/material/Grid2";
 
 import "./LeaderboardPage.css";
+import FormInputComponent from "../components/FormInputComponent";
 import ButtonComponent from "../components/ButtonComponent";
+import { List, ListItem, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 import { useRoomContext } from "../hook/useRoomContext";
 import { useEffect } from "react";
 import axios from "axios";
 import { useAuthContext } from "../hook/useAuthContext";
+import { useGameContext } from "../hook/useGameContext";
+
+function createData(name, score) {
+  return { name, score };
+}
+
+const rows = [
+  createData("Player 1", 100),
+  createData("Player 2", 80),
+  createData("Player 3", 85),
+  createData("Player 4", 85),
+  createData("Player 5", 21),
+  createData("Player 6", 85),
+  createData("Player 7", 40),
+  createData("Player 8", 100),
+  createData("Player 9", 100),
+  createData("Player 9", 100),
+  createData("Player 10", 100),
+];
 
 const LeaderboardPage = () => {
   const navigate = useNavigate();
@@ -39,7 +68,8 @@ const LeaderboardPage = () => {
           for (let player of response.data) {
             players.push({ name: player.email, score: player.score });
           }
-
+          players.sort((a, b) => b.score - a.score);
+  
           setPlayersInRoom(players);
         }
       })
@@ -83,6 +113,11 @@ const LeaderboardPage = () => {
           <div className="header">QuizzyPals</div>
           <div className="three-btn-container ">
             <div className="button-container">
+              {/* <ButtonComponent
+                className="leaderboard-btns"
+                label={"Start new game"}
+                onClick={() => navigate("/createquiz")}
+              /> */}
             </div>
             <div>
               <ButtonComponent

@@ -5,6 +5,7 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // host = host's userId not email
   host: {
     type: String,
     required: true,

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const Room = require("../models/roomModel");
 const { StatusCodes } = require("http-status-codes");
 
 const createJWT = (id) => {
@@ -8,6 +9,7 @@ const createJWT = (id) => {
 
 const signIn = async (req, res) => {
   const { email, password } = req.body;
+  // console.log(req.body);
 
   try {
     const user = await User.signin(email, password);
@@ -87,6 +89,32 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// const deleteUserByHost = async (req, res) => {
+//   const { hostId, targetUserEmail } = req.body;
+
+//   try {
+//     const host = await User.find({ userId: hostId });
+//     if (!host) {
+//       throw Error(`You are not the host`);
+//     }
+
+//     const room = await Room.find({ roomId: host.roomId });
+//     if (!room) {
+//       throw Error(`Only host can delete other users`);
+//     }
+
+//     const targetUser = await User.findOneAndDelete({ email: targetUserEmail });
+//     if (!targetUser) {
+//       throw Error(`No such user found`);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//       .json({ message: error.message });
+//   }
+// };
+
 const resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;
 
@@ -119,6 +147,34 @@ const getUserRoomId = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  const { hostId, targetUserEmail } = req.body;
+
+  try {
+    const host = await User.find({ userId: hostId });
+    if (!host) {
+      throw Error(`You are not the host`);
+    }
+
+    const room = await Room.find({ roomId: host.roomId });
+    if (!room) {
+      throw Error(`Only host can delete other users`);
+    }
+
+    const targetUser = await User.findOne({ email: targetUserEmail });
+    if (!targetUser) {
+      throw Error(`No such user found`);
+    }
+
+    res.status(StatusCodes.OK).json({ userId: targetUser.userId });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
 module.exports = {
   signIn,
   signUp,
@@ -126,4 +182,5 @@ module.exports = {
   deleteUser,
   getUserRoomId,
   resetPassword,
+  getUser,
 };

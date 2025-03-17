@@ -3,6 +3,7 @@
 .player-list-box-outer {
   margin-top: 10px;
   width: 400px;
+  /* height: 50vh; */
   background-color: #cccccc;
   border-radius: 10px;
   padding: 15px;
@@ -12,6 +13,7 @@
   width: 100%;
   background-color: #ffffff;
   border-radius: 10px;
+  /* height: 42vh; */
   overflow-y: scroll;
 }
 

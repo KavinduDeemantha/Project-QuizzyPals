@@ -1,13 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 
-.SignIn-btn {
-  margin-top: 10vh;
+.continue-btn {
+  margin-top: 1.5rem;
 }
 
 .custom-links {
   margin-top: 10px;
 }
 
-.error-message {
-  overflow-x: visible;
+.forgot-password-link {
+  margin-top: 1rem;
 }

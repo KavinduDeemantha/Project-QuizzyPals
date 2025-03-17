@@ -71,7 +71,7 @@
 
 .page-title {
   margin-top: 10vh;
-  font-size: 4em;
+  font-size: 4vw;
   font-weight: bold;
 }
 
@@ -81,6 +81,20 @@
 
 .margin-top-10 {
   margin-top: 10px;
+}
+
+.clickable-item {
+  cursor: pointer;
+  border-right: 1px solid #dddddd;
+  padding-right: 5px;
+}
+
+.header-container {
+  /* border-right: 1px solid black;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; */
 }
 
 .page-title-container {
@@ -137,8 +151,8 @@
   color: red !important;
   padding-top: 10px;
   padding-bottom: 20px;
-  height: 50px;
+  min-height: 50px;
   max-width: 400px; /* Limit the width */
   overflow-x: auto; /* Use "auto" instead of "scroll" to show scrollbar only when needed */
-  white-space: nowrap; /* Prevent text from wrapping*/
+  white-space: nowrap; /*Prevent text from wrapping*/
 }
