@@ -151,8 +151,8 @@
   color: red !important;
   padding-top: 10px;
   padding-bottom: 20px;
-  height: 50px;
+  min-height: 50px;
   max-width: 400px; /* Limit the width */
   overflow-x: auto; /* Use "auto" instead of "scroll" to show scrollbar only when needed */
-  white-space: nowrap; /* Prevent text from wrapping*/
+  white-space: nowrap; /*Prevent text from wrapping*/
 }

@@ -25,7 +25,7 @@ export const GameContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(gameReducer, { game: null });
 
   useEffect(() => {
-    socket.current = new WebSocket("ws://localhost:4000");
+    socket.current = new WebSocket(`ws://${process.env.REACT_APP_BASE_ADR}:4000`);
     const ws = socket.current;
     // const ws = new WebSocket("ws://localhost:4000");
     // setSocket(ws);

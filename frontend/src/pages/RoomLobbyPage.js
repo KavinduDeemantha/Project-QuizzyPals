@@ -47,11 +47,7 @@ const RoomLobbyPage = () => {
   const { room } = roomContext;
   const { user } = useAuthContext();
 
-  const [playersInRoom, setPlayersInRoom] = useState([
-    "Player 1",
-    "Player 2",
-    "Player 3",
-  ]);
+  const [playersInRoom, setPlayersInRoom] = useState(["Loading players..."]);
 
   const requestHeaders = {
     headers: {
@@ -161,7 +157,7 @@ const RoomLobbyPage = () => {
   const startGameRequest = async (gameData) => {
     await axios
       .post(
-        "http://localhost:4000/api/game/startgame",
+        `${process.env.REACT_APP_BASE_URL}/api/game/startgame`,
         gameData,
         requestHeaders
       )
@@ -410,7 +406,9 @@ const RoomLobbyPage = () => {
   }, [game, navigate]);
 
   useEffect(() => {
-    setSaveGameData(room.saveData);
+    if (room) {
+      setSaveGameData(room.saveData);
+    }
 
     if (game) {
       if (game.type === "GAME_STARTED_BY_HOST") {
@@ -427,16 +425,16 @@ const RoomLobbyPage = () => {
     }
   }, [game]);
 
-  if (!game) {
-    console.error("Game context destroyed in client side");
-    navigate("/welcome");
-    return;
-  }
-  if (!room) {
-    console.error("Room context destroyed in client side");
-    navigate("/welcome");
-    return;
-  }
+  // if (!game) {
+  //   console.error("Game context destroyed in client side");
+  //   navigate("/welcome");
+  //   return;
+  // }
+  // if (!room) {
+  //   console.error("Room context destroyed in client side");
+  //   navigate("/welcome");
+  //   return;
+  // }
 
   return (
     <>
@@ -493,7 +491,6 @@ const RoomLobbyPage = () => {
             <Switch
               checked={saveGameData}
               onChange={handleSaveDataSwitch}
-              defaultChecked
             />
           }
           label="Save Data"
@@ -539,7 +536,7 @@ const RoomLobbyPage = () => {
             <div className="start-btn lobbyBtnContainer">
               {game ? (
                 game.type === "GAME_STARTED" ||
-                game.type === "TIME_REMAINING" ? (
+                  game.type === "TIME_REMAINING" ? (
                   <ButtonComponent
                     label={"Continue Game"}
                     onClick={(e) => {
