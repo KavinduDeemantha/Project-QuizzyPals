@@ -86,7 +86,7 @@ const SignInPage = () => {
           <div className="page-title">SIGN IN</div>
 
           <FormInputComponent
-            placeholder={"john.doe@example.com"}
+            placeholder={"Enter your email"}
             type={"email"}
             label={"Email Address"}
             value={username}
@@ -94,7 +94,7 @@ const SignInPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here"}
+            placeholder={"Enter your password"}
             type={"password"}
             label={"Password"}
             value={password}
@@ -102,9 +102,9 @@ const SignInPage = () => {
           />
         </div>
 
-        <div className="continue-btn">
+        <div className="SignIn-btn">
           <ButtonComponent
-            label={"CONTINUE"}
+            label={"Sign In"}
             onClick={handleContinueButton}
             isDisabled={signIn.isLoading}
             fontSize={24}

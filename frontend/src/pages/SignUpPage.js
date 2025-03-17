@@ -17,7 +17,7 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const signUp = useSignUp();
 
-  const handleContinueButton = async (e) => {
+  const handleSignUpButton = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -81,7 +81,7 @@ const SignUpPage = () => {
           <div className="page-title">SIGN UP</div>
 
           <FormInputComponent
-            placeholder={"john.doe@example.com"}
+            placeholder={"Enter your email address"}
             type={"email"}
             label={"Email Address"}
             value={username}
@@ -89,7 +89,7 @@ const SignUpPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here"}
+            placeholder={"Enter a password"}
             type={"password"}
             label={"Password"}
             value={password}
@@ -97,7 +97,7 @@ const SignUpPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here to confirm"}
+            placeholder={"Confirm your password"}
             type={"password"}
             label={"Confirm Password"}
             value={confirmPassword}
@@ -112,7 +112,7 @@ const SignUpPage = () => {
         >
           <ButtonComponent
             label={"Sign Up"}
-            onClick={handleContinueButton}
+            onClick={handleSignUpButton}
             fontSize={24}
             isDisabled={signUp.isLoading}
           />
