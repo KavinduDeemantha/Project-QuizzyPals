@@ -11,12 +11,8 @@ import {
   Dialog,
   DialogTitle,
   ListItemText,
-  responsiveFontSizes,
   TextField,
-  Switch,
-  FormControlLabel,
   DialogContent,
-  Typography,
   DialogActions,
   DialogContentText,
   Button,
@@ -56,18 +52,6 @@ const RoomLobbyPage = () => {
     },
   };
 
-  const handleSaveDataSwitch = (e) => {
-    setSaveGameData(e.target.checked);
-  };
-
-  const handleSetGameDurationSeconds = (val) => {
-    val = parseInt(val);
-    if (val < 0 || val > 59) {
-      return;
-    }
-
-    setGameDurationSeconds(val);
-  };
   const handleSetGameDurationMinutes = (val) => {
     val = parseInt(val);
     if (val === "") {
@@ -81,14 +65,6 @@ const RoomLobbyPage = () => {
     setGameDurationMinutes(val);
   };
 
-  const handleSetGameAnswerDurationSeconds = (val) => {
-    val = parseInt(val);
-    if (val < 0 || val > 59) {
-      return;
-    }
-
-    setGameAnswerDurationSeconds(val);
-  };
   const handleSetGameAnswerDurationMinutes = (val) => {
     val = parseInt(val);
     if (val === "") {
@@ -425,17 +401,6 @@ const RoomLobbyPage = () => {
     }
   }, [game]);
 
-  // if (!game) {
-  //   console.error("Game context destroyed in client side");
-  //   navigate("/welcome");
-  //   return;
-  // }
-  // if (!room) {
-  //   console.error("Room context destroyed in client side");
-  //   navigate("/welcome");
-  //   return;
-  // }
-
   return (
     <>
       <Dialog
@@ -486,16 +451,6 @@ const RoomLobbyPage = () => {
             required={true}
           />
         </div>
-        {/* <FormControlLabel
-          control={
-            <Switch
-              checked={saveGameData}
-              onChange={handleSaveDataSwitch}
-            />
-          }
-          label="Save Data"
-          className="saveDataLabel"
-        /> */}
         <ButtonComponent
           label={"Start Game"}
           onClick={(e) => validateAndStartGame()}

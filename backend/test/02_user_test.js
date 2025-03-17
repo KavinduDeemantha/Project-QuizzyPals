@@ -7,21 +7,6 @@ let activeRoomId = "1234";
 const userEmail = "damian@gmail.com";
 const password = "12345678";
 
-// Sign in user ✅
-// router.post("/signin", signIn);
-
-// Sign up user ✅
-// router.post("/signup", signUp);
-
-// Update a user ✅
-// router.patch("/:id", updateUser);
-
-// Delete a user ✅
-// router.delete("/:email", deleteUser);
-
-// Reset user password by user id ✅
-// router.post("/reset-password/", resetPassword);
-
 describe("User API", () => {
   it("Delete User - Damian", async () => {
     const userData = {

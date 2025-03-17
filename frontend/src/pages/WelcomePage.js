@@ -10,10 +10,7 @@ import { useAuthContext } from "../hook/useAuthContext";
 import axios from "axios";
 import { useRoomCheckIn } from "../hook/useRoomCheckIn";
 import { useGameContext } from "../hook/useGameContext";
-import { useRoomContext } from "../hook/useRoomContext";
-import { Box, TextField, Typography } from "@mui/material";
-import Paper from "@mui/material/Paper";
-import { Label } from "@mui/icons-material";
+import { Typography } from "@mui/material";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -26,7 +23,6 @@ const WelcomePage = () => {
   const [roomCode, setRoomCode] = useState("");
   const [hostRoomId, setHostRoomId] = useState("");
   const [joinWithRoom, setJoinWithRoom] = useState(false);
-  const roomContext = useRoomContext();
   const [roomId, setRoomId] = useState(null);
 
   const [error, setError] = useState(null);
@@ -160,7 +156,6 @@ const WelcomePage = () => {
       );
       console.log(response);
       if (response.status === 200) {
-        // console.log(response);
         setRoomId(response.data.roomId);
       } else {
         console.log("error");

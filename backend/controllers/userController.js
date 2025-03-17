@@ -9,7 +9,6 @@ const createJWT = (id) => {
 
 const signIn = async (req, res) => {
   const { email, password } = req.body;
-  // console.log(req.body);
 
   try {
     const user = await User.signin(email, password);
@@ -88,32 +87,6 @@ const deleteUser = async (req, res) => {
       .json({ message: error.message });
   }
 };
-
-// const deleteUserByHost = async (req, res) => {
-//   const { hostId, targetUserEmail } = req.body;
-
-//   try {
-//     const host = await User.find({ userId: hostId });
-//     if (!host) {
-//       throw Error(`You are not the host`);
-//     }
-
-//     const room = await Room.find({ roomId: host.roomId });
-//     if (!room) {
-//       throw Error(`Only host can delete other users`);
-//     }
-
-//     const targetUser = await User.findOneAndDelete({ email: targetUserEmail });
-//     if (!targetUser) {
-//       throw Error(`No such user found`);
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res
-//       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-//       .json({ message: error.message });
-//   }
-// };
 
 const resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;

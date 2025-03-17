@@ -6,24 +6,6 @@ let activeRoomId = "1234";
 const userEmail = "damian@gmail.com";
 const password = "12345678";
 
-// Create new room ✅
-// router.post("/createroom", createRoom);
-
-// Get room by room id ✅
-// router.get("/getroom/:roomId", getRoomById);
-
-// Join to a room by room id ✅
-// router.post("/joinroom", joinRoomById);
-
-// Delete room by user id ✅
-// router.delete("/deleteroom/:userId", deleteRoomByUserId);
-
-// Get room mates by room id ✅
-// router.get("/getroommates/:roomId", getUsersByRoomId);
-
-// Get user room id by email ✅
-// router.get("/roomid/:email", getUserRoomId);
-
 describe("Room API", () => {
   before("Sign In", async () => {
     const userData = {
