@@ -16,31 +16,6 @@ const gameData = {
   saveData: false,
 };
 
-// Creating new quiz... ✅
-// router.post("/createquiz", createQuiz);
-
-// Start new game... ✅
-// router.post("/startgame", startGame);
-
-// End game by the host ❌
-// router.post("/endgame/", endGame);
-
-// Get quizzes by room id ✅
-// router.get("/getquizzes/:userId", getQuizzes);
-
-// Get player questions and answers conditionally ✅
-// If the game is over answers will be delivered
-// Else the answers will not be delivered
-// router.get("/get-all-player-answers/:roomId", getPlayerQandA);
-
-// Submit each players answers conditionally ✅
-// If the game answering round is not ended the answers are valid
-// Else not valid
-// router.post("/submitanswers", submitAnswers);
-
-// Get remaining time of the game
-// router.get("/remainingtime/:userId", getTimeRemaining);
-
 describe("Game API", () => {
   after("Delete Room - Damian", async () => {
     await fetch(`http://localhost:4000/api/rooms/deleteroom/${activeUserId}`, {
@@ -547,7 +522,6 @@ describe("Game API", () => {
       })
       .then((res) => res.json())
       .then((data) => {
-        // console.log(data);
         assert.strictEqual(data[0]["quizId"], johnsQuizData.quizId);
         assert.strictEqual(data[1]["quizId"], damiansQuizData.quizId);
       })

@@ -27,10 +27,13 @@ router.post("/endgame/", endGame);
 // Get quizzes by room id
 router.get("/getquizzes/:userId", getQuizzes);
 
+// Get all player answers
 router.get("/get-all-player-answers/:roomId", getPlayerQandA);
 
+// Submit answers
 router.post("/submitanswers", submitAnswers);
 
+// Get time remaining
 router.get("/remainingtime/:userId", getTimeRemaining);
 
 module.exports = router;

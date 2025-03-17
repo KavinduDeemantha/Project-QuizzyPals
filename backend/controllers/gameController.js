@@ -123,14 +123,6 @@ const endGame = async (req, res) => {
             await Quiz.deleteMany({ roomId: room.roomId });
           }
         }
-
-        // await UserQuiz.deleteMany({ roomId: room.roomId });
-
-        // const users = await User.find({ roomId: room.roomId });
-        // for (const user of users) {
-        //   user.roomId = null;
-        //   await user.save();
-        // }
       }
 
       await room.save();
@@ -213,7 +205,6 @@ const getQuizzes = async (req, res) => {
     if (room.answerRoundEnd < now) {
       // A player is trying the access quizzes after the game ended (so correct answer is there)
       for (let quiz of quizzes) {
-        // console.log(quiz);
         if (quiz.userId != user.userId) {
           quizzesExceptMe.push({
             quizId: quiz.quizId,
@@ -235,8 +226,6 @@ const getQuizzes = async (req, res) => {
         }
       }
     }
-
-    // console.log(quizzesExceptMe);
     res.status(StatusCodes.OK).json(quizzesExceptMe);
   } catch (error) {
     console.error(error);
@@ -307,8 +296,6 @@ const submitAnswers = async (req, res) => {
 
     if (duration > 0) {
       const quiz = await Quiz.findOne({ quizId });
-
-      // console.log(req.body);
 
       if (user.userId == quiz.userId) {
         return;

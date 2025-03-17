@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useReducer,
   useRef,
-  useState,
 } from "react";
 
 export const GameContext = createContext(null);
@@ -19,7 +18,6 @@ export const gameReducer = (state, action) => {
 export const GameContextProvider = ({ children }) => {
   // socket keep bi-directional realtime connection between server and client
   // to communicate game states(start, answer, end) using web-sockets.
-  // const [socket, setSocket] = useState(null);
   const socket = useRef(null);
 
   const [state, dispatch] = useReducer(gameReducer, { game: null });
@@ -27,8 +25,6 @@ export const GameContextProvider = ({ children }) => {
   useEffect(() => {
     socket.current = new WebSocket(`ws://${process.env.REACT_APP_BASE_ADR}:4000`);
     const ws = socket.current;
-    // const ws = new WebSocket("ws://localhost:4000");
-    // setSocket(ws);
 
     ws.onopen = () => console.log("WebSocket connected");
     ws.onclose = () => console.log("WebSocket disconnected");
@@ -38,7 +34,6 @@ export const GameContextProvider = ({ children }) => {
       dispatch({ type: data.type, payload: data });
       console.log("Received", msg);
     };
-
     // close the web-socket when the component unmounted.
     return () => ws.close();
   }, []);

@@ -1,8 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid2";
-import { Button } from "@mui/material";
 import Link from "@mui/material/Link";
 import FormInputComponent from "../components/FormInputComponent";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,16 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./SignUpPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { useSignUp } from "../hook/useSignup";
-import { useAuthContext } from "../hook/useAuthContext";
-import { useEffect } from "react";
 import { useResetPassword } from "../hook/useResetPassword";
-
-const BootstrapButton = styled(Button)({
-  backgroundColor: "#cccccc",
-  color: "#000000",
-  fontSize: 24,
-});
-
 const SignUpPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,11 +23,11 @@ const SignUpPage = () => {
   const handleContinueButton = async (e) => {
     e.preventDefault();
 
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
       alert("Passwords did not match. Please re-enter");
       return;
     } else {
-      if (queryParams.get("password-reset") == 1) {
+      if (queryParams.get("password-reset") === 1) {
         const userData = {
           email: username,
           newPassword: password,
@@ -105,7 +94,7 @@ const SignUpPage = () => {
         <div className="page-title-container">
           <div className="page-title">
             {
-              queryParams.get("password-reset") == 1 ? "RESET PASSWORD" : "SIGN UP"
+              queryParams.get("password-reset") === 1 ? "RESET PASSWORD" : "SIGN UP"
             }
           </div>
 
@@ -140,7 +129,7 @@ const SignUpPage = () => {
         >
           <ButtonComponent
             label={
-              queryParams.get("password-reset") == 1 ? "RESET" : "CONTINUE"
+              queryParams.get("password-reset") === 1 ? "RESET" : "CONTINUE"
             }
             onClick={handleContinueButton}
             fontSize={24}

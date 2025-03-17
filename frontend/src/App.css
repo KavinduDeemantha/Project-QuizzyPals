@@ -89,14 +89,6 @@
   padding-right: 5px;
 }
 
-.header-container {
-  /* border-right: 1px solid black;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; */
-}
-
 .page-title-container {
   display: flex;
   flex-direction: column;
@@ -127,7 +119,6 @@
   background-color: white;
   margin: 5px 40px 20px 40px;
   border-radius: 10px;
-  /* height: 50vh; */
   padding: 20px;
   font-size: 18px;
   overflow-y: scroll;
