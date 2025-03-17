@@ -11,12 +11,10 @@ import {
   Dialog,
   DialogTitle,
   ListItemText,
-  responsiveFontSizes,
   TextField,
   Switch,
   FormControlLabel,
   DialogContent,
-  Typography,
   DialogActions,
   DialogContentText,
   Button,
@@ -36,8 +34,8 @@ const RoomLobbyPage = () => {
   const [startDialogVisible, setStartDialogVisible] = useState(false);
   const [endDialogVisible, setEndDialogVisible] = useState(false);
   const [saveGameData, setSaveGameData] = useState(false);
-  const [gameDurationSeconds, setGameDurationSeconds] = useState(0);
-  const [gameAnswerDurationSeconds, setGameAnswerDurationSeconds] = useState(0);
+  const [gameDurationSeconds] = useState(0);
+  const [gameAnswerDurationSeconds] = useState(0);
   const [gameDurationMinutes, setGameDurationMinutes] = useState(1);
   const [gameDurationAnswerMinutes, setGameAnswerDurationMinutes] = useState(1);
   const roomContext = useRoomContext();
@@ -61,14 +59,6 @@ const RoomLobbyPage = () => {
     setSaveGameData(e.target.checked);
   };
 
-  const handleSetGameDurationSeconds = (val) => {
-    val = parseInt(val);
-    if (val < 0 || val > 59) {
-      return;
-    }
-
-    setGameDurationSeconds(val);
-  };
   const handleSetGameDurationMinutes = (val) => {
     val = parseInt(val);
     if (val === "") {
@@ -78,18 +68,9 @@ const RoomLobbyPage = () => {
     if (val < 0 || val > 59) {
       return;
     }
-
     setGameDurationMinutes(val);
   };
 
-  const handleSetGameAnswerDurationSeconds = (val) => {
-    val = parseInt(val);
-    if (val < 0 || val > 59) {
-      return;
-    }
-
-    setGameAnswerDurationSeconds(val);
-  };
   const handleSetGameAnswerDurationMinutes = (val) => {
     val = parseInt(val);
     if (val === "") {

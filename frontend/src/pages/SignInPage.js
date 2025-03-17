@@ -9,7 +9,6 @@ import { useSignIn } from "../hook/useSignin";
 import "./SignInPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { LinearProgress } from "@mui/material";
-import { useAuthContext } from "../hook/useAuthContext";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -62,7 +61,7 @@ const SignInPage = () => {
           alignItems: "center",
           height: "100%",
           borderRight: { lg: "2px solid #ccc" },
-          paddingTop: 20,
+          paddingTop: 0,
           paddingRight: { lg: "15vw", xs: 0 },
         }}
       >

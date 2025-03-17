@@ -7,29 +7,25 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemText,
   RadioGroup,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Radio,
   TextField,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
 import Grid from "@mui/material/Grid2";
-import { resolvePath, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircleOutlined";
 import "./GameQuestionRound.css";
 import ButtonComponent from "../components/ButtonComponent";
 import TimerComponent from "../components/TimerComponent";
 import { useRoomContext } from "../hook/useRoomContext";
 import { useAuthContext } from "../hook/useAuthContext";
-import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { useGameContext } from "../hook/useGameContext";
 import { useEffect } from "react";
-import { RadioButtonChecked } from "@mui/icons-material";
 
 import SpeedDialComponent from "../components/SpeedDialComponent";
 
@@ -40,7 +36,7 @@ import { makeStringATitle } from "../utils/StringUtils";
 const GameQuestionRound = () => {
   const { room } = useRoomContext();
   const { user } = useAuthContext();
-  const { game, socket, dispatch } = useGameContext();
+  const { game, socket } = useGameContext();
   const [addedChoices, setAddedChoices] = useState(() => {
     const storedChoices = localStorage.getItem("storedChoices");
     var res = [];
@@ -152,10 +148,6 @@ const GameQuestionRound = () => {
     socket.current.send(JSON.stringify(timeRequest));
   };
 
-  const handleDoneClick = async (e) => {
-    setShowWaitForOthers(true);
-  };
-
   const handleGameStateContinueButton = async (e) => {
     if (game.type === "ANSWER_ROUND_STARTED") {
       navigate("/answers");
@@ -226,11 +218,11 @@ const GameQuestionRound = () => {
     try {
       const sentimentResults = await analyzeSentiment();
       if (sentimentResults) {
-        if (sentimentResults.sentiment == "Neutral") {
+        if (sentimentResults.sentiment === "Neutral") {
           let items = ["🧐", "🙄"];
           let index = items[Math.floor(Math.random() * items.length)];
           setCurrentEmoji(emojiMapper[index]);
-        } else if (sentimentResults.sentiment == "Negative") {
+        } else if (sentimentResults.sentiment === "Negative") {
           let items = ["🫣", "🫢", "🤐"];
           let index = items[Math.floor(Math.random() * items.length)];
           setCurrentEmoji(emojiMapper[index]);
@@ -287,7 +279,6 @@ const GameQuestionRound = () => {
         });
         setGameStateMessageVisible(true);
       } else if (game.type === "TIME_REMAINING") {
-        // console.log(game);
         setGameTime(Math.floor(game.duration / 1000));
       } else if (game.type === "ROOM_DELETED") {
         setGameStateMessage({
@@ -323,19 +314,12 @@ const GameQuestionRound = () => {
 
   return (
     <div className="main-container">
-      {/* <div className="game-round-header"> */}
       <div>
-        {/* <div className="game-round-header-left"> */}
-        {/* <div className="room-code">Room: {room.roomId}</div> */}
         <Grid
           container
           sx={{
             display: "flex",
             justifyContent: { xs: "space-evenly", md: "space-between" },
-            // justifyContent: {
-            //   xs: "center",
-            //   md: "space-between",
-            // },
             alignItems: "center",
             paddingTop: 2,
             paddingLeft: 10,
@@ -371,17 +355,13 @@ const GameQuestionRound = () => {
             </Typography>
           </Grid>
           <Grid item>
-            {/* <div className="game-round-header-right"> */}
             {gameTime > 0 ? (
               <TimerComponent initialSeconds={gameTime} />
             ) : (
               <></>
             )}
-            {/* </div> */}
           </Grid>
         </Grid>
-        {/* <div className="round-title">Question Round</div> */}
-        {/* </div> */}
       </div>
 
       <SpeedDialComponent actions={actions} />
@@ -455,15 +435,12 @@ const GameQuestionRound = () => {
       </Dialog>
       <div className="question-main-container">
         <div className="question-outer-container">
-          {/* <div className="topic-label"> */}
           <Typography>
             Write a question to ask from your friends & wait for duration ends
           </Typography>
-          {/* </div> */}
           <div className="question-inner-container">
             <div className="inner-container-row question-text">
               <TextField
-                // className="question-field"
                 label="Enter your question here"
                 variant="outlined"
                 value={quizQuestion}
@@ -481,6 +458,7 @@ const GameQuestionRound = () => {
                       type="image/webp"
                     ></source>
                     <img
+                      alt='emoji'
                       src={`https://fonts.gstatic.com/s/e/notoemoji/latest/${currentEmoji}/512.gif`}
                       width="32"
                       height="32"
@@ -506,7 +484,7 @@ const GameQuestionRound = () => {
                 >
                   <List className="answer-list">
                     {addedChoices.map((item, i) => {
-                      if (correctAnswer == "") {
+                      if (correctAnswer === "") {
                         setCorrectAnswer(item);
                         console.log(item);
                       }
@@ -524,7 +502,6 @@ const GameQuestionRound = () => {
                           >
                             {item}
                           </div>
-                          {/* <ListItemText primary={item} /> */}
                           <FormControlLabel
                             value={item}
                             style={{
@@ -534,7 +511,7 @@ const GameQuestionRound = () => {
                             onClick={(e) => {
                               setCorrectChoiceIndex(i);
                             }}
-                            checked={i == correctChoiceIndex}
+                            checked={i === correctChoiceIndex}
                             control={<Radio />}
                             label={"make this correct"}
                           />
@@ -545,13 +522,6 @@ const GameQuestionRound = () => {
                 </RadioGroup>
               </FormControl>
             </div>
-            {/* <div className="margin-top-10">
-              <ButtonComponent
-                className={"doneBtn"}
-                label={"Done"}
-                onClick={handleDoneClick}
-              />
-            </div> */}
             <div className="lobby-btn-container">
               <Button
                 className="lobby-btn"

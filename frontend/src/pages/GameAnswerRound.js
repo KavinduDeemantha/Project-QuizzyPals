@@ -3,13 +3,9 @@ import {
   Dialog,
   DialogTitle,
   FormControl,
-  FormLabel,
   RadioGroup,
   Radio,
   FormControlLabel,
-  List,
-  ListItem,
-  ListItemText,
   TextField,
   DialogContent,
   DialogContentText,
@@ -17,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./GameAnswerRound.css";
 import ButtonComponent from "../components/ButtonComponent";
@@ -26,7 +22,6 @@ import axios from "axios";
 import { useAuthContext } from "../hook/useAuthContext";
 import { useRoomContext } from "../hook/useRoomContext";
 import { useGameContext } from "../hook/useGameContext";
-import { Label } from "@mui/icons-material";
 
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import HomeIcon from "@mui/icons-material/Home";
@@ -80,7 +75,6 @@ const GameAnswerRound = () => {
             });
             tmpPlayerQAndA[qa.answer] = "";
           }
-          // console.log(tmpQAndA);
           setQAndA(tmpQAndA);
         }
       })
@@ -97,8 +91,6 @@ const GameAnswerRound = () => {
       playerAnswer: answer,
     };
 
-    // console.log(answerData);
-
     await axios
       .post(
         `${process.env.REACT_APP_BASE_URL}/api/game/submitanswers`,
@@ -109,7 +101,7 @@ const GameAnswerRound = () => {
         if (response.status === 200) {
           console.log("Answer submitted successfully!");
         } else {
-          // console.log(response);
+          console.log(response);
         }
       })
       .catch((error) => {
@@ -172,7 +164,6 @@ const GameAnswerRound = () => {
   useEffect(() => {
     if (game) {
       if (game.type === "ANSWER_ROUND_STARTED") {
-        // console.log("Timer should work now!");
         setGameTime(Math.floor(game.duration / 1000));
       } else if (game.type === "GAME_ENDED") {
         setGameStateMessage({
@@ -192,13 +183,6 @@ const GameAnswerRound = () => {
     localStorage.clear("storedChoices");
     localStorage.clear("storedCorrectAnswer");
     localStorage.clear("storedQuestion");
-    // if (!game) {
-    //   navigate("/roomlobby");
-    // } else {
-    //   if (game.type === "GAME_ENDED" || game.type === "GAME_STARTED") {
-    //     navigate("/roomlobby");
-    //   }
-    // }
     getAndSetQuestions();
   }, []);
 
@@ -227,10 +211,6 @@ const GameAnswerRound = () => {
           sx={{
             display: "flex",
             justifyContent: { xs: "space-evenly", md: "space-between" },
-            // justifyContent: {
-            //   xs: "center",
-            //   md: "space-between",
-            // },
             alignItems: "center",
             paddingTop: 2,
             paddingLeft: 10,
@@ -295,16 +275,6 @@ const GameAnswerRound = () => {
           </Button>
         </div>
       </Dialog>
-
-      {/* <div className="game-round-header"> */}
-      {/* <div className="game-round-header-left">
-          <div className="room-code">Room: {room && room.roomId}</div>
-          <div className="round-title">Answer Round</div>
-        </div>
-        <div className="game-round-header-right">
-          {gameTime > 0 ? <TimerComponent initialSeconds={gameTime} /> : <></>}
-        </div> */}
-      {/* </div> */}
 
       <SpeedDialComponent actions={actions} />
 
@@ -379,14 +349,6 @@ const GameAnswerRound = () => {
         >
           Lobby
         </Button>
-        {/* <Button
-        className="submit-and-finish-btn"
-        variant="contained"
-        color="primary"
-        onClick={handleGameEnded}
-      >
-        Submit & Finish
-      </Button> */}
       </div>
     </div>
   );
