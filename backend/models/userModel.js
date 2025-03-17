@@ -16,10 +16,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // questionAnswer: {
-    //   type: String,
-    //   required: false,
-    // },
     score: {
       type: Number,
       required: false,
@@ -31,6 +27,37 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.statics.reset_password = async function (email, newPassword) {
+  // To create a user both password and email should be not empty
+  if (!email || !newPassword) {
+    throw Error("Invalid Credentials: All fields must be filled!");
+  }
+
+  if (!validator.isEmail(email)) {
+    throw Error("Validation Error: Email should be in correct format!");
+  }
+
+  const alreadyExists = await this.findOne({ email });
+
+  if (!alreadyExists) {
+    throw Error("Already Exists Error: Email not in use!");
+  }
+
+  // Generate a salt for password hashing
+  // The number 8 determines the complexity of the salt (higher is more secure but slower)
+  const salt = await bcrypt.genSalt(8);
+
+  // Hash the password using the generated salt
+  // This creates a secure, one-way hash of the password
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  // Change password here
+  alreadyExists.password = hashedPassword;
+  await alreadyExists.save();
+
+  return alreadyExists;
+};
 
 userSchema.statics.signup = async function (email, password) {
   // To create a user both password and email should be not empty

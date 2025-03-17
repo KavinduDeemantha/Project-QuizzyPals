@@ -17,10 +17,11 @@ const signIn = async (req, res) => {
     res
       .status(StatusCodes.OK)
       .json({ email: email, userId: user._id, userJWT: userJWT });
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: err.message });
+      .json({ message: error.message });
   }
 };
 
@@ -35,10 +36,11 @@ const signUp = async (req, res) => {
     res
       .status(StatusCodes.OK)
       .json({ email: newUser.email, userId: newUser._id, userJWT: userJWT });
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: err.message });
+      .json({ message: error.message });
   }
 };
 
@@ -49,38 +51,54 @@ const updateUser = async (req, res) => {
       res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
     }
 
-    if (req.body.username != null) {
-      user.username = req.body.username;
+    if (req.body.password != null) {
+      await User.reset_password(user.email, req.body.password);
     }
     if (req.body.email != null) {
       user.email = req.body.email;
     }
-    if (req.body.age != null) {
-      user.age = req.body.age;
-    }
 
     const updatedUser = await user.save();
     res.json(updatedUser);
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: err.message });
+      .json({ message: error.message });
   }
 };
 
 const deleteUser = async (req, res) => {
+  const userId = req.params.userId;
+
   try {
-    const deleted = await User.findOneAndDelete({ email: req.params.email });
+    const deleted = await User.findOneAndDelete({ userId });
     if (!deleted) {
       res.status(StatusCodes.NOT_FOUND).json({ message: "User not deleted" });
       return;
     }
 
     res.json({ message: "User deleted" });
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: err.message });
+      .json({ message: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const updatedUser = await User.reset_password(email, newPassword);
+
+    res.status(StatusCodes.OK).json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
@@ -93,10 +111,11 @@ const getUserRoomId = async (req, res) => {
     }
 
     res.json({ roomId: user.roomId });
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: err.message });
+      .json({ message: error.message });
   }
 };
 
@@ -106,4 +125,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getUserRoomId,
+  resetPassword,
 };

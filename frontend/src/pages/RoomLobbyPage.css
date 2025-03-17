@@ -2,8 +2,6 @@
 
 .player-list-box-outer {
   margin-top: 10px;
-  width: 20vw;
-  height: 50vh;
   background-color: #cccccc;
   border-radius: 10px;
   padding: 10px;
@@ -12,7 +10,7 @@
 .player-list-box-inner {
   background-color: #ffffff;
   border-radius: 10px;
-  height: 42vh;
+  overflow-y: scroll;
 }
 
 .players-list {
@@ -37,19 +35,6 @@
 .players {
   font-size: 24px;
   margin-bottom: 10px;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
-}
-
-.lobbyBtnContainer {
-  width: 100%;
-}
-
-.lobbyBtn {
-  width: 23% !important;
 }
 
 .startGameDialog {

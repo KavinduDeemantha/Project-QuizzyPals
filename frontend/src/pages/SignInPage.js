@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid2";
 import Link from "@mui/material/Link";
 import FormInputComponent from "../components/FormInputComponent";
@@ -9,11 +9,11 @@ import { useSignIn } from "../hook/useSignin";
 import "./SignInPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { LinearProgress } from "@mui/material";
-import { useAuthContext } from "../hook/useAuthContext";
 
 const SignInPage = () => {
   const navigate = useNavigate();
 
+  const [errorMessage, setErrorMessage] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,14 +34,52 @@ const SignInPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (signIn.error) {
+      setErrorMessage(signIn.error);
+    }
+  }, [signIn])
+
   return (
-    <Grid container columns={16}>
-      <Grid size={8}>
+    <Grid
+      container
+      sx={{
+        flexFlow: { lg: "row", md: "column", sm: "column", xs: "column" },
+        justifyContent: { lg: "center", md: "center", xs: "center" },
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        margin: 0,
+        padding: 0,
+      }}
+    >
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          borderRight: { lg: "2px solid #ccc" },
+          paddingTop: 0,
+          paddingRight: { lg: "15vw", xs: 0 },
+        }}
+      >
         <div className="header-container">
           <div className="header">QuizzyPals</div>
         </div>
       </Grid>
-      <Grid size={8}>
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          height: "100%",
+          paddingLeft: { lg: "15vw" },
+          paddingBottom: 20,
+        }}
+      >
         {signIn.isLoading && <LinearProgress />}
 
         <div className="page-title-container">
@@ -56,7 +94,7 @@ const SignInPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here"}
+            placeholder={"Enter your password"}
             type={"password"}
             label={"Password"}
             value={password}
@@ -64,15 +102,15 @@ const SignInPage = () => {
           />
         </div>
 
-        <div className="continue-btn">
+        <div className="SignIn-btn">
           <ButtonComponent
-            label={"CONTINUE"}
+            label={"Sign In"}
             onClick={handleContinueButton}
             isDisabled={signIn.isLoading}
             fontSize={24}
           />
         </div>
-        {signIn.error && <div className="error-message">{signIn.error}</div>}
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
         <div className="margin-top-10">
           <Link href="/signup">Create New Account</Link>
         </div>

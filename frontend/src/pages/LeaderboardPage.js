@@ -3,41 +3,12 @@ import { useState } from "react";
 import Grid from "@mui/material/Grid2";
 
 import "./LeaderboardPage.css";
-import FormInputComponent from "../components/FormInputComponent";
 import ButtonComponent from "../components/ButtonComponent";
-import { List, ListItem, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 import { useRoomContext } from "../hook/useRoomContext";
 import { useEffect } from "react";
 import axios from "axios";
 import { useAuthContext } from "../hook/useAuthContext";
-import { useGameContext } from "../hook/useGameContext";
-
-function createData(name, score) {
-  return { name, score };
-}
-
-const rows = [
-  createData("Player 1", 100),
-  createData("Player 2", 80),
-  createData("Player 3", 85),
-  createData("Player 4", 85),
-  createData("Player 5", 21),
-  createData("Player 6", 85),
-  createData("Player 7", 40),
-  createData("Player 8", 100),
-  createData("Player 9", 100),
-  createData("Player 9", 100),
-  createData("Player 10", 100),
-];
 
 const LeaderboardPage = () => {
   const navigate = useNavigate();
@@ -86,17 +57,32 @@ const LeaderboardPage = () => {
   }, []);
 
   return (
-    <Grid container columns={16}>
-      <Grid size={8}>
+    <Grid
+      container
+      sx={{
+        display: "flex",
+        justifyContent: {
+          xs: "center",
+          sm: "center",
+          md: "space-around",
+          lg: "space-evenly",
+        },
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
+      <Grid
+        item
+        sx={{
+          paddingTop: 20,
+          paddingBottom: 20,
+        }}
+      >
         <div className="header-container">
           <div className="header">QuizzyPals</div>
           <div className="three-btn-container ">
             <div className="button-container">
-              <ButtonComponent
-                className="leaderboard-btns"
-                label={"Start new game"}
-                onClick={() => navigate("/createquiz")}
-              />
             </div>
             <div>
               <ButtonComponent
@@ -115,7 +101,20 @@ const LeaderboardPage = () => {
           </div>
         </div>
       </Grid>
-      <Grid size={8}>
+      <Grid
+        item
+        sx={{
+          width: 2,
+          height: { xs: "0", sm: "0", md: "100vh", lg: "100vh" },
+          backgroundColor: "#ccc",
+        }}
+      ></Grid>
+      <Grid
+        item
+        sx={{
+          paddingBottom: 20,
+        }}
+      >
         <div className="page-title-container">
           <div className="page-title">LEADERBOARD</div>
           <div className="sub-title">RoomCode: {room && room.roomId}</div>

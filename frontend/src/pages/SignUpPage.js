@@ -1,8 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid2";
-import { Button } from "@mui/material";
 import Link from "@mui/material/Link";
 import FormInputComponent from "../components/FormInputComponent";
 import { useNavigate } from "react-router-dom";
@@ -10,12 +8,6 @@ import { useNavigate } from "react-router-dom";
 import "./SignUpPage.css";
 import ButtonComponent from "../components/ButtonComponent";
 import { useSignUp } from "../hook/useSignup";
-
-const BootstrapButton = styled(Button)({
-  backgroundColor: "#cccccc",
-  color: "#000000",
-  fontSize: 24,
-});
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -25,10 +17,10 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const signUp = useSignUp();
 
-  const handleContinueButton = async (e) => {
+  const handleSignUpButton = async (e) => {
     e.preventDefault();
 
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
       alert("Passwords did not match. Please re-enter");
       return;
     } else {
@@ -46,30 +38,47 @@ const SignUpPage = () => {
   };
 
   return (
-    <Grid container columns={16}>
-      <Grid size={8}>
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <div className="bigname">QuizzyPals</div>
+    <Grid
+      container
+      sx={{
+        flexFlow: { lg: "row", md: "column", sm: "column", xs: "column" },
+        justifyContent: { lg: "center", md: "center", xs: "center" },
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        margin: 0,
+        padding: 0,
+      }}
+    >
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          borderRight: { lg: "2px solid #ccc" },
+          paddingTop: 0,
+          paddingRight: { lg: "15vw", xs: 0 },
+        }}
+      >
+        <div className="header-container">
+          <div className="header">QuizzyPals</div>
         </div>
       </Grid>
-      <Grid size={8}>
-        <div
-          style={{
-            borderLeft: "1px solid black",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyItems: "center",
-          }}
-        >
-          <div className="pagetitle">SIGN UP</div>
+      <Grid
+        item
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          height: "100%",
+          paddingLeft: { lg: "15vw" },
+          paddingBottom: 20,
+        }}
+      >
+        <div className="page-title-container">
+          <div className="page-title">SIGN UP</div>
 
           <FormInputComponent
             placeholder={"john.doe@example.com"}
@@ -80,7 +89,7 @@ const SignUpPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here"}
+            placeholder={"Enter a password"}
             type={"password"}
             label={"Password"}
             value={password}
@@ -88,29 +97,28 @@ const SignUpPage = () => {
           />
 
           <FormInputComponent
-            placeholder={"Enter your password here to confirm"}
+            placeholder={"Confirm your password"}
             type={"password"}
             label={"Confirm Password"}
             value={confirmPassword}
             onChange={(evt) => setConfirmPassword(evt.target.value)}
           />
-          <div
-            style={{
-              marginTop: "10vh",
-            }}
-          >
-            <ButtonComponent
-              label={"CONTINUE"}
-              onClick={handleContinueButton}
-              fontSize={24}
-              isDisabled={signUp.isLoading}
-            />
-            {signUp.error && (
-              <div className="error-message">{signUp.error}</div>
-            )}
-            <div className="custom-links">
-              <Link href="/signin">Already have an account</Link>
-            </div>
+        </div>
+        <div
+          style={{
+            marginTop: "8vh",
+            marginBottom: "5vh",
+          }}
+        >
+          <ButtonComponent
+            label={"Sign Up"}
+            onClick={handleSignUpButton}
+            fontSize={24}
+            isDisabled={signUp.isLoading}
+          />
+          {signUp.error && <div className="error-message">{signUp.error}</div>}
+          <div className="custom-links">
+            <Link href="/signin">Already have an account?</Link>
           </div>
         </div>
       </Grid>

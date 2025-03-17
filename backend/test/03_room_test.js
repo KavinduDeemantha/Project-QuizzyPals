@@ -1,0 +1,262 @@
+const assert = require("assert");
+
+let JWT = "1234";
+let activeUserId = "1234";
+let activeRoomId = "1234";
+const userEmail = "damian@gmail.com";
+const password = "12345678";
+
+// Create new room ✅
+// router.post("/createroom", createRoom);
+
+// Get room by room id ✅
+// router.get("/getroom/:roomId", getRoomById);
+
+// Join to a room by room id ✅
+// router.post("/joinroom", joinRoomById);
+
+// Delete room by user id ✅
+// router.delete("/deleteroom/:userId", deleteRoomByUserId);
+
+// Get room mates by room id ✅
+// router.get("/getroommates/:roomId", getUsersByRoomId);
+
+// Get user room id by email ✅
+// router.get("/roomid/:email", getUserRoomId);
+
+describe("Room API", () => {
+  before("Sign In", async () => {
+    const userData = {
+      email: userEmail,
+      password: password,
+    };
+
+    await fetch("http://localhost:4000/api/users/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 200);
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.notStrictEqual(data.userJWT, "");
+
+        JWT = data.userJWT;
+        activeUserId = data.userId;
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+
+  after("Delete Room - Damian", async () => {
+    await fetch(`http://localhost:4000/api/rooms/deleteroom/${activeUserId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JWT}`,
+      },
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 200);
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.strictEqual(data.message, "Room deleted successfully");
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+
+  it("Create Room - Damian", async () => {
+    const roomData = {
+      host: userEmail,
+    };
+
+    await fetch("http://localhost:4000/api/rooms/createroom", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JWT}`,
+      },
+      body: JSON.stringify(roomData),
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 201);
+
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.strictEqual(data.host, userEmail);
+
+        activeRoomId = data.roomId;
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+
+  it("Join Room - Damian", () => {
+    const roomData = {
+      userEmail: userEmail,
+      roomId: activeRoomId,
+    };
+
+    fetch("http://localhost:4000/api/rooms/joinroom", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JWT}`,
+      },
+      body: JSON.stringify(roomData),
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 200);
+
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.strictEqual(data.roomId, activeRoomId);
+        assert.strictEqual(data.host, userEmail);
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+
+  var johnJWT = "";
+  var johnUserId = "";
+  it("Sign In - Chalanka", async () => {
+    const userData = {
+      email: "john@gmail.com",
+      password: "12345678",
+    };
+
+    await fetch("http://localhost:4000/api/users/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 200);
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.notStrictEqual(data.userJWT, "");
+
+        johnJWT = data.userJWT;
+        johnUserId = data.userId;
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+
+  it("Join Room - Chalanka", () => {
+    const roomData = {
+      userEmail: "john@gmail.com",
+      roomId: activeRoomId,
+    };
+
+    fetch("http://localhost:4000/api/rooms/joinroom", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${johnJWT}`,
+      },
+      body: JSON.stringify(roomData),
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 200);
+
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.strictEqual(data.roomId, activeRoomId);
+        assert.strictEqual(data.host, userEmail);
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+
+  it("Get Room Mates", () => {
+    fetch(`http://localhost:4000/api/rooms/getroommates/${activeRoomId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JWT}`,
+      },
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 200);
+
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.notStrictEqual(data, null);
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+
+  it("Get Room Data", () => {
+    fetch(`http://localhost:4000/api/rooms/getroom/${activeRoomId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JWT}`,
+      },
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 200);
+
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.strictEqual(data.roomId, activeRoomId);
+        assert.strictEqual(data.host, activeUserId);
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+
+  it("Get Room ID by User Email", () => {
+    fetch(`http://localhost:4000/api/users/roomid/${userEmail}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JWT}`,
+      },
+    })
+      .then((res) => {
+        assert.strictEqual(res.status, 200);
+
+        return res;
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        assert.strictEqual(data.roomId, activeRoomId);
+      })
+      .catch((error) => {
+        throw error;
+      });
+  });
+});

@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 
-.continue-btn {
+.SignIn-btn {
   margin-top: 10vh;
 }
 
@@ -9,6 +9,5 @@
 }
 
 .error-message {
-  margin-top: 5px;
-  color: red;
+  overflow-x: visible;
 }

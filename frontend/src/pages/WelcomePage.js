@@ -10,7 +10,7 @@ import { useAuthContext } from "../hook/useAuthContext";
 import axios from "axios";
 import { useRoomCheckIn } from "../hook/useRoomCheckIn";
 import { useGameContext } from "../hook/useGameContext";
-import { useRoomContext } from "../hook/useRoomContext";
+import { Typography } from "@mui/material";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -22,7 +22,6 @@ const WelcomePage = () => {
 
   const [roomCode, setRoomCode] = useState("");
   const [joinWithRoom, setJoinWithRoom] = useState(false);
-  const roomContext = useRoomContext();
   const [roomId, setRoomId] = useState(null);
 
   const [error, setError] = useState(null);
@@ -156,7 +155,6 @@ const WelcomePage = () => {
       );
       console.log(response);
       if (response.status === 200) {
-        console.log(response);
         setRoomId(response.data.roomId);
       } else {
         console.log("error");
@@ -175,15 +173,54 @@ const WelcomePage = () => {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    if (roomId) {
+      setRoomCode(roomId);
+    }
+  }, [roomId]);
+
   return (
     user && (
-      <Grid container columns={16}>
-        <Grid size={8}>
+      <Grid
+        container
+        sx={{
+          display: "flex",
+          justifyContent: {
+            xs: "center",
+            sm: "center",
+            md: "space-around",
+            lg: "space-evenly",
+          },
+          alignItems: "center",
+          height: "100vh",
+          width: "100vw",
+        }}
+      >
+        <Grid
+          item
+          sx={{
+            paddingTop: 20,
+            paddingBottom: 20,
+          }}
+        >
           <div className="header-container">
             <div className="header">QuizzyPals</div>
           </div>
         </Grid>
-        <Grid size={8}>
+        <Grid
+          item
+          sx={{
+            width: 2,
+            height: { xs: "0", sm: "0", md: "100vh", lg: "100vh" },
+            backgroundColor: "#ccc",
+          }}
+        ></Grid>
+        <Grid
+          item
+          sx={{
+            paddingBottom: 20,
+          }}
+        >
           <div className="page-title-container">
             <div className="page-title">WELCOME</div>
             <div className="sub-title">{user.email}</div>
@@ -229,7 +266,9 @@ const WelcomePage = () => {
                 />
               </div>
             )}
-            {error && <div className="error-message">{error}</div>}
+            {error && (
+              <Typography className="error-message">{error}</Typography>
+            )}
           </div>
         </Grid>
       </Grid>
