@@ -81,7 +81,7 @@ const SignUpPage = () => {
           <div className="page-title">SIGN UP</div>
 
           <FormInputComponent
-            placeholder={"Enter your email address"}
+            placeholder={"john.doe@example.com"}
             type={"email"}
             label={"Email Address"}
             value={username}

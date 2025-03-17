@@ -86,7 +86,7 @@ const SignInPage = () => {
           <div className="page-title">SIGN IN</div>
 
           <FormInputComponent
-            placeholder={"Enter your email"}
+            placeholder={"john.doe@example.com"}
             type={"email"}
             label={"Email Address"}
             value={username}
